@@ -10,10 +10,10 @@ import kwetter.container.WorldContainer;
 
 import static org.junit.Assert.*;
 
-public class UpdateProfileInformationTest {
+public class UpdateProfileInformationStepDef {
     private WorldContainer worldContainer;
 
-    public UpdateProfileInformationTest(WorldContainer userContainer) {
+    public UpdateProfileInformationStepDef(WorldContainer userContainer) {
         this.worldContainer = userContainer;
     }
 

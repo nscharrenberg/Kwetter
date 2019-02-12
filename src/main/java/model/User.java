@@ -7,53 +7,43 @@ package model;
 import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
 
+import javax.inject.Inject;
+import javax.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class User {
+
+    @Inject
     private int id;
+
+    @Inject
     private String username;
+
+    @Inject
+    @Size(min = 1, max = 160)
     private String biography;
+
+    @Inject
     private double locationLongitude;
+
+    @Inject
     private double locationLatitude;
+
+    @Inject
     private String website;
+
+    @Inject
     private Set<User> followers;
+
+    @Inject
     private Set<User> following;
+
+    @Inject
     private Role role;
 
-    public User(String username, String biography, double locationLongitude, double locationLatitude, String website, Role role) throws StringToLongException, UsernameNotUniqueException {
-        //TODO: Add check for unique username
-
-        if(biography.length() > 160) {
-            throw new StringToLongException("Biography can not be more then 160 characters long.");
-        }
-
-        this.username = username;
-        this.biography = biography;
-        this.locationLongitude = locationLongitude;
-        this.locationLatitude = locationLatitude;
-        this.website = website;
-        this.role = role;
-        this.followers = new HashSet<User>();
-        this.following = new HashSet<User>();
-    }
-
-    public User(int id, String username, String biography, double locationLongitude, double locationLatitude, String website, Role role) throws StringToLongException, UsernameNotUniqueException {
-        //TODO: Add check for unique username
-
-        if(biography.length() > 160) {
-            throw new StringToLongException("Biography can not be more then 160 characters long.");
-        }
-
-        this.id = id;
-        this.username = username;
-        this.biography = biography;
-        this.locationLongitude = locationLongitude;
-        this.locationLatitude = locationLatitude;
-        this.website = website;
-        this.role = role;
-        this.followers = new HashSet<User>();
-        this.following = new HashSet<User>();
+    public User() {
     }
 
     public int getId() {
@@ -114,6 +104,7 @@ public class User {
     }
 
     public void removeFollower(User user) {
+
         this.followers.remove(user);
     }
 
@@ -126,6 +117,7 @@ public class User {
     }
 
     public void removeFollowing(User user) {
+
         this.following.remove(user);
     }
 

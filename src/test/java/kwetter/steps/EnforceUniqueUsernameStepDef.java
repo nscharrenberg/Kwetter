@@ -11,10 +11,10 @@ import kwetter.container.WorldContainer;
 
 import static org.junit.Assert.assertEquals;
 
-public class EnforceUniqueUsername {
+public class EnforceUniqueUsernameStepDef {
     private WorldContainer worldContainer;
 
-    public EnforceUniqueUsername(WorldContainer userContainer) {
+    public EnforceUniqueUsernameStepDef(WorldContainer userContainer) {
         this.worldContainer = userContainer;
     }
 

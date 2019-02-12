@@ -1,21 +1,20 @@
 package model;
 
+import javax.inject.Inject;
 import java.util.Set;
 
 public class Role {
+
+    @Inject
     private int id;
+
+    @Inject
     private String name;
+
+    @Inject
     private Set<Permission> permissions;
 
-    public Role(int id, String name, Set<Permission> permissions) {
-        this.id = id;
-        this.name = name;
-        this.permissions = permissions;
-    }
-
-    public Role(int id, String name) {
-        this.id = id;
-        this.name = name;
+    public Role() {
     }
 
     public Role(String name) {

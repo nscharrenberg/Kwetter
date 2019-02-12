@@ -6,42 +6,32 @@ package model;
 
 import exception.StringToLongException;
 
+import javax.inject.Inject;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Tweet {
+
+    @Inject
     private int id;
+
+    @Inject
+    @Size(min = 0, max = 140)
     private String message;
+
+    @Inject
     private User author;
+
+    @Inject
     private Set<User> likes;
+
+    @Inject
     private Set<User> mentions;
+
+    @Inject
     private Date createdAt;
-
-    public Tweet(int id, String message, User author, Set<User> mentions, Date createdAt) throws StringToLongException {
-        if(message.length() > 140) {
-            throw new StringToLongException("Tweet can not be more then 140 characters.");
-        }
-
-        this.id = id;
-        this.message = message;
-        this.author = author;
-        this.mentions = mentions;
-        this.createdAt = createdAt;
-        this.likes = new HashSet<User>();
-    }
-
-    public Tweet(String message, User author, Set<User> mentions, Date createdAt) throws StringToLongException {
-        if(message.length() > 140) {
-            throw new StringToLongException("Tweet can not be more then 140 characters.");
-        }
-
-        this.message = message;
-        this.author = author;
-        this.mentions = mentions;
-        this.createdAt = createdAt;
-        this.likes = new HashSet<User>();
-    }
 
     public int getId() {
         return id;
