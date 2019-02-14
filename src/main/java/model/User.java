@@ -11,10 +11,10 @@ import javax.inject.Inject;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class User {
-
     @Inject
     private int id;
 
@@ -42,9 +42,6 @@ public class User {
 
     @Inject
     private Role role;
-
-    public User() {
-    }
 
     public int getId() {
         return id;
