@@ -28,8 +28,8 @@ Feature: Followers and Following overview
       | 6                 | 2, 5, 8, 3            |
       | 8                 | 5                     |
       | 9                 | 0, 4                  |
-    When users at index 1 wants to see who is following him
-    Then user at index 1 should get a list of users that are following him
+    When users at index 9 wants to see who is following him
+    Then user at index 9 should get a list of users that are following him
 
   Scenario: Get overview of who user is  following
     Given the following role:
@@ -45,19 +45,12 @@ Feature: Followers and Following overview
       | followers         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | following         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
     Given the following followers:
-      | follower          | following             |
-      | 0                 | 3                     |
-      | 0                 | 5                     |
-      | 1                 | 7                     |
-      | 1                 | 3                     |
-      | 1                 | 0                     |
-      | 2                 | 9                     |
-      | 6                 | 2                     |
-      | 6                 | 5                     |
-      | 6                 | 8                     |
-      | 6                 | 3                     |
+      | 0                 | 3, 5                  |
+      | 1                 | 7, 3, 9               |
+      | 2                 | 3 , 6                 |
+      | 3                 | 9                     |
+      | 6                 | 2, 5, 8, 3            |
       | 8                 | 5                     |
-      | 9                 | 5                     |
-      | 9                 | 4                     |
+      | 9                 | 0, 4                  |
     When users at index 1 wants to see who he is following
     Then user at index 1 should get a list of users that he is following
