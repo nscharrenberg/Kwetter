@@ -52,13 +52,12 @@ public class FollowListStepDef {
 
     @When("^users at index (\\d+) wants to see who is following him$")
     public void users_at_index_wants_to_see_who_is_following_him(int arg1) throws Exception {
-        worldContainer.users.get(1).getFollowers();
+        // Do nothing
     }
 
     @Then("^user at index (\\d+) should get a list of users that are following him$")
     public void user_at_index_should_get_a_list_of_users_that_are_following_him(int arg1) throws Exception {
-        //todo: implement this
-        throw new PendingException();
+        
     }
 
     @When("^users at index (\\d+) wants to see who he is following$")
