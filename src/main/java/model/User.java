@@ -4,43 +4,63 @@
 
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
 
 import javax.inject.Inject;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Entity
 public class User {
-    @Inject
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Inject
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Inject
-    @Size(min = 1, max = 160)
+    @Column(nullable = false)
+    @JsonIgnore
+    private String password;
+
+    @Column(length = 160)
     private String biography;
 
-    @Inject
+    @Column
     private double locationLongitude;
 
-    @Inject
+    @Column
     private double locationLatitude;
 
-    @Inject
+    @Column
     private String website;
 
-    @Inject
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            }
+    )
+    @JoinTable(
+            name = "followers",
+            joinColumns = @JoinColumn(name = "follower"),
+            inverseJoinColumns = @JoinColumn(name = "following")
+    )
     private Set<User> followers;
 
-    @Inject
+    @ManyToMany(
+            mappedBy = "followers"
+    )
     private Set<User> following;
 
-    @Inject
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
     private Role role;
 
     public int getId() {

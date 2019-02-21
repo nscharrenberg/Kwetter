@@ -2,7 +2,7 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package service.implementation;
+package repository.JPA;
 
 import service.AuthenticationService;
 

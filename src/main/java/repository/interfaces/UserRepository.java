@@ -2,7 +2,7 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package repository;
+package repository.interfaces;
 
 import model.User;
 

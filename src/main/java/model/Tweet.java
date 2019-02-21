@@ -7,30 +7,55 @@ package model;
 import exception.StringToLongException;
 
 import javax.inject.Inject;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
 public class Tweet {
 
-    @Inject
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Inject
-    @Size(min = 0, max = 140)
+    @Column(length = 140)
     private String message;
 
-    @Inject
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author")
     private User author;
 
-    @Inject
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE,
+                    CascadeType.DETACH
+            }
+    )
+    @JoinTable(
+            name = "likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tweet_id")
+    )
     private Set<User> likes;
 
-    @Inject
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE,
+                    CascadeType.DETACH
+            }
+    )
+    @JoinTable(
+            name = "mentions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tweet_id")
+    )
     private Set<User> mentions;
 
-    @Inject
+    @Column
     private Date createdAt;
 
     public int getId() {

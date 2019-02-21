@@ -1,17 +1,31 @@
 package model;
 
 import javax.inject.Inject;
+import javax.persistence.*;
 import java.util.Set;
 
+@Entity
 public class Role {
 
-    @Inject
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Inject
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Inject
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE,
+                    CascadeType.DETACH
+            }
+    )
+    @JoinTable(
+            name = "role_permission",
+            joinColumns = @JoinColumn(name = "permission_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Permission> permissions;
 
     public Role() {

@@ -5,18 +5,24 @@
 package service;
 
 import model.User;
+import repository.interfaces.JPA;
+import repository.interfaces.UserRepository;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class UserService {
+
+    @Inject @JPA
+    private UserRepository ur;
+
 
     /**
      * Get all Users
      * @return
      */
     public List<User> getUsers() {
-        //todo: implement getUsers method
-        return null;
+        return ur.getUsers();
     }
 
     /**
@@ -25,8 +31,7 @@ public class UserService {
      * @return
      */
     public User getUserById(int id) {
-        //todo: implement getUserById method
-        return null;
+        return ur.getUserById(id);
     }
 
     /**
@@ -35,8 +40,7 @@ public class UserService {
      * @return
      */
     public User getUserByUsername(String username) {
-        //todo: implement getUserByUsername method
-        return null;
+        return ur.getUserByUsername(username);
     }
 
     /**
@@ -45,8 +49,7 @@ public class UserService {
      * @return
      */
     public User create(User user) {
-        //todo: implement createUser method
-        return null;
+        return ur.create(user);
     }
 
     /**
@@ -55,8 +58,7 @@ public class UserService {
      * @param follower - the person that is being followed.
      */
     public void follow(User user, User follower) {
-        //todo: implement follow method - Think about passing 2 params or to use 1 parameter and get the current user from the session.
-
+        ur.follow(user, follower);
     }
 
     /**
@@ -65,7 +67,7 @@ public class UserService {
      * @param follower - the person that is being unfollowed.
      */
     public void unfollow(User user, User follower) {
-        //todo: implement unfollow method - Think about passing 2 params or to use 1 parameter and get the current user from the session.
+        ur.unfollow(user, follower);
     }
 
     /**
@@ -74,10 +76,7 @@ public class UserService {
      * @return
      */
     public List<User> getFollowersById(int id) {
-        User user = getUserById(id);
-
-        //todo: implement getFollowersById method
-        return null;
+        return ur.getFollowersById(id);
     }
 
     /**
@@ -86,10 +85,7 @@ public class UserService {
      * @return
      */
     public List<User> getFollowersByUsername(String username) {
-        User user = getUserByUsername(username);
-
-        //todo: implement getFollowersByUsername method
-        return null;
+        return ur.getFollowersByUsername(username);
     }
 
 
@@ -99,10 +95,7 @@ public class UserService {
      * @return
      */
     public List<User> getFollowingById(int id) {
-        User user = getUserById(id);
-
-        //todo: implement getFollowingById method
-        return null;
+        return ur.getFollowingById(id);
     }
 
     /**
@@ -111,10 +104,7 @@ public class UserService {
      * @return
      */
     public List<User> getFollowingByUsername(String username) {
-        User user = getUserByUsername(username);
-
-        //todo: implement getFollowingByUsername method
-        return null;
+        return ur.getFollowingByUsername(username);
     }
 
     /**
@@ -123,7 +113,6 @@ public class UserService {
      * @return
      */
     public User updateUser(User user) {
-        //todo: implement updateUser method
-        return null;
+        return ur.updateUser(user);
     }
 }
