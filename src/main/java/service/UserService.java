@@ -48,8 +48,8 @@ public class UserService {
      * @param user - the user to be created.
      * @return
      */
-    public User create(User user) {
-        return ur.create(user);
+    public void create(User user) {
+        ur.create(user);
     }
 
     /**
@@ -112,7 +112,7 @@ public class UserService {
      * @param user - update the user information of a specific user.
      * @return
      */
-    public User updateUser(User user) {
-        return ur.updateUser(user);
+    public void update(User user) {
+        ur.update(user);
     }
 }

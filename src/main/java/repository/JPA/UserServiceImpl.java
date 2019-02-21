@@ -33,8 +33,8 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public User create(User user) {
-        return null;
+    public void create(User user) {
+
     }
 
     @Override
@@ -68,7 +68,6 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public User updateUser(User user) {
-        return null;
-    }
+    public void update(User user) {
+            }
 }

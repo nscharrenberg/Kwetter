@@ -6,10 +6,13 @@ package kwetter.container;
 
 import model.Role;
 import model.User;
+import repository.memory.UserServiceImpl;
+import service.UserService;
 
 import java.util.List;
 
 public class WorldContainer {
+    public UserServiceImpl userService;
     public Role role;
     public List<User> users;
     public Exception actualException;

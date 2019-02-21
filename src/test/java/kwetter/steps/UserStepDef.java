@@ -4,10 +4,12 @@
 
 package kwetter.steps;
 
+import com.google.common.collect.Iterables;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.*;
 import kwetter.container.WorldContainer;
 import model.*;
+import repository.memory.UserServiceImpl;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class UserStepDef {
 
     public UserStepDef(WorldContainer worldContainer) {
         this.worldContainer = worldContainer;
+        this.worldContainer.userService = new UserServiceImpl();
     }
 
     @Given("^the following role:$")
@@ -27,6 +30,6 @@ public class UserStepDef {
     @Given("^the following users:$")
     public void the_following_users(DataTable arg1) throws Exception {
         List<User> users = arg1.transpose().asList(User.class);
-        this.worldContainer.users = users;
+        Iterables.addAll(this.worldContainer.userService.getUsers(), users);
     }
 }
