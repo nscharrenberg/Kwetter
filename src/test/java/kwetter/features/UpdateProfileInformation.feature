@@ -40,4 +40,4 @@ Feature: Update profile information
       | website           | wwww.mysite.io        |
       | role              |                       |
     When the biography field on the profile page with the value "7vIQjpT47BP1KJNRww4HhiyCW3xAILcs9h87yBsdjOigzcvLjFhV5yMlhnHdcTttdxPcGk8TTcUblYJ0HWufNCzimntyabU0DcBPNK2PtgBE8JytEgsE9WGC3QQj4nkcTopoRO8vwDPdPZzieVlQWIIpulAUVlDTaDfHlZ4K8N" is entered
-    Then an Exception StringToLongException saying "Biography can not be more then 160 characters long." is thrown.
+    Then an Exception StringToLongException saying "Biography can not be more then 160 characters." is thrown.

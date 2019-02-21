@@ -43,7 +43,7 @@ public class Tweet {
 
     public void setMessage(String message) throws StringToLongException {
         if(message.length() > 140) {
-            throw new StringToLongException("Tweet can not be more then 140 characters.");
+            throw new StringToLongException("Tweet can not be longer then 140 characters.");
         }
 
         this.message = message;

@@ -49,10 +49,4 @@ public class LikeTweetStepDef {
     public void the_Tweet_should_not_have_a_like_by_testUser_anymore() throws Exception {
         assertTrue(tweet.getLikes().isEmpty());
     }
-
-    @Then("^an Exception StringToLongException saying \"([^\"]*)\" is thrown\\.$")
-    public void an_Exception_StringToLongException_saying_is_thrown(String arg1) throws Exception {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
 }

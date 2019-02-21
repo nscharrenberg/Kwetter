@@ -62,7 +62,7 @@ public class User {
 
     public void setBiography(String biography) throws StringToLongException {
         if(biography.length() > 160) {
-            throw new StringToLongException("Biography can not be more then 160 characters long.");
+            throw new StringToLongException("Biography can not be more then 160 characters.");
         }
 
         this.biography = biography;
