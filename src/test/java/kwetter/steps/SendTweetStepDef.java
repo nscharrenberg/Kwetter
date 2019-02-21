@@ -54,4 +54,16 @@ public class SendTweetStepDef {
     public void an_Exception_StringToLongException_saying_is_thrown(String arg1) {
         assertEquals(arg1, this.worldContainer.actualException.getMessage());
     }
+
+    @When("^testUser wants to send a tweet with the message \"([^\"]*)\" mentioning a user")
+    public void testuser_wants_to_send_a_tweet_with_the_message_mentioning_a_user(String arg1) throws Exception {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @Then("^a tweet should be created and a mention should be added$")
+    public void a_tweet_should_be_created_and_a_mention_should_be_added() throws Exception {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
 }

@@ -1,5 +1,6 @@
 Feature: User sends a tweet of max 140 characters
   •	As a user I want to send a new tweet of max. 140 characters so that I can share something that I want to share with others.
+  •	As a user I want to mention another user when tweeting so that the other user gets notified that I mentioned him.
 
   Scenario: Send a tweet of less then 140 characters
     Given the following role:
@@ -13,6 +14,19 @@ Feature: User sends a tweet of max 140 characters
       | role              |                       |                      |
     When testUser wants to send a tweet with the message "This is my tweet of less then 140 characters"
     Then a tweet should be created
+
+  Scenario: Send a tweet of less then 140 characters and mention "testUser2"
+    Given the following role:
+      | member |
+    Given the following users:
+      | username          | testUser              | testUser2            |
+      | biography         | This is my biography  | This is my biography |
+      | locationLongitude | 123123.123123         | 12345456.234234      |
+      | locationLatitude  | 123653.234123         | 89237489.23423       |
+      | website           | wwww.mysite.io        | www.mysite.com       |
+      | role              |                       |                      |
+    When testUser wants to send a tweet with the message "@testUser2 you are awesome!" mentioning a user
+    Then a tweet should be created and a mention should be added
 
   Scenario: Send a tweet with more then 140 characters
     Given the following role:
