@@ -2,6 +2,8 @@ package repository.memory;
 
 import com.google.common.base.*;
 import com.google.common.collect.*;
+import exception.StringToLongException;
+import exception.UsernameNotUniqueException;
 import model.User;
 import repository.interfaces.UserRepository;
 
@@ -44,7 +46,18 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public void create(User user) {
+    public void create(User user) throws UsernameNotUniqueException {
+        User result = Iterables.tryFind(users, new Predicate<User>() {
+            @Override
+            public boolean apply(@Nullable User u) {
+                return user.getUsername().equals(u.getUsername());
+            }
+        }).orNull();
+
+        if(result != null) {
+            throw new UsernameNotUniqueException("Username must be unique.");
+        }
+
         users.add(user);
     }
 
@@ -86,7 +99,25 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public void update(User user) {
+    public void update(User user) throws UsernameNotUniqueException, StringToLongException {
+        User result = Iterables.tryFind(users, new Predicate<User>() {
+            @Override
+            public boolean apply(@Nullable User u) {
+                return user.getUsername().equals(u.getUsername()) && !Integer.toString(user.getId()).equals(Integer.toString(u.getId()));
+            }
+        }).orNull();
 
+        if(result != null) {
+            throw new UsernameNotUniqueException("Username must be unique.");
+        }
+
+        int index = Iterables.indexOf(users, new Predicate<User>() {
+            @Override
+            public boolean apply(@Nullable User u) {
+                return Integer.toString(user.getId()).equals(Integer.toString(u.getId()));
+            }
+        });
+
+        users.set(index, user);
     }
 }

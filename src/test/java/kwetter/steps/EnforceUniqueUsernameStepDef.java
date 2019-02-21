@@ -9,12 +9,14 @@ import com.google.common.collect.Iterables;
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import cucumber.api.junit.Cucumber;
 import exception.UsernameNotUniqueException;
 import kwetter.container.WorldContainer;
 import model.User;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class EnforceUniqueUsernameStepDef {
     private WorldContainer worldContainer;
@@ -24,27 +26,28 @@ public class EnforceUniqueUsernameStepDef {
     }
 
     @When("^\"([^\"]*)\" changes it's name to \"([^\"]*)\"$")
-    public void changes_it_s_name_to(String arg1, String arg2) throws Exception {
-        try {
-            Iterables.tryFind(this.worldContainer.userService.getUsers(), new Predicate<User>() {
-                @Override
-                public boolean apply(@Nullable User u) {
-                    return arg1.equals(u.getUsername());
-                }
-            }).orNull().setUsername(arg2);
-        } catch(UsernameNotUniqueException e) {
-            this.worldContainer.actualException = e;
+    public void changes_it_s_name_to(String arg1, String arg2) throws Exception, UsernameNotUniqueException {
+        User user = Iterables.tryFind(this.worldContainer.userService.getUsers(), new Predicate<User>() {
+            @Override
+            public boolean apply(@Nullable User u) {
+                return arg1.equals(u.getUsername());
+            }
+        }).orNull();
+
+        if(user != null) {
+            user.setUsername(arg2);
         }
+
+        this.worldContainer.userService.update(user);
     }
 
     @Then("^an Exception UsernameNotUniqueException saying \"([^\"]*)\"$")
-    public void an_Exception_UsernameNotUniqueException_saying(String arg1) throws Exception {
-        assertEquals(UsernameNotUniqueException.class.getSimpleName(), this.worldContainer.actualException.getClass().getSimpleName());
+    public void an_Exception_UsernameNotUniqueException_saying(String arg1) {
         assertEquals(arg1, this.worldContainer.actualException.getMessage());
     }
 
     @Then("^the username of \"([^\"]*)\" should be \"([^\"]*)\"$")
-    public void the_username_of_should_be(String arg1, String arg2) throws Exception {
+    public void the_username_of_should_be(String arg1, String arg2) {
         assertEquals(arg2, Iterables.tryFind(this.worldContainer.userService.getUsers(), new Predicate<User>() {
             @Override
             public boolean apply(@Nullable User user) {

@@ -4,6 +4,8 @@
 
 package service;
 
+import exception.StringToLongException;
+import exception.UsernameNotUniqueException;
 import model.User;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
@@ -48,7 +50,7 @@ public class UserService {
      * @param user - the user to be created.
      * @return
      */
-    public void create(User user) {
+    public void create(User user) throws UsernameNotUniqueException {
         ur.create(user);
     }
 
@@ -112,7 +114,7 @@ public class UserService {
      * @param user - update the user information of a specific user.
      * @return
      */
-    public void update(User user) {
+    public void update(User user) throws StringToLongException, UsernameNotUniqueException {
         ur.update(user);
     }
 }
