@@ -10,14 +10,16 @@ import model.User;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.List;
 
+@Stateless
 public class UserService {
 
-    @Inject @JPA
+    @Inject @Default
     private UserRepository ur;
-
 
     /**
      * Get all Users

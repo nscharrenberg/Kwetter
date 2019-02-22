@@ -8,15 +8,20 @@ import model.User;
 import repository.interfaces.UserRepository;
 
 import javax.annotation.Nullable;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Stateless
+@ApplicationScoped
+@Default
 public class UserServiceImpl implements UserRepository {
-    private List<User> users;
 
-    public UserServiceImpl() {
-        this.users = new ArrayList<>();
-    }
+    private List<User> users = new ArrayList<>();
 
     @Override
     public List<User> getUsers() {

@@ -5,6 +5,7 @@ Feature: User should be able to like a tweet
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     | 2                    |
       | username          | testUser              | testUser2            |
       | biography         | This is my biography  | This is my biography |
       | locationLongitude | 123123.123123         | 12345456.234234      |
@@ -15,13 +16,14 @@ Feature: User should be able to like a tweet
       | message           | This is a tweet       |
       | author            | testUser2             |
       | createdAt         | 12/01/2019            |
-    When testUser likes a Tweet
-    Then the Tweet should have one like by testUser
+    When "testUser" likes a Tweet
+    Then the Tweet should have one like by "testUser"
 
   Scenario: Unlike a Tweet
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     | 2                    |
       | username          | testUser              | testUser2            |
       | biography         | This is my biography  | This is my biography |
       | locationLongitude | 123123.123123         | 12345456.234234      |
@@ -32,5 +34,5 @@ Feature: User should be able to like a tweet
       | message           | This is a tweet       |
       | author            | testUser2             |
       | createdAt         | 12/01/2019            |
-    When testUser unlikes a Tweet
-    Then the Tweet should not have a like by testUser anymore
+    When "testUser" unlikes a Tweet
+    Then the Tweet should not have a like by "testUser" anymore

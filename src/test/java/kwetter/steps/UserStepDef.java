@@ -9,6 +9,7 @@ import cucumber.api.DataTable;
 import cucumber.api.java.en.*;
 import kwetter.container.WorldContainer;
 import model.*;
+import repository.memory.TweetServiceImpl;
 import repository.memory.UserServiceImpl;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class UserStepDef {
     public UserStepDef(WorldContainer worldContainer) {
         this.worldContainer = worldContainer;
         this.worldContainer.userService = new UserServiceImpl();
+        this.worldContainer.tweetService = new TweetServiceImpl();
     }
 
     @Given("^the following role:$")
