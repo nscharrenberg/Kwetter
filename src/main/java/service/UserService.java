@@ -11,11 +11,13 @@ import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
 import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.List;
 
 @Stateless
+@ApplicationScoped
 public class UserService {
 
     @Inject @Default

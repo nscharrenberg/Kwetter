@@ -11,15 +11,15 @@ import model.User;
 import java.util.List;
 
 public interface UserRepository {
-    public List<User> getUsers();
-    public User getUserById(int id);
-    public User getUserByUsername(String username);
-    public void create(User user) throws UsernameNotUniqueException;
-    public void follow(User user, User follower);
-    public void unfollow(User user, User follower);
-    public List<User> getFollowersById(int id);
-    public List<User> getFollowersByUsername(String username);
-    public List<User> getFollowingById(int id);
-    public List<User> getFollowingByUsername(String username);
-    public void update(User user) throws UsernameNotUniqueException, StringToLongException;
+    List<User> getUsers();
+    User getUserById(int id);
+    User getUserByUsername(String username);
+    void create(User user) throws UsernameNotUniqueException;
+    void follow(User user, User follower);
+    void unfollow(User user, User follower);
+    List<User> getFollowersById(int id);
+    List<User> getFollowersByUsername(String username);
+    List<User> getFollowingById(int id);
+    List<User> getFollowingByUsername(String username);
+    void update(User user) throws UsernameNotUniqueException, StringToLongException;
 }

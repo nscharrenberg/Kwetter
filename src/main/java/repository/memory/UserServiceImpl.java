@@ -20,7 +20,8 @@ import java.util.List;
 @Default
 public class UserServiceImpl implements UserRepository {
 
-    private List<User> users = new ArrayList<>();
+    @Inject
+    private List<User> users;
 
     @Override
     public List<User> getUsers() {

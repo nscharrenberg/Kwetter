@@ -1,16 +1,14 @@
 package repository.memory;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import exception.StringToLongException;
 import model.Tweet;
 import model.User;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import repository.interfaces.TweetRepository;
-import repository.interfaces.UserRepository;
-import service.UserService;
 
-import javax.ejb.Local;
 import javax.ejb.Stateless;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.*;
@@ -21,10 +19,11 @@ import java.util.regex.Pattern;
 @Default
 public class TweetServiceImpl implements TweetRepository {
 
+    @Inject
     private List<Tweet> tweets;
 
     @Inject
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Override
     public List<Tweet> getTweets() {
@@ -73,32 +72,74 @@ public class TweetServiceImpl implements TweetRepository {
     }
 
     @Override
-    public Tweet update(Tweet tweet) {
-        return null;
+    public void update(Tweet tweet) {
+        int index = Iterables.indexOf(tweets, new Predicate<Tweet>() {
+            @Override
+            public boolean apply(@Nullable Tweet t) {
+                return Integer.toString(tweet.getId()).equals(Integer.toString(t.getId()));
+            }
+        });
+
+        tweets.set(index, tweet);
     }
 
     @Override
     public boolean delete(User user, int id) {
-        return false;
+        Tweet tweet = Iterables.tryFind(tweets, new Predicate<Tweet>() {
+            @Override
+            public boolean apply(@Nullable Tweet tweet) {
+                return Integer.toString(id).equals(tweet.getId()) && Integer.toString(user.getId()).equals(Integer.toString(tweet.getAuthor().getId()));
+            }
+        }).orNull();
+
+        return tweets.remove(tweet);
     }
 
     @Override
-    public Tweet like(User user, int id) {
-        return null;
+    public void like(User user, int id) throws Exception {
+        Tweet tweet = Iterables.tryFind(tweets, new Predicate<Tweet>() {
+            @Override
+            public boolean apply(@Nullable Tweet tweet) {
+                return Integer.toString(id).equals(tweet.getId()) && !Integer.toString(user.getId()).equals(Integer.toString(tweet.getAuthor().getId()));
+            }
+        }).orNull();
+
+        if(tweet == null) {
+            throw new Exception("Tweet could not be found!");
+        }
+
+        tweet.addLike(user);
     }
 
     @Override
-    public Tweet unlike(User user, int id) {
-        return null;
+    public void unlike(User user, int id) throws Exception {
+        Tweet tweet = Iterables.tryFind(tweets, new Predicate<Tweet>() {
+            @Override
+            public boolean apply(@Nullable Tweet tweet) {
+                return Integer.toString(id).equals(tweet.getId()) && !Integer.toString(user.getId()).equals(Integer.toString(tweet.getAuthor().getId()));
+            }
+        }).orNull();
+
+        if(tweet == null) {
+            throw new Exception("Tweet could not be found!");
+        }
+
+        if(!tweet.getLikes().contains(user)) {
+            throw new Exception("You are not able to unlike this tweet.");
+        }
+
+        tweet.removeLike(user);
     }
 
     @Override
     public List<Tweet> getTimeline(String username) {
+        //todo: implement
         return null;
     }
 
     @Override
     public List<Tweet> search(String input) {
+        //todo: implement
         return null;
     }
 }

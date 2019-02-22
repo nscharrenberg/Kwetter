@@ -2,20 +2,11 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package kwetter.steps;
+package cucumber.steps;
 
-import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.*;
-import cucumber.runtime.junit.Assertions;
 import exception.StringToLongException;
-import exception.UsernameNotUniqueException;
-import kwetter.container.WorldContainer;
-import model.Tweet;
-import model.User;
-
-import java.util.Date;
-import java.util.List;
+import cucumber.container.WorldContainer;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;

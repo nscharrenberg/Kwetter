@@ -16,10 +16,10 @@ public interface TweetRepository {
     public List<Tweet> getTweetsByUser(String username);
     public void create(User user, String message) throws StringToLongException;
     public Set<User> getMentionsByMessage(String message);
-    public Tweet update(Tweet tweet);
+    public void update(Tweet tweet);
     public boolean delete(User user, int id);
-    public Tweet like(User user, int id);
-    public Tweet unlike(User user, int id);
+    public void like(User user, int id) throws Exception;
+    public void unlike(User user, int id) throws Exception;
     public List<Tweet> getTimeline(String username);
     public List<Tweet> search(String input);
 }

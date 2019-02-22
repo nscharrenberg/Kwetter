@@ -4,20 +4,32 @@
 
 package service;
 
+import exception.StringToLongException;
 import model.Tweet;
 import model.User;
+import repository.interfaces.TweetRepository;
+import repository.interfaces.UserRepository;
 
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import java.util.List;
 
+@Stateless
 public class TweetService {
+
+    @Inject @Default
+    TweetRepository tr;
+
+    @Inject @Default
+    UserRepository ur;
 
     /**
      * Get All Tweets
      * @return
      */
     public List<Tweet> getTweets() {
-        //todo: implement getTweets method
-        return null;
+        return  tr.getTweets();
     }
 
     /**
@@ -26,8 +38,7 @@ public class TweetService {
      * @return
      */
     public List<Tweet> getTweetsByUser(String username) {
-        //todo: implement getTweetsByUser method
-        return null;
+        return tr.getTweetsByUser(username);
     }
 
     /**
@@ -36,20 +47,8 @@ public class TweetService {
      * @param message - the message of the tweet
      * @return
      */
-    public Tweet create(User user, String message) {
-        List<User> mentions = getMentionsByMessage(message);
-        //todo: implement create method
-        return null;
-    }
-
-    /**
-     * Get all mentions from a message
-     * @param message
-     * @return
-     */
-    private List<User> getMentionsByMessage(String message) {
-        //todo: implement getMentionsByMessage method
-        return null;
+    public void create(User user, String message) throws StringToLongException {
+        tr.create(user, message);
     }
 
     /**
@@ -57,9 +56,8 @@ public class TweetService {
      * @param tweet
      * @return
      */
-    public Tweet update(Tweet tweet) {
-        //todo: implement update method
-        return null;
+    public void update(Tweet tweet) {
+        tr.update(tweet);
     }
 
     /**
@@ -69,8 +67,7 @@ public class TweetService {
      * @return
      */
     public boolean delete(User user, int id) {
-        //todo: implement delete method
-        return false;
+        return tr.delete(user, id);
     }
 
     /**
@@ -79,9 +76,8 @@ public class TweetService {
      * @param id - the id of the Tweet that is being liked
      * @return
      */
-    public Tweet like(User user, int id) {
-        //todo: implement like method
-        return null;
+    public void like(User user, int id) throws Exception {
+        tr.like(user, id);
     }
 
     /**
@@ -90,9 +86,8 @@ public class TweetService {
      * @param id - the id of the Tweet that is being unliked
      * @return
      */
-    public Tweet unlike(User user, int id) {
-        //todo: implement unlike method
-        return null;
+    public void unlike(User user, int id) throws Exception {
+        tr.unlike(user, id);
     }
 
     /**
@@ -101,8 +96,7 @@ public class TweetService {
      * @return
      */
     public List<Tweet> getTimeline(String username) {
-         //todo: implement getTimeline method
-        return null;
+         return tr.getTimeline(username);
     }
 
     /**
@@ -111,7 +105,10 @@ public class TweetService {
      * @return
      */
     public List<Tweet> search(String input) {
-        //todo: implement search method
-        return null;
+        return tr.search(input);
+    }
+
+    public void setUr(UserRepository ur) {
+        this.ur = ur;
     }
 }

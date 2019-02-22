@@ -2,15 +2,10 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package kwetter.steps;
+package cucumber.steps;
 
-import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.*;
-import kwetter.container.WorldContainer;
-import model.User;
-
-import java.util.List;
+import cucumber.container.WorldContainer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

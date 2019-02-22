@@ -2,13 +2,11 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package kwetter.steps;
+package cucumber.steps;
 
-import com.google.common.collect.Iterables;
 import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.*;
-import kwetter.container.WorldContainer;
+import cucumber.container.WorldContainer;
 import model.Tweet;
 
 import java.util.List;

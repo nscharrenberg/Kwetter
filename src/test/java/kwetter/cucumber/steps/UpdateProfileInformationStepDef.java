@@ -2,16 +2,13 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package kwetter.steps;
+package cucumber.steps;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import cucumber.api.java.en.*;
 import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
-import kwetter.container.WorldContainer;
+import cucumber.container.WorldContainer;
 import model.User;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;

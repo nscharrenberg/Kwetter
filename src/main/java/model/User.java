@@ -72,7 +72,6 @@ public class User {
     }
 
     public void setUsername(String username) throws UsernameNotUniqueException {
-        //TODO: Add check for unique username
         this.username = username;
     }
 
@@ -81,10 +80,6 @@ public class User {
     }
 
     public void setBiography(String biography) throws StringToLongException {
-        if(biography.length() > 160) {
-            throw new StringToLongException("Biography can not be more then 160 characters.");
-        }
-
         this.biography = biography;
     }
 
@@ -116,11 +111,11 @@ public class User {
         return followers;
     }
 
-    public void addFollower(User user) {
+    private void addFollower(User user) {
         this.followers.add(user);
     }
 
-    public void removeFollower(User user) {
+    private void removeFollower(User user) {
 
         this.followers.remove(user);
     }
