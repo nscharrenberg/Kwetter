@@ -4,10 +4,16 @@
 
 package kwetter.steps;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import cucumber.api.java.en.*;
 import exception.StringToLongException;
+import exception.UsernameNotUniqueException;
 import kwetter.container.WorldContainer;
+import model.User;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 
 public class UpdateProfileInformationStepDef {
@@ -19,18 +25,24 @@ public class UpdateProfileInformationStepDef {
 
     @When("^the website field with the value \"([^\"]*)\" is entered$")
     public void the_website_field_with_the_value_is_entered(String arg1) throws Exception {
-        this.worldContainer.users.get(0).setWebsite(arg1);
+        User user = worldContainer.userService.getUserById(1);
+        user.setWebsite(arg1);
+
+        worldContainer.userService.update(user);
     }
 
     @Then("^the website field for the user is \"([^\"]*)\"$")
     public void the_website_field_for_the_user_is(String arg1) throws Exception {
-        assertEquals(arg1, this.worldContainer.users.get(0).getWebsite());
+        assertEquals(arg1, worldContainer.userService.getUserById(1).getWebsite());
     }
 
     @When("^the biography field on the profile page with the value \"([^\"]*)\" is entered$")
     public void the_biography_field_on_the_profile_page_with_the_value_is_entered(String arg1) throws Exception {
         try {
-            this.worldContainer.users.get(0).setBiography(arg1);
+            User user = worldContainer.userService.getUserById(1);
+            user.setBiography(arg1);
+
+            worldContainer.userService.update(user);
         } catch(StringToLongException e) {
             this.worldContainer.actualException = e;
         }
@@ -38,12 +50,15 @@ public class UpdateProfileInformationStepDef {
 
     @Then("^the biography for the user is \"([^\"]*)\"$")
     public void the_biography_for_the_user_is(String arg1) throws Exception {
-        assertEquals(arg1, this.worldContainer.users.get(0).getBiography());
+        assertEquals(arg1, worldContainer.userService.getUserById(1).getBiography());
     }
 
     @Then("^an Exception StringToLongException saying \"([^\"]*)\"$")
     public void an_Exception_StringToLongException_saying(String arg1) throws Exception {
-        assertEquals(StringToLongException.class.getSimpleName(), this.worldContainer.actualException.getClass().getSimpleName());
-        assertEquals(arg1, this.worldContainer.actualException.getMessage());
+        if(this.worldContainer.actualException == null) {
+            fail("Expected a UsernameNotUniqueException");
+        }
+
+        assertThatThrownBy(() -> { throw new UsernameNotUniqueException(arg1); }).isInstanceOf(this.worldContainer.actualException.getClass()).hasMessage(this.worldContainer.actualException.getMessage());
     }
 }

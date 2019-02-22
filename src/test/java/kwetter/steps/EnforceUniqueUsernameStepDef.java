@@ -48,8 +48,6 @@ public class EnforceUniqueUsernameStepDef {
 
     @Then("^an Exception UsernameNotUniqueException saying \"([^\"]*)\"$")
     public void an_Exception_UsernameNotUniqueException_saying(String arg1) {
-        int test = 0;
-
         if(this.worldContainer.actualException == null) {
             fail("Expected a UsernameNotUniqueException");
         }

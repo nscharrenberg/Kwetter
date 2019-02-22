@@ -7,6 +7,7 @@ Feature: Update profile information
     Given the following role:
       | member |
     And the following users:
+      | id                | 1                     |
       | username          | testUser              |
       | biography         | This is my biography  |
       | locationLongitude | 123123.123123         |
@@ -20,6 +21,7 @@ Feature: Update profile information
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     |
       | username          | testUser              |
       | biography         | This is my biography  |
       | locationLongitude | 123123.123123         |
@@ -33,6 +35,7 @@ Feature: Update profile information
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     |
       | username          | testUser              |
       | biography         | This is my biography  |
       | locationLongitude | 123123.123123         |
