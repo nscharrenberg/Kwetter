@@ -18,50 +18,35 @@ import static org.junit.Assert.assertTrue;
 
 public class FollowUserStepDef {
     private WorldContainer worldContainer;
-    private User testUser;
-    private User testUser2;
 
     public FollowUserStepDef(WorldContainer worldContainer) {
         this.worldContainer = worldContainer;
     }
 
-    @Given("^user at index (\\d+) follows user at index (\\d+)$")
+    @Given("^user with id (\\d+) follows user with id (\\d+)$")
     public void user_at_index_follows_user_at_index(int arg1, int arg2) throws Exception {
-        testUser = worldContainer.users.get(arg1);
-        testUser2 = worldContainer.users.get(arg2);
-
-        testUser2.addFollower(testUser);
-        testUser.addFollowing(testUser2);
+        worldContainer.userService.getUserById(arg1).addFollowing(worldContainer.userService.getUserById(arg2));
     }
 
-    @When("^user at index (.*) wants to follow user at index (.*)$")
+    @When("^user with id (.*) wants to follow user with id (.*)$")
     public void user_at_index_wants_to_follow_user_at_index(int arg1, int arg2) throws Exception {
-        testUser = worldContainer.users.get(arg1);
-        testUser2 = worldContainer.users.get(arg2);
-
-        testUser2.addFollower(testUser);
-        testUser.addFollowing(testUser2);
+        worldContainer.userService.getUserById(arg1).addFollowing(worldContainer.userService.getUserById(arg2));
     }
 
-    @Then("^user at index (.*) should be following user at index (.*)$")
+    @Then("^user with id (.*) should be following user with id (.*)$")
     public void user_at_index_should_be_following_user_at_index(int arg1, int arg2) throws Exception {
-        assertEquals(testUser.getId(), worldContainer.users.get(arg1).getId());
-        assertEquals(testUser2.getId(), worldContainer.users.get(arg2).getId());
-        assertTrue(testUser2.getFollowers().contains(testUser));
-        assertTrue(testUser.getFollowing().contains(testUser2));
+        assertTrue(worldContainer.userService.getUserById(arg1).getFollowing().contains(worldContainer.userService.getUserById(arg2)));
+        assertTrue(worldContainer.userService.getUserById(arg2).getFollowers().contains(worldContainer.userService.getUserById(arg1)));
     }
 
-    @When("^user at index (\\d+) wants to unfollow user at index (\\d+)$")
+    @When("^user with id (\\d+) wants to unfollow user with id (\\d+)$")
     public void user_at_index_wants_to_unfollow_user_at_index(int arg1, int arg2) throws Exception {
-        testUser2.removeFollower(testUser);
-        testUser.removeFollowing(testUser2);
+        worldContainer.userService.getUserById(arg1).removeFollowing(worldContainer.userService.getUserById(arg2));
     }
 
-    @Then("^user at index (\\d+) should be unfollowing user at index (\\d+)$")
+    @Then("^user with id (\\d+) should be unfollowing user with id (\\d+)$")
     public void user_at_index_should_be_unfollowing_user_at_index(int arg1, int arg2) throws Exception {
-        assertEquals(testUser.getId(), worldContainer.users.get(arg1).getId());
-        assertEquals(testUser2.getId(), worldContainer.users.get(arg2).getId());
-        assertFalse(testUser2.getFollowers().contains(testUser));
-        assertFalse(testUser.getFollowing().contains(testUser2));
+        assertFalse(worldContainer.userService.getUserById(arg1).getFollowing().contains(worldContainer.userService.getUserById(arg2)));
+        assertFalse(worldContainer.userService.getUserById(arg2).getFollowers().contains(worldContainer.userService.getUserById(arg1)));
     }
 }

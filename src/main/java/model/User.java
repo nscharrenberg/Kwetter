@@ -131,11 +131,13 @@ public class User {
 
     public void addFollowing(User user) {
         this.following.add(user);
+        user.addFollower(this);
     }
 
     public void removeFollowing(User user) {
 
         this.following.remove(user);
+        user.removeFollower(this);
     }
 
     public Role getRole() {

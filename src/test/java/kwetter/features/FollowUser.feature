@@ -20,8 +20,8 @@ Feature: Follow or Unfollow User
       | role              |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | followers         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | following         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
-    When user at index 0 wants to follow user at index 2
-    Then user at index 0 should be following user at index 2
+    When user with id 1 wants to follow user with id 4
+    Then user with id 1 should be following user with id 4
 
   Scenario: Unfollow a user that I'm following
     Given the following role:
@@ -36,6 +36,6 @@ Feature: Follow or Unfollow User
       | role              |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | followers         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | following         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
-    Given user at index 0 follows user at index 2
-    When user at index 0 wants to unfollow user at index 2
-    Then user at index 0 should be unfollowing user at index 2
+    Given user with id 1 follows user with id 4
+    When user with id 1 wants to unfollow user with id 4
+    Then user with id 1 should be unfollowing user with id 4
