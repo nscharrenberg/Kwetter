@@ -21,15 +21,15 @@ Feature: Followers and Following overview
       | followers         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | following         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
     Given the following followers:
-      | 0                 | 3, 5                  |
       | 1                 | 7, 3, 9               |
       | 2                 | 3 , 6                 |
       | 3                 | 9                     |
       | 6                 | 2, 5, 8, 3            |
       | 8                 | 5                     |
-      | 9                 | 0, 4                  |
-    When users at index 9 wants to see who is following him
-    Then user at index 9 should get a list of users that are following him
+      | 9                 | 1, 4                  |
+      | 10                 | 3, 5                  |
+    When users with id 9 wants to see who is following him
+    Then user with id 9 should get a list of users that are following him
 
   Scenario: Get overview of who user is  following
     Given the following role:
@@ -45,12 +45,12 @@ Feature: Followers and Following overview
       | followers         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | following         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
     Given the following followers:
-      | 0                 | 3, 5                  |
       | 1                 | 7, 3, 9               |
       | 2                 | 3 , 6                 |
       | 3                 | 9                     |
       | 6                 | 2, 5, 8, 3            |
       | 8                 | 5                     |
-      | 9                 | 0, 4                  |
-    When users at index 1 wants to see who he is following
-    Then user at index 1 should get a list of users that he is following
+      | 9                 | 1, 4                  |
+      | 10                 | 3, 5                 |
+    When users with id 1 wants to see who he is following
+    Then user with id 1 should get a list of users that he is following
