@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public void update(User user) throws UsernameNotUniqueException, StringToLongException {
+    public void update(User user) throws UsernameNotUniqueException {
         User result = Iterables.tryFind(users, new Predicate<User>() {
             @Override
             public boolean apply(@Nullable User u) {

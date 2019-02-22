@@ -15,6 +15,7 @@ import kwetter.container.WorldContainer;
 import model.User;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -26,24 +27,34 @@ public class EnforceUniqueUsernameStepDef {
     }
 
     @When("^\"([^\"]*)\" changes it's name to \"([^\"]*)\"$")
-    public void changes_it_s_name_to(String arg1, String arg2) throws Exception, UsernameNotUniqueException {
-        User user = Iterables.tryFind(this.worldContainer.userService.getUsers(), new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User u) {
-                return arg1.equals(u.getUsername());
+    public void changes_it_s_name_to(String arg1, String arg2) {
+        try {
+            User user = Iterables.tryFind(this.worldContainer.userService.getUsers(), new Predicate<User>() {
+                @Override
+                public boolean apply(@Nullable User u) {
+                    return arg1.equals(u.getUsername());
+                }
+            }).orNull();
+
+            if(user != null) {
+                user.setUsername(arg2);
             }
-        }).orNull();
 
-        if(user != null) {
-            user.setUsername(arg2);
+            this.worldContainer.userService.update(user);
+        } catch(UsernameNotUniqueException e) {
+            this.worldContainer.actualException = e;
         }
-
-        this.worldContainer.userService.update(user);
     }
 
     @Then("^an Exception UsernameNotUniqueException saying \"([^\"]*)\"$")
     public void an_Exception_UsernameNotUniqueException_saying(String arg1) {
-        assertEquals(arg1, this.worldContainer.actualException.getMessage());
+        int test = 0;
+
+        if(this.worldContainer.actualException == null) {
+            fail("Expected a UsernameNotUniqueException");
+        }
+
+        assertThatThrownBy(() -> { throw new UsernameNotUniqueException(arg1); }).isInstanceOf(this.worldContainer.actualException.getClass()).hasMessage(this.worldContainer.actualException.getMessage());
     }
 
     @Then("^the username of \"([^\"]*)\" should be \"([^\"]*)\"$")

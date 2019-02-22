@@ -8,6 +8,7 @@ Feature: Enforce unique username
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     | 2                    |
       | username          | testUser              | testUser2            |
       | biography         | This is my biography  | This is my biography |
       | locationLongitude | 123123.123123         | 12345456.234234      |
@@ -21,6 +22,7 @@ Feature: Enforce unique username
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     | 2                    |
       | username          | testUser              | testUser2            |
       | biography         | This is my biography  | This is my biography |
       | locationLongitude | 123123.123123         | 12345456.234234      |
