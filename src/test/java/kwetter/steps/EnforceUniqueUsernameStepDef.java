@@ -10,6 +10,7 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.api.junit.Cucumber;
+import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
 import kwetter.container.WorldContainer;
 import model.User;
@@ -43,6 +44,8 @@ public class EnforceUniqueUsernameStepDef {
             this.worldContainer.userService.update(user);
         } catch(UsernameNotUniqueException e) {
             this.worldContainer.actualException = e;
+        } catch (StringToLongException e) {
+            e.printStackTrace();
         }
     }
 

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
-@ApplicationScoped
 @Default
 public class UserServiceImpl implements UserRepository {
 

@@ -7,6 +7,7 @@ import repository.interfaces.TweetRepository;
 import repository.interfaces.UserRepository;
 import service.UserService;
 
+import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.SessionScoped;
@@ -17,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Stateless
-@ApplicationScoped
 @Default
 public class TweetServiceImpl implements TweetRepository {
 
