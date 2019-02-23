@@ -31,33 +31,18 @@ public class UserServiceImpl implements UserRepository {
     @Override
     public User getUserById(int id) {
         return Iterables.tryFind(users,
-                new Predicate<User>() {
-                    @Override
-                    public boolean apply(@Nullable User user) {
-                        return Integer.toString(id).equals(Integer.toString(user.getId()));
-                    }
-                }).orNull();
+                user -> id == user.getId()).orNull();
     }
 
     @Override
     public User getUserByUsername(String username) {
         return Iterables.tryFind(users,
-                new Predicate<User>() {
-                    @Override
-                    public boolean apply(@Nullable User user) {
-                        return username.equals(user.getUsername());
-                    }
-                }).orNull();
+                user -> username.equals(user.getUsername())).orNull();
     }
 
     @Override
     public void create(User user) throws UsernameNotUniqueException {
-        User result = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User u) {
-                return user.getUsername().equals(u.getUsername());
-            }
-        }).orNull();
+        User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername())).orNull();
 
         if(result != null) {
             throw new UsernameNotUniqueException("Username must be unique.");
@@ -68,12 +53,7 @@ public class UserServiceImpl implements UserRepository {
 
     @Override
     public void follow(User user, User follower) {
-        int index = Iterables.indexOf(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User u) {
-                return user.getUsername().equals(u.getUsername());
-            }
-        });
+        int index = Iterables.indexOf(users, u -> user.getUsername().equals(u.getUsername()));
 
         users.get(index).addFollowing(follower);
     }
@@ -105,23 +85,13 @@ public class UserServiceImpl implements UserRepository {
 
     @Override
     public void update(User user) throws UsernameNotUniqueException {
-        User result = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User u) {
-                return user.getUsername().equals(u.getUsername()) && !Integer.toString(user.getId()).equals(Integer.toString(u.getId()));
-            }
-        }).orNull();
+        User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername()) && user.getId() == u.getId()).orNull();
 
         if(result != null) {
             throw new UsernameNotUniqueException("Username must be unique.");
         }
 
-        int index = Iterables.indexOf(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User u) {
-                return Integer.toString(user.getId()).equals(Integer.toString(u.getId()));
-            }
-        });
+        int index = Iterables.indexOf(users, u -> user.getId() == u.getId());
 
         users.set(index, user);
     }

@@ -13,7 +13,7 @@ import java.util.Set;
 
 public interface TweetRepository {
     public List<Tweet> getTweets();
-    public List<Tweet> getTweetsByUser(String username);
+    public List<Tweet> getTweetsByUser(String username) throws Exception;
     public void create(User user, String message) throws StringToLongException;
     public Set<User> getMentionsByMessage(String message);
     public void update(Tweet tweet);

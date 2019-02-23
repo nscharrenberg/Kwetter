@@ -2,6 +2,7 @@ package model;
 
 import javax.inject.Inject;
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -54,4 +55,6 @@ public class Role {
     public void addPermission(Permission permission) {
         this.permissions.add(permission);
     }
+
+    public void addPermissions(Set<Permission> permissions) { this.permissions = permissions; }
 }

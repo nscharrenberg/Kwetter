@@ -83,6 +83,14 @@ public class User {
         this.biography = biography;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public double getLocationLongitude() {
         return locationLongitude;
     }
@@ -98,6 +106,7 @@ public class User {
     public void setLocationLatitude(double locationLatitude) {
         this.locationLatitude = locationLatitude;
     }
+
 
     public String getWebsite() {
         return website;

@@ -4,18 +4,20 @@
 
 package repository.interfaces;
 
+import exception.UsernameNotUniqueException;
 import model.Permission;
 import model.Role;
 
 import java.util.List;
+import java.util.Set;
 
 public interface RoleRepository {
-    public List<Role> getRoles();
-    public Role getRoleById(int id);
-    public Role getRoleByName(String name);
-    public Role create(Role role);
-    public Role update(Role role);
-    public Role addPermission(Role role, Permission permission);
-    public Role addPermissions(Role role, List<Permission> permissions);
-    public Role removePermission(Role role, Permission permission);
+    List<Role> getRoles();
+    Role getRoleById(int id);
+    Role getRoleByName(String name);
+    void create(Role role) throws UsernameNotUniqueException;
+    void update(Role role) throws UsernameNotUniqueException;
+    void addPermission(Role role, Permission permission);
+    void addPermissions(Role role, Set<Permission> permissions);
+    Role removePermission(Role role, Permission permission);
 }

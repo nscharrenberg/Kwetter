@@ -4,7 +4,21 @@
 
 package service;
 
+import repository.interfaces.AuthenticationRepository;
+import repository.interfaces.UserRepository;
+
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 public class AuthenticationService {
+
+    @Inject
+    @Default
+    private AuthenticationRepository ar;
+
+    @Inject
+    @Default
+    private UserRepository ur;
 
     /**
      * Authenticate to the system as a user
@@ -13,8 +27,6 @@ public class AuthenticationService {
      * @return
      */
     public boolean login(String username, String password) {
-
-        //todo: implement login method
-        return true;
+        return ar.login(username, password);
     }
 }

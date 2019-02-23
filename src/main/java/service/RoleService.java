@@ -4,20 +4,28 @@
 
 package service;
 
+import exception.UsernameNotUniqueException;
 import model.Permission;
 import model.Role;
+import repository.interfaces.RoleRepository;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import java.util.List;
+import java.util.Set;
 
 public class RoleService {
+
+    @Inject
+    @Default
+    private RoleRepository rr;
 
     /**
      * Get all Roles
      * @return
      */
     public List<Role> getRoles() {
-        //todo: implement getRoles method
-        return null;
+        return rr.getRoles();
     }
 
     /**
@@ -26,8 +34,7 @@ public class RoleService {
      * @return
      */
     public Role getRoleById(int id) {
-        //todo: implement getRoleById method
-        return null;
+        return rr.getRoleById(id);
     }
 
     /**
@@ -36,8 +43,7 @@ public class RoleService {
      * @return
      */
     public Role getRoleByName(String name) {
-        //todo: impleemnt getRoleByName method
-        return null;
+        return getRoleByName(name);
     }
 
     /**
@@ -45,9 +51,8 @@ public class RoleService {
      * @param role
      * @return
      */
-    public Role create(Role role) {
-        //todo: implement create method
-        return null;
+    public void create(Role role) throws UsernameNotUniqueException {
+        rr.create(role);
     }
 
     /**
@@ -55,9 +60,8 @@ public class RoleService {
      * @param role
      * @return
      */
-    public Role update(Role role) {
-        //todo: implement update method
-        return null;
+    public void update(Role role) throws UsernameNotUniqueException {
+        rr.update(role);
     }
 
     /**
@@ -66,9 +70,8 @@ public class RoleService {
      * @param permission
      * @return
      */
-    public Role addPermission(Role role, Permission permission) {
-        //todo: implement addPermission method
-        return null;
+    public void addPermission(Role role, Permission permission) {
+        rr.addPermission(role, permission);
     }
 
     /**
@@ -77,9 +80,8 @@ public class RoleService {
      * @param permissions
      * @return
      */
-    public Role addPermissions(Role role, List<Permission> permissions) {
-        //todo: implement addPermissions method
-        return null;
+    public void addPermissions(Role role, Set<Permission> permissions) {
+        rr.addPermissions(role, permissions);
     }
 
     /**
@@ -88,8 +90,7 @@ public class RoleService {
      * @param permission
      * @return
      */
-    public Role removePermission(Role role, Permission permission) {
-        //todo: implement removePermission method
-        return null;
+    public void removePermission(Role role, Permission permission) {
+         rr.removePermission(role, permission);
     }
 }
