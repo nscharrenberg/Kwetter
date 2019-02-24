@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -20,8 +21,7 @@ import java.util.List;
 @Default
 public class UserServiceImpl implements UserRepository {
 
-    @Inject
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
     @Override
     public List<User> getUsers() {
@@ -41,7 +41,11 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public void create(User user) throws UsernameNotUniqueException {
+    public void create(User user) throws UsernameNotUniqueException, StringToLongException {
+        if(user.getBiography().length() > 160) {
+            throw new StringToLongException("Biography can not be more then 160 characters.");
+        }
+
         User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername())).orNull();
 
         if(result != null) {
@@ -84,8 +88,12 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public void update(User user) throws UsernameNotUniqueException {
-        User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername()) && user.getId() == u.getId()).orNull();
+    public void update(User user) throws UsernameNotUniqueException, StringToLongException {
+        if(user.getBiography().length() > 160) {
+            throw new StringToLongException("Biography can not be more then 160 characters.");
+        }
+
+        User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername()) && user.getId() != u.getId()).orNull();
 
         if(result != null) {
             throw new UsernameNotUniqueException("Username must be unique.");

@@ -63,6 +63,28 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    public User() {
+    }
+
+    public User(String username, String password, String biography, double locationLongitude, double locationLatitude, String website, Role role) {
+        this.username = username;
+        this.password = password;
+        this.biography = biography;
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
+        this.website = website;
+        this.role = role;
+    }
+
+    public User(String username, String password, String biography, double locationLongitude, double locationLatitude, String website) {
+        this.username = username;
+        this.password = password;
+        this.biography = biography;
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
+        this.website = website;
+    }
+
     public int getId() {
         return id;
     }

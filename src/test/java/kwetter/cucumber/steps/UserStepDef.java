@@ -2,15 +2,15 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package cucumber.steps;
+package kwetter.cucumber.steps;
 
 import com.google.common.collect.Iterables;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.*;
+import kwetter.cucumber.container.WorldContainer;
 import model.*;
-import repository.memory.TweetServiceImpl;
-import repository.memory.UserServiceImpl;
-import cucumber.container.WorldContainer;
+import service.TweetService;
+import service.UserService;
 
 import java.util.List;
 
@@ -19,8 +19,6 @@ public class UserStepDef {
 
     public UserStepDef(WorldContainer worldContainer) {
         this.worldContainer = worldContainer;
-        this.worldContainer.userService = new UserServiceImpl();
-        this.worldContainer.tweetService = new TweetServiceImpl();
     }
 
     @Given("^the following role:$")

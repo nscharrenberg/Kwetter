@@ -7,18 +7,24 @@ package service;
 import repository.interfaces.AuthenticationRepository;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
+@Stateless
 public class AuthenticationService {
 
-    @Inject
+    @EJB
     @Default
     private AuthenticationRepository ar;
 
-    @Inject
+    @EJB
     @Default
     private UserRepository ur;
+
+    public AuthenticationService() {
+    }
 
     /**
      * Authenticate to the system as a user

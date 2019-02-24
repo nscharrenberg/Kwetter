@@ -7,8 +7,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import repository.interfaces.AuthenticationRepository;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
+@Stateless
+@Default
 public class AuthenticationServiceImpl implements AuthenticationRepository {
 
     @Inject

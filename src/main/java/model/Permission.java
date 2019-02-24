@@ -23,6 +23,17 @@ public class Permission {
     @Column
     private  boolean canDelete;
 
+    public Permission() {
+    }
+
+    public Permission(String name, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) {
+        this.name = name;
+        this.canCreate = canCreate;
+        this.canRead = canRead;
+        this.canUpdate = canUpdate;
+        this.canDelete = canDelete;
+    }
+
     public int getId() {
         return id;
     }

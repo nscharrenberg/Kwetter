@@ -6,10 +6,13 @@ package service;
 
 import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
+import model.Role;
 import model.User;
 import repository.interfaces.JPA;
+import repository.interfaces.RoleRepository;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
@@ -17,11 +20,18 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Stateless
-@ApplicationScoped
 public class UserService {
 
-    @Inject @Default
+    @EJB
+    @Default
     private UserRepository ur;
+
+    @EJB
+    @Default
+    private RoleRepository rr;
+
+    public UserService() {
+    }
 
     /**
      * Get all Users
@@ -54,7 +64,13 @@ public class UserService {
      * @param user - the user to be created.
      * @return
      */
-    public void create(User user) throws UsernameNotUniqueException {
+    public void create(User user) throws Exception {
+        Role role = rr.getRoleById(user.getRole().getId());
+
+        if(role == null) {
+            throw new Exception("Role not found, during registration.");
+        }
+
         ur.create(user);
     }
 
@@ -118,7 +134,13 @@ public class UserService {
      * @param user - update the user information of a specific user.
      * @return
      */
-    public void update(User user) throws StringToLongException, UsernameNotUniqueException {
+    public void update(User user) throws Exception {
+        Role role = rr.getRoleById(user.getRole().getId());
+
+        if(role == null) {
+            throw new Exception("Role not found, during registration.");
+        }
+
         ur.update(user);
     }
 }

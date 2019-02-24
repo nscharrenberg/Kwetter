@@ -2,13 +2,13 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package cucumber.steps;
+package kwetter.cucumber.steps;
 
 import com.google.common.collect.*;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import cucumber.container.WorldContainer;
+import kwetter.cucumber.container.WorldContainer;
 import model.User;
 
 import java.util.Arrays;

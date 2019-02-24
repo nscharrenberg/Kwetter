@@ -14,7 +14,8 @@ import java.util.List;
 
 @JPA
 public class UserServiceImpl implements UserRepository {
-    
+
+    @PersistenceContext
     private EntityManager em;
 
     @Override

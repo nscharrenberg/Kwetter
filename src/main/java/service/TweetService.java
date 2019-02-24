@@ -10,19 +10,29 @@ import model.User;
 import repository.interfaces.TweetRepository;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Stateless
 public class TweetService {
 
-    @Inject @Default
+    @EJB
+    @Default
     TweetRepository tr;
 
-    @Inject @Default
+    @EJB
+    @Default
     UserRepository ur;
+
+    public TweetService() {
+    }
 
     /**
      * Get All Tweets
@@ -34,60 +44,110 @@ public class TweetService {
 
     /**
      * Get a specific tweet by Username
-     * @param username - The username of the user who's tweets you want to get.
+     * @param userId - The id of the user who's tweets you want to get.
      * @return
      */
-    public List<Tweet> getTweetsByUser(String username) {
-        return tr.getTweetsByUser(username);
+    public List<Tweet> getTweetsByUser(int userId) throws Exception {
+        User user = ur.getUserById(userId);
+
+        return tr.getTweetsByUser(user);
     }
 
     /**
      * Create a new Tweet
-     * @param user - the author of the tweet
+     * @param userId - the author of the tweet
      * @param message - the message of the tweet
      * @return
      */
-    public void create(User user, String message) throws StringToLongException {
-        tr.create(user, message);
+    public void create(int userId, String message) throws Exception {
+        User user = ur.getUserById(userId);
+        Set<User> mentions = getMentionsByMessage(message);
+
+        tr.create(user, message, mentions);
+    }
+
+    public Set<User> getMentionsByMessage(String message) {
+        if(!message.contains("@")) {
+            return null;
+        }
+
+        String regex = "(?:\\s|\\A)[@]+([A-Za-z0-9-_]+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(message);
+
+        Set<User> users = new HashSet<>();
+
+        while(matcher.find()) {
+            users.add(ur.getUserByUsername(matcher.group(0).replace(" ", "").replace("@", "")));
+        }
+
+        return users;
     }
 
     /**
-     * Update an existing Tweet
+     * Update Existing Tweet
+     * @param userId
      * @param tweet
-     * @return
+     * @throws Exception
      */
-    public void update(Tweet tweet) {
+    public void update(int userId, Tweet tweet) throws Exception {
+        User user = ur.getUserById(userId);
+
+        //todo: take permission with this
+        if(tweet.getAuthor().getId() != user.getId()) {
+            throw new Exception("This is not your tweet, you can therefore not edit it.");
+        }
+
         tr.update(tweet);
     }
 
     /**
      * Delete an existing Tweet
-     * @param user - the author of the tweet
-     * @param id - the id of the tweet
+     * @param userId - the author of the tweet
+     * @param tweet - the tweet
      * @return
      */
-    public boolean delete(User user, int id) {
-        return tr.delete(user, id);
+    public boolean delete(int userId, Tweet tweet) throws Exception {
+        User user = ur.getUserById(userId);
+
+        //todo: take permission with this
+        if(tweet.getAuthor().getId() != user.getId()) {
+            throw new Exception("This is not your tweet, you can therefore not delete it.");
+        }
+
+        return tr.delete(tweet);
     }
 
     /**
      * Like a tweet
-     * @param user - the User that likes the tweet
-     * @param id - the id of the Tweet that is being liked
+     * @param userId - the User that likes the tweet
+     * @param tweet - the Tweet that is being liked
      * @return
      */
-    public void like(User user, int id) throws Exception {
-        tr.like(user, id);
+    public void like(int userId, Tweet tweet) throws Exception {
+        User user = ur.getUserById(userId);
+
+        if(tweet.getLikes().contains(user)) {
+            throw new Exception("You already like this tweet.");
+        }
+
+        tr.like(user, tweet);
     }
 
     /**
      * Unlike a tweet
-     * @param user - the User that unlikes the tweet
-     * @param id - the id of the Tweet that is being unliked
+     * @param userId - the User that unlikes the tweet
+     * @param tweet - the Tweet that is being unliked
      * @return
      */
-    public void unlike(User user, int id) throws Exception {
-        tr.unlike(user, id);
+    public void unlike(int userId, Tweet tweet) throws Exception {
+        User user = ur.getUserById(userId);
+
+        if(!tweet.getLikes().contains(user)) {
+            throw new Exception("You do not like this tweet yet.");
+        }
+
+        tr.unlike(user, tweet);
     }
 
     /**
@@ -96,7 +156,8 @@ public class TweetService {
      * @return
      */
     public List<Tweet> getTimeline(String username) {
-         return tr.getTimeline(username);
+        User user = ur.getUserByUsername(username);
+         return tr.getTimeline(user);
     }
 
     /**
@@ -106,9 +167,5 @@ public class TweetService {
      */
     public List<Tweet> search(String input) {
         return tr.search(input);
-    }
-
-    public void setUr(UserRepository ur) {
-        this.ur = ur;
     }
 }

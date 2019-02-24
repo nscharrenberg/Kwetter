@@ -58,6 +58,20 @@ public class Tweet {
     @Column
     private Date createdAt;
 
+    public Tweet() {
+    }
+
+    public Tweet(String message, User author) {
+        this.message = message;
+        this.author = author;
+    }
+
+    public Tweet(String message, User author, Date createdAt) {
+        this.message = message;
+        this.author = author;
+        this.createdAt = createdAt;
+    }
+
     public int getId() {
         return id;
     }
@@ -112,5 +126,10 @@ public class Tweet {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean contains(String input) {
+        return this.message.contains(input) || this.getAuthor().getUsername().equals(input);
+
     }
 }

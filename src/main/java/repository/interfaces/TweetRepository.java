@@ -12,14 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 public interface TweetRepository {
-    public List<Tweet> getTweets();
-    public List<Tweet> getTweetsByUser(String username) throws Exception;
-    public void create(User user, String message) throws StringToLongException;
-    public Set<User> getMentionsByMessage(String message);
-    public void update(Tweet tweet);
-    public boolean delete(User user, int id);
-    public void like(User user, int id) throws Exception;
-    public void unlike(User user, int id) throws Exception;
-    public List<Tweet> getTimeline(String username);
-    public List<Tweet> search(String input);
+    List<Tweet> getTweets();
+    List<Tweet> getTweetsByUser(User user);
+    void create(User user, String message, Set<User> mentions) throws StringToLongException;
+    void update(Tweet tweet);
+    boolean delete(Tweet tweet);
+    void like(User user, Tweet tweet) throws Exception;
+    void unlike(User user, Tweet tweet);
+    List<Tweet> getTimeline(User user);
+    List<Tweet> search(String input);
 }

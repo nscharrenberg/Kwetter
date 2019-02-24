@@ -9,16 +9,22 @@ import model.Permission;
 import model.Role;
 import repository.interfaces.RoleRepository;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Set;
 
+@Stateless
 public class RoleService {
 
-    @Inject
+    @EJB
     @Default
     private RoleRepository rr;
+
+    public RoleService() {
+    }
 
     /**
      * Get all Roles

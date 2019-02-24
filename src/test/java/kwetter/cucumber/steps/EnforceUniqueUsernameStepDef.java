@@ -2,15 +2,15 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package cucumber.steps;
+package kwetter.cucumber.steps;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import cucumber.container.WorldContainer;
 import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
+import kwetter.cucumber.container.WorldContainer;
 import model.User;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -42,7 +42,7 @@ public class EnforceUniqueUsernameStepDef {
             this.worldContainer.userService.update(user);
         } catch(UsernameNotUniqueException e) {
             this.worldContainer.actualException = e;
-        } catch (StringToLongException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

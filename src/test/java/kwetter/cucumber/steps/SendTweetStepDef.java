@@ -2,11 +2,11 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package cucumber.steps;
+package kwetter.cucumber.steps;
 
 import cucumber.api.java.en.*;
 import exception.StringToLongException;
-import cucumber.container.WorldContainer;
+import kwetter.cucumber.container.WorldContainer;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
@@ -22,7 +22,7 @@ public class SendTweetStepDef {
     @When("^\"([^\"]*)\" wants to send a tweet with the message \"([^\"]*)\"$")
     public void wants_to_send_a_tweet_with_the_message(String arg1, String arg2) throws Exception {
          try {
-             worldContainer.tweetService.create(worldContainer.userService.getUserByUsername(arg1), arg2);
+             worldContainer.tweetService.create(worldContainer.userService.getUserByUsername(arg1).getId(), arg2);
          } catch (StringToLongException e) {
              worldContainer.actualException = e;
          }

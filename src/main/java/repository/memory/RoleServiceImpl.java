@@ -8,13 +8,19 @@ import model.Role;
 import repository.interfaces.RoleRepository;
 
 import javax.annotation.Nullable;
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@Stateless
+@Default
 public class RoleServiceImpl implements RoleRepository {
-    @Inject
-    private List<Role> roles;
+
+    private List<Role> roles = new ArrayList<>();
 
     @Override
     public List<Role> getRoles() {
