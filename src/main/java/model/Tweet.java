@@ -7,31 +7,75 @@ package model;
 import exception.StringToLongException;
 
 import javax.inject.Inject;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@NamedQueries({
+        @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t"),
+        @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
+        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author")
+})
 public class Tweet {
 
-    @Inject
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Inject
-    @Size(min = 0, max = 140)
+    @Column(length = 140)
     private String message;
 
-    @Inject
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author")
     private User author;
 
-    @Inject
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE,
+                    CascadeType.DETACH
+            }
+    )
+    @JoinTable(
+            name = "likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tweet_id")
+    )
     private Set<User> likes;
 
-    @Inject
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE,
+                    CascadeType.DETACH
+            }
+    )
+    @JoinTable(
+            name = "mentions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tweet_id")
+    )
     private Set<User> mentions;
 
-    @Inject
+    @Column
     private Date createdAt;
+
+    public Tweet() {
+    }
+
+    public Tweet(String message, User author) {
+        this.message = message;
+        this.author = author;
+    }
+
+    public Tweet(String message, User author, Date createdAt) {
+        this.message = message;
+        this.author = author;
+        this.createdAt = createdAt;
+    }
 
     public int getId() {
         return id;
@@ -43,7 +87,7 @@ public class Tweet {
 
     public void setMessage(String message) throws StringToLongException {
         if(message.length() > 140) {
-            throw new StringToLongException("Tweet can not be more then 140 characters.");
+            throw new StringToLongException("Tweet can not be longer then 140 characters.");
         }
 
         this.message = message;
@@ -89,5 +133,8 @@ public class Tweet {
         this.createdAt = createdAt;
     }
 
+    public boolean contains(String input) {
+        return this.message.contains(input) || this.getAuthor().getUsername().equals(input);
 
+    }
 }

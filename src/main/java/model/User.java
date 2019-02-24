@@ -4,44 +4,91 @@
 
 package model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
 
 import javax.inject.Inject;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Entity
+@NamedQueries({
+        @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
+        @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
+        @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
+})
 public class User {
-    @Inject
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Inject
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Inject
-    @Size(min = 1, max = 160)
+    @Column(nullable = false)
+    @JsonIgnore
+    private String password;
+
+    @Column(length = 160)
     private String biography;
 
-    @Inject
+    @Column
     private double locationLongitude;
 
-    @Inject
+    @Column
     private double locationLatitude;
 
-    @Inject
+    @Column
     private String website;
 
-    @Inject
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            }
+    )
+    @JoinTable(
+            name = "followers",
+            joinColumns = @JoinColumn(name = "follower"),
+            inverseJoinColumns = @JoinColumn(name = "following")
+    )
     private Set<User> followers;
 
-    @Inject
+    @ManyToMany(
+            mappedBy = "followers"
+    )
     private Set<User> following;
 
-    @Inject
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
     private Role role;
+
+    public User() {
+    }
+
+    public User(String username, String password, String biography, double locationLongitude, double locationLatitude, String website, Role role) {
+        this.username = username;
+        this.password = password;
+        this.biography = biography;
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
+        this.website = website;
+        this.role = role;
+    }
+
+    public User(String username, String password, String biography, double locationLongitude, double locationLatitude, String website) {
+        this.username = username;
+        this.password = password;
+        this.biography = biography;
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
+        this.website = website;
+    }
 
     public int getId() {
         return id;
@@ -52,7 +99,6 @@ public class User {
     }
 
     public void setUsername(String username) throws UsernameNotUniqueException {
-        //TODO: Add check for unique username
         this.username = username;
     }
 
@@ -61,11 +107,15 @@ public class User {
     }
 
     public void setBiography(String biography) throws StringToLongException {
-        if(biography.length() > 160) {
-            throw new StringToLongException("Biography can not be more then 160 characters long.");
-        }
-
         this.biography = biography;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public double getLocationLongitude() {
@@ -84,6 +134,7 @@ public class User {
         this.locationLatitude = locationLatitude;
     }
 
+
     public String getWebsite() {
         return website;
     }
@@ -96,11 +147,11 @@ public class User {
         return followers;
     }
 
-    public void addFollower(User user) {
+    private void addFollower(User user) {
         this.followers.add(user);
     }
 
-    public void removeFollower(User user) {
+    private void removeFollower(User user) {
 
         this.followers.remove(user);
     }
@@ -111,11 +162,13 @@ public class User {
 
     public void addFollowing(User user) {
         this.following.add(user);
+        user.addFollower(this);
     }
 
     public void removeFollowing(User user) {
 
         this.following.remove(user);
+        user.removeFollower(this);
     }
 
     public Role getRole() {

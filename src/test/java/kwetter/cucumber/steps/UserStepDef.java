@@ -2,12 +2,15 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package kwetter.steps;
+package kwetter.cucumber.steps;
 
+import com.google.common.collect.Iterables;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.*;
-import kwetter.container.WorldContainer;
+import kwetter.cucumber.container.WorldContainer;
 import model.*;
+import service.TweetService;
+import service.UserService;
 
 import java.util.List;
 
@@ -27,6 +30,6 @@ public class UserStepDef {
     @Given("^the following users:$")
     public void the_following_users(DataTable arg1) throws Exception {
         List<User> users = arg1.transpose().asList(User.class);
-        this.worldContainer.users = users;
+        Iterables.addAll(this.worldContainer.userService.getUsers(), users);
     }
 }

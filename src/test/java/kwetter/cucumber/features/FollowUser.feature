@@ -1,13 +1,13 @@
-Feature: Followers and Following overview
+Feature: Follow or Unfollow User
   As a user
-  I want to see who is following me
-  So that I can get an overview of all my followers.
+  I want to follow a user
+  So that i can get status updates from the user I'm following
 
   As a user
-  I want to see who is following me
-  So that i can get an overview of all my followers
+  I want to unfollow a user
+  So that i do not get status updates from the user that i used to follow
 
-  Scenario: Get overview of my followers
+  Scenario: Follow a user I'm not yet following
     Given the following role:
       | member |
     Given the following users:
@@ -20,18 +20,10 @@ Feature: Followers and Following overview
       | role              |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | followers         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | following         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
-    Given the following followers:
-      | 0                 | 3, 5                  |
-      | 1                 | 7, 3, 9               |
-      | 2                 | 3 , 6                 |
-      | 3                 | 9                     |
-      | 6                 | 2, 5, 8, 3            |
-      | 8                 | 5                     |
-      | 9                 | 0, 4                  |
-    When users at index 1 wants to see who is following him
-    Then user at index 1 should get a list of users that are following him
+    When user with id 1 wants to follow user with id 4
+    Then user with id 1 should be following user with id 4
 
-  Scenario: Get overview of who user is  following
+  Scenario: Unfollow a user that I'm following
     Given the following role:
       | member |
     Given the following users:
@@ -44,20 +36,6 @@ Feature: Followers and Following overview
       | role              |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | followers         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
       | following         |                       |                      |                      |                      |                      |                      |                      |                      |                      |                      |
-    Given the following followers:
-      | follower          | following             |
-      | 0                 | 3                     |
-      | 0                 | 5                     |
-      | 1                 | 7                     |
-      | 1                 | 3                     |
-      | 1                 | 0                     |
-      | 2                 | 9                     |
-      | 6                 | 2                     |
-      | 6                 | 5                     |
-      | 6                 | 8                     |
-      | 6                 | 3                     |
-      | 8                 | 5                     |
-      | 9                 | 5                     |
-      | 9                 | 4                     |
-    When users at index 1 wants to see who he is following
-    Then user at index 1 should get a list of users that he is following
+    Given user with id 1 follows user with id 4
+    When user with id 1 wants to unfollow user with id 4
+    Then user with id 1 should be unfollowing user with id 4

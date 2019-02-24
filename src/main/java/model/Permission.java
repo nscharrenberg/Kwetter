@@ -1,20 +1,29 @@
 package model;
 
+import javax.persistence.*;
+
+@Entity
 public class Permission {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column
     private boolean canCreate;
+
+    @Column
     private boolean canRead;
+
+    @Column
     private boolean canUpdate;
+
+    @Column
     private  boolean canDelete;
 
-    public Permission(int id, String name, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) {
-        this.id = id;
-        this.name = name;
-        this.canCreate = canCreate;
-        this.canRead = canRead;
-        this.canUpdate = canUpdate;
-        this.canDelete = canDelete;
+    public Permission() {
     }
 
     public Permission(String name, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) {
@@ -23,15 +32,6 @@ public class Permission {
         this.canRead = canRead;
         this.canUpdate = canUpdate;
         this.canDelete = canDelete;
-    }
-
-    public Permission(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Permission(String name) {
-        this.name = name;
     }
 
     public int getId() {

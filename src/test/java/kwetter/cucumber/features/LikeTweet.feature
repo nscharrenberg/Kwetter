@@ -1,31 +1,38 @@
-Feature: Enforce unique username
-  As a system
-  I want to check a username upon registration or profile updates
-  So that I can throw errors when a username is not unique.
+Feature: User should be able to like a tweet
+  As a user I want to like a tweet so that I can interact with another user.
 
-
-  Scenario: Change Username of User to a unique username and make sure the Username is unique
+  Scenario: Like a Tweet
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     | 2                    |
       | username          | testUser              | testUser2            |
       | biography         | This is my biography  | This is my biography |
       | locationLongitude | 123123.123123         | 12345456.234234      |
       | locationLatitude  | 123653.234123         | 89237489.23423       |
       | website           | wwww.mysite.io        | www.mysite.com       |
       | role              |                       |                      |
-    When testUser changes it's name to "testUser3"
-    Then the username of testUser should be "testUser3"
+    Given the following tweet:
+      | message           | This is a tweet       |
+      | author            | testUser2             |
+      | createdAt         | 12/01/2019            |
+    When "testUser" likes a Tweet
+    Then the Tweet should have one like by "testUser"
 
-  Scenario: Change Username of User to an existing username and make sure the Username is unique
+  Scenario: Unlike a Tweet
     Given the following role:
       | member |
     Given the following users:
+      | id                | 1                     | 2                    |
       | username          | testUser              | testUser2            |
       | biography         | This is my biography  | This is my biography |
       | locationLongitude | 123123.123123         | 12345456.234234      |
       | locationLatitude  | 123653.234123         | 89237489.23423       |
       | website           | wwww.mysite.io        | www.mysite.com       |
       | role              |                       |                      |
-    When testUser changes it's name to "testUser2"
-    Then an Exception UsernameNotUniqueException saying "Username must be unique."
+    Given the following tweet:
+      | message           | This is a tweet       |
+      | author            | testUser2             |
+      | createdAt         | 12/01/2019            |
+    When "testUser" unlikes a Tweet
+    Then the Tweet should not have a like by "testUser" anymore
