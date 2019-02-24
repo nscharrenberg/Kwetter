@@ -20,12 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationRepository {
 
     @Override
     public boolean login(String username, String password) {
-        User user = Iterables.tryFind(ur.getUsers(), new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return username.equals(user.getUsername()) && password.equals(user.getPassword());
-            }
-        }).orNull();
+        User user = Iterables.tryFind(ur.getUsers(), user1 -> username.equals(user1.getUsername()) && password.equals(user1.getPassword())).orNull();
 
         return user != null;
     }

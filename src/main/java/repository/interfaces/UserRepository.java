@@ -9,6 +9,7 @@ import exception.UsernameNotUniqueException;
 import model.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserRepository {
     List<User> getUsers();
@@ -17,9 +18,9 @@ public interface UserRepository {
     void create(User user) throws UsernameNotUniqueException, StringToLongException;
     void follow(User user, User follower);
     void unfollow(User user, User follower);
-    List<User> getFollowersById(int id);
-    List<User> getFollowersByUsername(String username);
-    List<User> getFollowingById(int id);
-    List<User> getFollowingByUsername(String username);
+    Set<User> getFollowersById(int id);
+    Set<User> getFollowersByUsername(String username);
+    Set<User> getFollowingById(int id);
+    Set<User> getFollowingByUsername(String username);
     void update(User user) throws UsernameNotUniqueException, StringToLongException;
 }

@@ -14,6 +14,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@NamedQueries({
+        @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t"),
+        @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
+        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author")
+})
 public class Tweet {
 
     @Id

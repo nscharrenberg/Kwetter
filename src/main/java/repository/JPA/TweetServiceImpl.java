@@ -1,71 +1,76 @@
-package repository.memory;
+/*
+ * Copyright (c) 2019. Noah Scharrenberg
+ */
 
-import com.google.common.collect.Iterables;
+package repository.JPA;
+
 import exception.StringToLongException;
 import model.Tweet;
 import model.User;
+import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
+
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
-import java.util.*;
-import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Stateless
-@Default
+@JPA
 public class TweetServiceImpl implements TweetRepository {
 
-    private List<Tweet> tweets = new ArrayList<>();
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public List<Tweet> getTweets() {
-        return tweets;
+        return em.createNamedQuery("tweet.getAllTweets", Tweet.class).getResultList();
     }
 
     @Override
     public Tweet getTweetById(int id) {
-        return Iterables.tryFind(getTweets(), tweet -> id == tweet.getId()).orNull();
+        return em.createNamedQuery("tweet.getTweetById", Tweet.class).setParameter("id", id).getSingleResult();
     }
 
     @Override
     public List<Tweet> getTweetsByUser(User user) {
-        return tweets.stream().filter(tweet -> user.getId() == tweet.getAuthor().getId()).collect(Collectors.toList());
+        return em.createNamedQuery("tweet.getTweetByUser", Tweet.class).setParameter("author", user.getId()).getResultList();
     }
 
     @Override
     public void create(Tweet tweet) throws StringToLongException {
-        tweets.add(tweet);
+        em.persist(tweet);
     }
 
     @Override
     public void update(Tweet tweet) {
-        int index = Iterables.indexOf(tweets, t -> tweet.getId() == t.getId());
-
-        tweets.set(index, tweet);
+        em.merge(tweet);
     }
 
     @Override
     public void delete(Tweet tweet) {
-        tweets.remove(tweet);
+        em.remove(tweet);
     }
 
     @Override
-    public void like(User user, Tweet tweet) {
+    public void like(User user, Tweet tweet) throws Exception {
         tweet.addLike(user);
+        em.merge(tweet);
     }
 
     @Override
     public void unlike(User user, Tweet tweet) {
         tweet.removeLike(user);
+        em.merge(tweet);
     }
 
     @Override
     public List<Tweet> getTimeline(User user) {
-        //todo: implement
         return null;
     }
 
     @Override
     public List<Tweet> search(String input) {
-        return getTweets().stream().filter(tweet -> tweet.contains(input)).collect(Collectors.toList());
+        return null;
     }
 }

@@ -8,10 +8,13 @@ import model.User;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Set;
 
+@Stateless
 @JPA
 public class UserServiceImpl implements UserRepository {
 
@@ -20,55 +23,58 @@ public class UserServiceImpl implements UserRepository {
 
     @Override
     public List<User> getUsers() {
-        return null;
+        return em.createNamedQuery("user.getAllUsers", User.class).getResultList();
     }
 
     @Override
     public User getUserById(int id) {
-        return null;
+        return em.createNamedQuery("user.getUserById", User.class).setParameter("id", id).getSingleResult();
     }
 
     @Override
     public User getUserByUsername(String username) {
-        return null;
+        return em.createNamedQuery("user.getUserByUsername", User.class).setParameter("username", username).getSingleResult();
     }
 
     @Override
     public void create(User user) {
-
+        em.persist(user);
     }
 
     @Override
     public void follow(User user, User follower) {
-
+        user.addFollowing(follower);
+        em.merge(user);
     }
 
     @Override
     public void unfollow(User user, User follower) {
-
+        user.removeFollowing(follower);
+        em.merge(user);
     }
 
     @Override
-    public List<User> getFollowersById(int id) {
-        return null;
+    public Set<User> getFollowersById(int id) {
+        return getUserById(id).getFollowers();
     }
 
     @Override
-    public List<User> getFollowersByUsername(String username) {
-        return null;
+    public Set<User> getFollowersByUsername(String username) {
+        return getUserByUsername(username).getFollowers();
     }
 
     @Override
-    public List<User> getFollowingById(int id) {
-        return null;
+    public Set<User> getFollowingById(int id) {
+        return getUserById(id).getFollowing();
     }
 
     @Override
-    public List<User> getFollowingByUsername(String username) {
-        return null;
+    public Set<User> getFollowingByUsername(String username) {
+        return getUserByUsername(username).getFollowing();
     }
 
     @Override
     public void update(User user) {
-            }
+        em.merge(user);
+    }
 }

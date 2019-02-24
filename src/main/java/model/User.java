@@ -17,6 +17,11 @@ import java.util.Map;
 import java.util.Set;
 
 @Entity
+@NamedQueries({
+        @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
+        @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
+        @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
+})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -19,5 +19,5 @@ public interface RoleRepository {
     void update(Role role) throws UsernameNotUniqueException;
     void addPermission(Role role, Permission permission);
     void addPermissions(Role role, Set<Permission> permissions);
-    Role removePermission(Role role, Permission permission);
+    void removePermission(Role role, Permission permission);
 }

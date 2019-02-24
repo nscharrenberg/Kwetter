@@ -19,7 +19,7 @@ import java.util.Set;
 @Stateless
 public class RoleService {
 
-    @EJB
+    @Inject
     @Default
     private RoleRepository rr;
 

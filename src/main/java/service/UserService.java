@@ -18,15 +18,16 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Set;
 
 @Stateless
 public class UserService {
 
-    @EJB
+    @Inject
     @Default
     private UserRepository ur;
 
-    @EJB
+    @Inject
     @Default
     private RoleRepository rr;
 
@@ -97,7 +98,7 @@ public class UserService {
      * @param id - The id from the User you want to get the followers from
      * @return
      */
-    public List<User> getFollowersById(int id) {
+    public Set<User> getFollowersById(int id) {
         return ur.getFollowersById(id);
     }
 
@@ -106,7 +107,7 @@ public class UserService {
      * @param username - The username from the User you want to get the followers from
      * @return
      */
-    public List<User> getFollowersByUsername(String username) {
+    public Set<User> getFollowersByUsername(String username) {
         return ur.getFollowersByUsername(username);
     }
 
@@ -116,7 +117,7 @@ public class UserService {
      * @param id - the id from the User you want to get the Users it's following from
      * @return
      */
-    public List<User> getFollowingById(int id) {
+    public Set<User> getFollowingById(int id) {
         return ur.getFollowingById(id);
     }
 
@@ -125,7 +126,7 @@ public class UserService {
      * @param username - the username from the User you want to get the Users it's following from
      * @return
      */
-    public List<User> getFollowingByUsername(String username) {
+    public Set<User> getFollowingByUsername(String username) {
         return ur.getFollowingByUsername(username);
     }
 

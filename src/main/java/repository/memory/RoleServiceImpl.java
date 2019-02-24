@@ -1,17 +1,13 @@
 package repository.memory;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import exception.UsernameNotUniqueException;
 import model.Permission;
 import model.Role;
 import repository.interfaces.RoleRepository;
 
-import javax.annotation.Nullable;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -76,7 +72,9 @@ public class RoleServiceImpl implements RoleRepository {
     }
 
     @Override
-    public Role removePermission(Role role, Permission permission) {
-        return null;
+    public void removePermission(Role role, Permission permission) {
+        int index = Iterables.indexOf(roles, r -> role.getId() == r.getId());
+
+        roles.get(index).removePermission(permission);
     }
 }

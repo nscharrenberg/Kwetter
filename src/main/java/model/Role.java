@@ -1,11 +1,14 @@
 package model;
 
-import javax.inject.Inject;
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
+@NamedQueries({
+        @NamedQuery(name = "role.getAllRoles", query = "SELECT r FROM Role r"),
+        @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
+        @NamedQuery(name = "role.getRoleByName", query = "SELECT r FROM Role r WHERE r.name = :name")
+})
 public class Role {
 
     @Id
@@ -57,4 +60,6 @@ public class Role {
     }
 
     public void addPermissions(Set<Permission> permissions) { this.permissions = permissions; }
+
+    public void removePermission(Permission permission) { this.permissions.remove(permission); }
 }

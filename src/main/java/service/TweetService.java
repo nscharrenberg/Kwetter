@@ -23,11 +23,11 @@ import java.util.regex.Pattern;
 @Stateless
 public class TweetService {
 
-    @EJB
+    @Inject
     @Default
     TweetRepository tr;
 
-    @EJB
+    @Inject
     @Default
     UserRepository ur;
 
@@ -63,7 +63,15 @@ public class TweetService {
         User user = ur.getUserById(userId);
         Set<User> mentions = getMentionsByMessage(message);
 
-        tr.create(user, message, mentions);
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+        tweet.setAuthor(user);
+
+        if(mentions != null) {
+            tweet.setMentions(mentions);
+        }
+
+        tr.create(tweet);
     }
 
     public Set<User> getMentionsByMessage(String message) {
@@ -107,7 +115,7 @@ public class TweetService {
      * @param tweet - the tweet
      * @return
      */
-    public boolean delete(int userId, Tweet tweet) throws Exception {
+    public void delete(int userId, Tweet tweet) throws Exception {
         User user = ur.getUserById(userId);
 
         //todo: take permission with this
@@ -115,7 +123,7 @@ public class TweetService {
             throw new Exception("This is not your tweet, you can therefore not delete it.");
         }
 
-        return tr.delete(tweet);
+        tr.delete(tweet);
     }
 
     /**

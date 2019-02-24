@@ -15,11 +15,11 @@ import javax.inject.Inject;
 @Stateless
 public class AuthenticationService {
 
-    @EJB
+    @Inject
     @Default
     private AuthenticationRepository ar;
 
-    @EJB
+    @Inject
     @Default
     private UserRepository ur;
 

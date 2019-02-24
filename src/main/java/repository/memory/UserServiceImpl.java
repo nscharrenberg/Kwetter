@@ -1,21 +1,16 @@
 package repository.memory;
 
-import com.google.common.base.*;
 import com.google.common.collect.*;
 import exception.StringToLongException;
 import exception.UsernameNotUniqueException;
 import model.User;
 import repository.interfaces.UserRepository;
 
-import javax.annotation.Nullable;
-import javax.ejb.Local;
 import javax.ejb.Stateless;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Stateless
 @Default
@@ -68,22 +63,22 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public List<User> getFollowersById(int id) {
+    public Set<User> getFollowersById(int id) {
         return null;
     }
 
     @Override
-    public List<User> getFollowersByUsername(String username) {
+    public Set<User> getFollowersByUsername(String username) {
         return null;
     }
 
     @Override
-    public List<User> getFollowingById(int id) {
+    public Set<User> getFollowingById(int id) {
         return null;
     }
 
     @Override
-    public List<User> getFollowingByUsername(String username) {
+    public Set<User> getFollowingByUsername(String username) {
         return null;
     }
 
