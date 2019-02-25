@@ -19,7 +19,7 @@ import java.util.List;
 @JPA
 public class TweetServiceImpl implements TweetRepository {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "kwetterDB")
     private EntityManager em;
 
     @Override

@@ -11,6 +11,7 @@ import exception.UsernameNotUniqueException;
 import javax.inject.Inject;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.Set;
         @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
         @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
 })
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -71,6 +72,31 @@ public class User {
     public User() {
     }
 
+    public User(int id, String username, String password, String biography, double locationLongitude, double locationLatitude, String website, Role role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.biography = biography;
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
+        this.website = website;
+        this.role = role;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
+    }
+
+    public User(int id, String username, String password, String biography, double locationLongitude, double locationLatitude, String website) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.biography = biography;
+        this.locationLongitude = locationLongitude;
+        this.locationLatitude = locationLatitude;
+        this.website = website;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
+    }
+
     public User(String username, String password, String biography, double locationLongitude, double locationLatitude, String website, Role role) {
         this.username = username;
         this.password = password;
@@ -79,6 +105,8 @@ public class User {
         this.locationLatitude = locationLatitude;
         this.website = website;
         this.role = role;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
     }
 
     public User(String username, String password, String biography, double locationLongitude, double locationLatitude, String website) {
@@ -88,6 +116,8 @@ public class User {
         this.locationLongitude = locationLongitude;
         this.locationLatitude = locationLatitude;
         this.website = website;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
     }
 
     public int getId() {

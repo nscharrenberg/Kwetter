@@ -2,7 +2,7 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package domain;
+package kwetter.domain;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -30,7 +30,7 @@ public class UserTest {
          * Create 10 Users
          */
         for(int i = 0; i < 10; i++) {
-//            users.add(new User(i, "testUser" + i, "password", "this is my bio", "www.mysite" + i + ".com", 123123.123123, 123123.123132, role));
+            users.add(new User("testUser" + i, "password", "this is my biography" , 123.654,123.1235, "www.site.com" + i, role));
         }
     }
 
@@ -40,19 +40,8 @@ public class UserTest {
 
     @Test
     public void addFollowing() {
-        User follower = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return Integer.toString(2).equals(Integer.toString(user.getId()));
-            }
-        }).orNull();
-
-        User following = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return Integer.toString(5).equals(Integer.toString(user.getId()));
-            }
-        }).orNull();
+        User follower = Iterables.tryFind(users, user -> Integer.toString(2).equals(Integer.toString(user.getId()))).orNull();
+        User following = Iterables.tryFind(users, user -> Integer.toString(5).equals(Integer.toString(user.getId()))).orNull();
 
         if(follower == null && following == null) {
             fail("Follower & Following users expected");
@@ -72,19 +61,9 @@ public class UserTest {
         /**
          * Add Following
          */
-        User follower = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return Integer.toString(2).equals(Integer.toString(user.getId()));
-            }
-        }).orNull();
+        User follower = Iterables.tryFind(users, user -> Integer.toString(2).equals(Integer.toString(user.getId()))).orNull();
 
-        User following = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return Integer.toString(5).equals(Integer.toString(user.getId()));
-            }
-        }).orNull();
+        User following = Iterables.tryFind(users, user -> Integer.toString(5).equals(Integer.toString(user.getId()))).orNull();
 
         assert follower != null;
         assert following != null;

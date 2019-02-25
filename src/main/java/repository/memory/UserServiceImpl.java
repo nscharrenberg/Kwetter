@@ -36,18 +36,29 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public void create(User user) throws UsernameNotUniqueException, StringToLongException {
+    public User create(User user) throws Exception {
+        System.out.println("Create: user - " + user);
         if(user.getBiography().length() > 160) {
+            System.out.println("Create: More then 160 chars");
             throw new StringToLongException("Biography can not be more then 160 characters.");
         }
+        System.out.println("Create: Less then 160 chars");
 
         User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername())).orNull();
 
         if(result != null) {
+            System.out.println("Create: A user is found! - " + result);
             throw new UsernameNotUniqueException("Username must be unique.");
         }
+        System.out.println("Create: No Results found");
 
-        users.add(user);
+        if(users.add(user)) {
+            System.out.println("Create: User Created");
+            return user;
+        } else {
+            System.out.println("Create: Could not create user");
+            throw new Exception("User could not be created");
+        }
     }
 
     @Override

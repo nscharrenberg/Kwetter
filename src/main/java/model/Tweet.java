@@ -9,6 +9,7 @@ import exception.StringToLongException;
 import javax.inject.Inject;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,7 @@ import java.util.Set;
         @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
         @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author")
 })
-public class Tweet {
+public class Tweet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -66,15 +67,34 @@ public class Tweet {
     public Tweet() {
     }
 
+    public Tweet(int id, String message, User author) {
+        this.message = message;
+        this.author = author;
+        this.likes = new HashSet<>();
+        this.mentions = new HashSet<>();
+    }
+
+    public Tweet(int id, String message, User author, Date createdAt) {
+        this.message = message;
+        this.author = author;
+        this.createdAt = createdAt;
+        this.likes = new HashSet<>();
+        this.mentions = new HashSet<>();
+    }
+
     public Tweet(String message, User author) {
         this.message = message;
         this.author = author;
+        this.likes = new HashSet<>();
+        this.mentions = new HashSet<>();
     }
 
     public Tweet(String message, User author, Date createdAt) {
         this.message = message;
         this.author = author;
         this.createdAt = createdAt;
+        this.likes = new HashSet<>();
+        this.mentions = new HashSet<>();
     }
 
     public int getId() {

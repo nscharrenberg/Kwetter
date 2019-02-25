@@ -72,6 +72,10 @@ public class UserService {
             throw new Exception("Role not found, during registration.");
         }
 
+        if(user.getBiography().length() > 160) {
+            throw new StringToLongException("Biography can not be more then 160 characters.");
+        }
+
         ur.create(user);
     }
 

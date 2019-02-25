@@ -2,7 +2,7 @@
  * Copyright (c) 2019. Noah Scharrenberg
  */
 
-package domain;
+package kwetter.domain;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -33,7 +33,7 @@ public class TweetTest {
          * Create 10 Users
          */
         for(int i = 0; i < 10; i++) {
-//            users.add(new User(i, "testUser" + i, "password", "this is my bio", "www.mysite" + i + ".com", 123123.123123, 123123.123132, role));
+            users.add(new User("testUser" + i, "password", "this is my biography" , 123.654,123.1235, "www.site.com" + i, role));
         }
 
         User user = Iterables.tryFind(users, new Predicate<User>() {
@@ -46,22 +46,36 @@ public class TweetTest {
         if(user == null) {
             fail("User is NULL");
         }
-
-//        tweet = new Tweet(1, "this is a tweet", user, new Date());
     }
 
     @After
     public void tearDown() throws Exception {
     }
 
+    private Tweet addTweet(String message, User user) {
+        return new Tweet(message, user);
+    }
+
+    @Test
+    public void addTweetTest() {
+        User user = Iterables.tryFind(users, user1 -> "testUser4".equals(user1.getUsername())).orNull();
+        String expectedMessage = "This is my tweet";
+
+        tweet = addTweet(expectedMessage, user);
+
+        assertEquals(expectedMessage, tweet.getMessage());
+        assertEquals(user.getUsername(), tweet.getAuthor().getUsername());
+    }
+
     @Test
     public void likeTweet() {
-        User user = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return "testUser4".equals(user.getUsername());
-            }
-        }).orNull();
+        User author = Iterables.tryFind(users, user1 -> "testUser2".equals(user1.getUsername())).orNull();
+        User user = Iterables.tryFind(users, user1 -> "testUser4".equals(user1.getUsername())).orNull();
+        String message = "This is my tweet";
+        tweet = addTweet(message, author);
+
+        assertEquals(message, tweet.getMessage());
+        assertEquals(author.getUsername(), tweet.getAuthor().getUsername());
 
         if(user == null) {
             fail("User is NULL");
@@ -74,15 +88,16 @@ public class TweetTest {
 
     @Test
     public void unlikeTweet() {
+        User author = Iterables.tryFind(users, user1 -> "testUser2".equals(user1.getUsername())).orNull();
+        String message = "This is my tweet";
+        tweet = addTweet(message, author);
+        assertEquals(message, tweet.getMessage());
+        assertEquals(author.getUsername(), tweet.getAuthor().getUsername());
+
         /**
          * Like Tweet
          */
-        User user = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return "testUser4".equals(user.getUsername());
-            }
-        }).orNull();
+        User user = Iterables.tryFind(users, user1 -> "testUser4".equals(user1.getUsername())).orNull();
 
         if(user == null) {
             fail("User is NULL");

@@ -20,7 +20,7 @@ import java.util.Set;
 @JPA
 public class RoleServiceImpl implements RoleRepository {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "kwetterDB")
     private EntityManager em;
 
     @Override

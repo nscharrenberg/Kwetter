@@ -7,6 +7,7 @@ package service;
 import exception.UsernameNotUniqueException;
 import model.Permission;
 import model.Role;
+import repository.interfaces.JPA;
 import repository.interfaces.RoleRepository;
 
 import javax.ejb.EJB;
@@ -49,7 +50,7 @@ public class RoleService {
      * @return
      */
     public Role getRoleByName(String name) {
-        return getRoleByName(name);
+        return rr.getRoleByName(name);
     }
 
     /**

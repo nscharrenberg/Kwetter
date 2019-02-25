@@ -23,6 +23,9 @@ public class startUp {
     @Inject
     private RoleService roleService;
 
+    public startUp() {
+    }
+
     @PostConstruct
     private void initData() {
         Role role = new Role("member");

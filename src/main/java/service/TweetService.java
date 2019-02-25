@@ -7,6 +7,7 @@ package service;
 import exception.StringToLongException;
 import model.Tweet;
 import model.User;
+import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
 import repository.interfaces.UserRepository;
 

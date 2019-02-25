@@ -1,6 +1,8 @@
 package model;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -9,7 +11,7 @@ import java.util.Set;
         @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
         @NamedQuery(name = "role.getRoleByName", query = "SELECT r FROM Role r WHERE r.name = :name")
 })
-public class Role {
+public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,6 +39,7 @@ public class Role {
 
     public Role(String name) {
         this.name = name;
+        this.permissions = new HashSet<>();
     }
 
     public int getId() {

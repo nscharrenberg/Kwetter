@@ -18,7 +18,7 @@ import java.util.Set;
 @JPA
 public class UserServiceImpl implements UserRepository {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "kwetterDB")
     private EntityManager em;
 
     @Override
@@ -37,8 +37,10 @@ public class UserServiceImpl implements UserRepository {
     }
 
     @Override
-    public void create(User user) {
+    public User create(User user) {
         em.persist(user);
+
+        return user;
     }
 
     @Override

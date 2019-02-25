@@ -4,8 +4,11 @@
 
 package kwetter.cucumber.container;
 
+import cucumber.api.java.Before;
 import model.Role;
 import model.User;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import repository.interfaces.TweetRepository;
 import repository.interfaces.UserRepository;
 import service.TweetService;
@@ -16,15 +19,8 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.List;
 
+import static org.mockito.MockitoAnnotations.initMocks;
+
 public class WorldContainer {
-
-    @Inject
-    public UserService userService;
-
-    @Inject
-    public TweetService tweetService;
-
-    public Role role;
-    public List<User> users;
     public Exception actualException;
 }

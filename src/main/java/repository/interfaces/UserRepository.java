@@ -15,7 +15,7 @@ public interface UserRepository {
     List<User> getUsers();
     User getUserById(int id);
     User getUserByUsername(String username);
-    void create(User user) throws UsernameNotUniqueException, StringToLongException;
+    User create(User user) throws Exception;
     void follow(User user, User follower);
     void unfollow(User user, User follower);
     Set<User> getFollowersById(int id);
