@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "tweets")
 @NamedQueries({
         @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t"),
         @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
@@ -23,14 +24,14 @@ import java.util.Set;
 public class Tweet implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(length = 140)
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author")
+    @JoinColumn(name = "author", nullable = false)
     private User author;
 
     @ManyToMany(

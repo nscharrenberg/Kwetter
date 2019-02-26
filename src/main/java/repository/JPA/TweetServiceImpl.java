@@ -13,9 +13,11 @@ import repository.interfaces.TweetRepository;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Stateless
+@Transactional
 @JPA
 public class TweetServiceImpl implements TweetRepository {
 

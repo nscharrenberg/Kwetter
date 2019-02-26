@@ -24,11 +24,11 @@ import java.util.Set;
 public class UserService {
 
     @Inject
-    @Default
+    @JPA
     private UserRepository ur;
 
     @Inject
-    @Default
+    @JPA
     private RoleRepository rr;
 
     public UserService() {

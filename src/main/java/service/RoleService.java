@@ -21,7 +21,7 @@ import java.util.Set;
 public class RoleService {
 
     @Inject
-    @Default
+    @JPA
     private RoleRepository rr;
 
     public RoleService() {

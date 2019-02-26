@@ -25,11 +25,11 @@ import java.util.regex.Pattern;
 public class TweetService {
 
     @Inject
-    @Default
+    @JPA
     TweetRepository tr;
 
     @Inject
-    @Default
+    @JPA
     UserRepository ur;
 
     public TweetService() {

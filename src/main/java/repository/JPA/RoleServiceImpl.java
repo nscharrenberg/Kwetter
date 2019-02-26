@@ -13,10 +13,12 @@ import repository.interfaces.RoleRepository;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
 @Stateless
+@Transactional
 @JPA
 public class RoleServiceImpl implements RoleRepository {
 

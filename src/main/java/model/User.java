@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Entity
+@Table(name = "users")
 @NamedQueries({
         @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
         @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
@@ -25,7 +26,7 @@ import java.util.Set;
 })
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false, unique = true)
@@ -61,7 +62,8 @@ public class User implements Serializable {
     private Set<User> followers;
 
     @ManyToMany(
-            mappedBy = "followers"
+            mappedBy = "followers",
+            fetch = FetchType.LAZY
     )
     private Set<User> following;
 

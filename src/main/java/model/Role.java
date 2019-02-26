@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "roles")
 @NamedQueries({
         @NamedQuery(name = "role.getAllRoles", query = "SELECT r FROM Role r"),
         @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
