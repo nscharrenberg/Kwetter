@@ -1,23 +1,18 @@
-/*
- * Copyright (c) 2019. Noah Scharrenberg
- */
-
 package repository.interfaces;
 
-import exception.UsernameNotUniqueException;
-import model.Permission;
-import model.Role;
+import domain.Permission;
+import domain.Role;
+import exceptions.NameNotUniqueException;
 
 import java.util.List;
-import java.util.Set;
 
 public interface RoleRepository {
-    List<Role> getRoles();
-    Role getRoleById(int id);
-    Role getRoleByName(String name);
-    void create(Role role) throws UsernameNotUniqueException;
-    void update(Role role) throws UsernameNotUniqueException;
-    void addPermission(Role role, Permission permission);
-    void addPermissions(Role role, Set<Permission> permissions);
-    void removePermission(Role role, Permission permission);
+    List<Role> all();
+    Role getById(int id);
+    Role getByName(String name);
+    Role create(Role role) throws NameNotUniqueException, ClassNotFoundException;
+    Role update(Role role) throws NameNotUniqueException;
+    boolean delete(Role role) throws ClassNotFoundException;
+    Role addPermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException;
+    Role removePermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException;
 }

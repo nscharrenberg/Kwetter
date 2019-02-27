@@ -1,151 +1,184 @@
-/*
- * Copyright (c) 2019. Noah Scharrenberg
- */
-
 package service;
 
-import exception.StringToLongException;
-import exception.UsernameNotUniqueException;
-import model.Role;
-import model.User;
-import repository.interfaces.JPA;
+import domain.Role;
+import domain.User;
+import exceptions.NameNotUniqueException;
 import repository.interfaces.RoleRepository;
 import repository.interfaces.UserRepository;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.ws.rs.NotFoundException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.List;
-import java.util.Set;
 
-@Stateless
 public class UserService {
 
-    @Inject
-    @JPA
+    @Inject @Default
     private UserRepository ur;
 
-    @Inject
-    @JPA
+    @Inject @Default
     private RoleRepository rr;
 
-    public UserService() {
+    public List<User> all() {
+        return ur.all();
     }
 
-    /**
-     * Get all Users
-     * @return
-     */
-    public List<User> getUsers() {
-        return ur.getUsers();
-    }
-
-    /**
-     * Get a specific user by ID
-     * @param id - the id of the user that has to be found.
-     * @return
-     */
-    public User getUserById(int id) {
-        return ur.getUserById(id);
-    }
-
-    /**
-     * Get a specific user by username
-     * @param username - the username of the user that has to be found.
-     * @return
-     */
-    public User getUserByUsername(String username) {
-        return ur.getUserByUsername(username);
-    }
-
-    /**
-     * Create a new USer
-     * @param user - the user to be created.
-     * @return
-     */
-    public void create(User user) throws Exception {
-        Role role = rr.getRoleById(user.getRole().getId());
-
-        if(role == null) {
-            throw new Exception("Role not found, during registration.");
+    public User getById(int id) {
+        if(id <= 0) {
+            throw new IllegalArgumentException("Invalid ID");
         }
 
-        if(user.getBiography().length() > 160) {
-            throw new StringToLongException("Biography can not be more then 160 characters.");
+        User user = ur.getById(id);
+
+        if(user == null) {
+            throw new NotFoundException("User not found");
         }
 
-        ur.create(user);
+        return user;
     }
 
-    /**
-     * Follow a user
-     * @param user - the person that is going to follow somebody.
-     * @param follower - the person that is being followed.
-     */
-    public void follow(User user, User follower) {
-        ur.follow(user, follower);
-    }
-
-    /**
-     * Unfollow a user
-     * @param user - the person that is currently following somebody.
-     * @param follower - the person that is being unfollowed.
-     */
-    public void unfollow(User user, User follower) {
-        ur.unfollow(user, follower);
-    }
-
-    /**
-     * Get the followers of a specific User by Id
-     * @param id - The id from the User you want to get the followers from
-     * @return
-     */
-    public Set<User> getFollowersById(int id) {
-        return ur.getFollowersById(id);
-    }
-
-    /**
-     * Get the followers of a specific User by Username
-     * @param username - The username from the User you want to get the followers from
-     * @return
-     */
-    public Set<User> getFollowersByUsername(String username) {
-        return ur.getFollowersByUsername(username);
-    }
-
-
-    /**
-     * Get a specific User by Id and show the Users it's following.
-     * @param id - the id from the User you want to get the Users it's following from
-     * @return
-     */
-    public Set<User> getFollowingById(int id) {
-        return ur.getFollowingById(id);
-    }
-
-    /**
-     * Get a specific User by Username and show the Users it's following.
-     * @param username - the username from the User you want to get the Users it's following from
-     * @return
-     */
-    public Set<User> getFollowingByUsername(String username) {
-        return ur.getFollowingByUsername(username);
-    }
-
-    /**
-     * Update a specific user
-     * @param user - update the user information of a specific user.
-     * @return
-     */
-    public void update(User user) throws Exception {
-        Role role = rr.getRoleById(user.getRole().getId());
-
-        if(role == null) {
-            throw new Exception("Role not found, during registration.");
+    public User getByUsername(String username) {
+        if(username.isEmpty()) {
+            throw new IllegalArgumentException("username can not be empty");
         }
 
-        ur.update(user);
+        User user = ur.getByUsername(username);
+
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        return user;
+    }
+
+    public User getByEmail(String email) {
+        if(email.isEmpty()) {
+            throw new IllegalArgumentException("username can not be empty");
+        }
+
+        User user = ur.getByEmail(email);
+
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        return user;
+    }
+
+    public User create(User user) throws NameNotUniqueException, ClassNotFoundException, NoSuchAlgorithmException {
+        if(user.getUsername().isEmpty()) {
+            throw new IllegalArgumentException("username can not be empty");
+        }
+
+        if(ur.getByUsername(user.getUsername()) != null) {
+            throw new NameNotUniqueException("Username already taken");
+        }
+
+        user.setPassword(tempSha256Encryption(user.getPassword()));
+        return ur.create(user);
+    }
+
+    public User update(User user) throws NameNotUniqueException {
+        if(user.getUsername().isEmpty()) {
+            throw new IllegalArgumentException("username can not be empty");
+        }
+
+        if(user.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+
+        if(ur.getById(user.getId()) == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        User result = ur.getByUsername(user.getUsername());
+        if(result != null && result.getId() != user.getId()) {
+            throw new NameNotUniqueException("Username already taken");
+        }
+
+        return ur.update(user);
+    }
+
+    public boolean delete(User user) throws ClassNotFoundException {
+        if(user.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+
+        return ur.delete(user);
+    }
+
+    public User follow(User user, User toFollow) throws ClassNotFoundException, NameNotUniqueException {
+        if(user.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
+        }
+
+        if(toFollow.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid ID for User you are trying to follow");
+        }
+
+        if(ur.getById(user.getId()) == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if(ur.getById(toFollow.getId()) == null) {
+            throw new NotFoundException("User you are trying to follow not found");
+        }
+
+        return ur.follow(user, toFollow);
+    }
+
+    public User unfollow(User user, User toUnfollow) throws ClassNotFoundException, NameNotUniqueException {
+        if(user.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
+        }
+
+        if(toUnfollow.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid ID for User you are trying to unfollow");
+        }
+
+        if(ur.getById(user.getId()) == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if(ur.getById(toUnfollow.getId()) == null) {
+            throw new NotFoundException("User you are trying to unfollow not found");
+        }
+
+        return ur.unfollow(user, toUnfollow);
+    }
+
+    public boolean login(String username, String password) throws NoSuchAlgorithmException {
+        return ur.login(username, tempSha256Encryption(password));
+    }
+
+    public User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException {
+        if(user.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
+        }
+
+        if(role.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid role ID");
+        }
+
+        if(ur.getById(user.getId()) == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if(rr.getById(role.getId()) == null) {
+            throw new NotFoundException("Role not found");
+        }
+
+        return ur.changeRole(user, role);
+    }
+
+    private String tempSha256Encryption(String text) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = messageDigest.digest(text.getBytes(StandardCharsets.UTF_8));
+
+        return Base64.getEncoder().encodeToString(hash);
     }
 }
