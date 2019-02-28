@@ -6,9 +6,13 @@ import exceptions.NameNotUniqueException;
 import service.PermissionService;
 
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Model;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -16,6 +20,8 @@ import java.util.List;
 @Stateless
 @Path("/permissions")
 public class PermissionController extends Application {
+    @Context
+    private HttpServletRequest servletRequest;
 
     @Inject
     private PermissionService permissionService;

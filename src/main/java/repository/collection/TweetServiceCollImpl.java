@@ -49,6 +49,7 @@ public class TweetServiceCollImpl implements TweetRepository {
 
     @Override
     public Tweet create(Tweet tweet) throws ClassNotFoundException {
+        tweet.setId(all().size() + 1);
         if(tweets.add(tweet)) {
             return tweet;
         } else {

@@ -7,7 +7,7 @@
 
     <persistence-unit name="kwetterDB" transaction-type="JTA">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>jdbc/mypool</jta-data-source>
+        <jta-data-source>jdbc/kwetter</jta-data-source>
         <properties>
             <property name="eclipselink.deploy-on-startup" value="true" />
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>

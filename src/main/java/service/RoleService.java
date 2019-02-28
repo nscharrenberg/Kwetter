@@ -6,6 +6,7 @@ import exceptions.ActionForbiddenException;
 import exceptions.NameNotUniqueException;
 import repository.interfaces.PermissionRepository;
 import repository.interfaces.RoleRepository;
+import repository.interfaces.SelectedContext;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -14,16 +15,25 @@ import java.util.List;
 
 public class RoleService {
 
-    @Inject @Default
+    @Inject @SelectedContext
     private RoleRepository rr;
 
-    @Inject @Default
+    @Inject @SelectedContext
     private PermissionRepository pr;
 
+    /**
+     * Get all roles
+     * @return a list of roles
+     */
     List<Role> all() {
         return rr.all();
     }
 
+    /**
+     * Get a role by its id
+     * @param id - the id of the role
+     * @return a role
+     */
     Role getById(int id) {
         if(id <= 0) {
             throw new IllegalArgumentException("Invalid ID");
@@ -38,6 +48,11 @@ public class RoleService {
         return role;
     }
 
+    /**
+     * Get a role by its name
+     * @param name - the name of the role
+     * @return a role
+     */
     Role getByName(String name) {
         if(name.isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
@@ -52,6 +67,13 @@ public class RoleService {
         return role;
     }
 
+    /**
+     * Create a new role
+     * @param role - the role information
+     * @return the newly created role
+     * @throws NameNotUniqueException
+     * @throws ClassNotFoundException
+     */
     Role create(Role role) throws NameNotUniqueException, ClassNotFoundException {
         if(role.getName().isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
@@ -60,6 +82,12 @@ public class RoleService {
         return rr.create(role);
     }
 
+    /**
+     * Update an existing role
+     * @param role - the new role information with an existing role id
+     * @return the updated role
+     * @throws NameNotUniqueException
+     */
     Role update(Role role) throws NameNotUniqueException {
         if(role.getName().isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
@@ -72,6 +100,12 @@ public class RoleService {
         return rr.update(role);
     }
 
+    /**
+     * Delete an existing role
+     * @param role - the role to be deleted
+     * @return a boolean wether or not the role is deleted.
+     * @throws ClassNotFoundException
+     */
     boolean delete(Role role) throws ClassNotFoundException {
         if(role.getId() <= 0) {
             throw new IllegalArgumentException("Invalid ID");
@@ -80,6 +114,16 @@ public class RoleService {
         return rr.delete(role);
     }
 
+
+    /**
+     * Add a permission to an existing role
+     * @param role - the role
+     * @param permission - the permission
+     * @return the role
+     * @throws ClassNotFoundException
+     * @throws NameNotUniqueException
+     * @throws ActionForbiddenException
+     */
     Role addPermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
         if(role.getId() <= 0) {
             throw new IllegalArgumentException("Invalid role ID");
@@ -108,6 +152,15 @@ public class RoleService {
         return rr.addPermission(role, permission);
     }
 
+    /**
+     * Remove a permission from an existing role
+     * @param role - the role
+     * @param permission - the permission
+     * @return the role
+     * @throws ClassNotFoundException
+     * @throws NameNotUniqueException
+     * @throws ActionForbiddenException
+     */
     Role removePermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
         if(role.getId() <= 0) {
             throw new IllegalArgumentException("Invalid role ID");

@@ -4,6 +4,7 @@ import domain.Role;
 import domain.User;
 import exceptions.NameNotUniqueException;
 import repository.interfaces.RoleRepository;
+import repository.interfaces.SelectedContext;
 import repository.interfaces.UserRepository;
 
 import javax.enterprise.inject.Default;
@@ -17,16 +18,25 @@ import java.util.List;
 
 public class UserService {
 
-    @Inject @Default
+    @Inject @SelectedContext
     private UserRepository ur;
 
-    @Inject @Default
+    @Inject @SelectedContext
     private RoleRepository rr;
 
+    /**
+     * Get all Users
+     * @return a list of users
+     */
     public List<User> all() {
         return ur.all();
     }
 
+    /**
+     * Get a user by its id
+     * @param id - the id of the user
+     * @return a user
+     */
     public User getById(int id) {
         if(id <= 0) {
             throw new IllegalArgumentException("Invalid ID");
@@ -41,6 +51,11 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Get a user by its name
+     * @param username - the username of the user
+     * @return a user
+     */
     public User getByUsername(String username) {
         if(username.isEmpty()) {
             throw new IllegalArgumentException("username can not be empty");
@@ -55,6 +70,11 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Get a user by its email
+     * @param email - the email of the user
+     * @return a user
+     */
     public User getByEmail(String email) {
         if(email.isEmpty()) {
             throw new IllegalArgumentException("username can not be empty");
@@ -69,7 +89,15 @@ public class UserService {
         return user;
     }
 
-    public User create(User user) throws NameNotUniqueException, ClassNotFoundException, NoSuchAlgorithmException {
+    /**
+     * Create a new user
+     * @param user - the user information
+     * @return the newly created user
+     * @throws NameNotUniqueException
+     * @throws ClassNotFoundException
+     * @throws NoSuchAlgorithmException
+     */
+    public User create(User user) throws NameNotUniqueException, NoSuchAlgorithmException, ClassNotFoundException {
         if(user.getUsername().isEmpty()) {
             throw new IllegalArgumentException("username can not be empty");
         }
@@ -82,6 +110,12 @@ public class UserService {
         return ur.create(user);
     }
 
+    /**
+     * Update an existing user
+     * @param user - the new user information with an existing user id
+     * @return the updated user
+     * @throws NameNotUniqueException
+     */
     public User update(User user) throws NameNotUniqueException {
         if(user.getUsername().isEmpty()) {
             throw new IllegalArgumentException("username can not be empty");
@@ -103,6 +137,12 @@ public class UserService {
         return ur.update(user);
     }
 
+    /**
+     * Delete an existing user
+     * @param user - the user to be deleted
+     * @return a boolean wether or not the user is deleted.
+     * @throws ClassNotFoundException
+     */
     public boolean delete(User user) throws ClassNotFoundException {
         if(user.getId() <= 0) {
             throw new IllegalArgumentException("Invalid ID");
@@ -111,6 +151,14 @@ public class UserService {
         return ur.delete(user);
     }
 
+    /**
+     * follow a user
+     * @param user - the user that wants to follow another user
+     * @param toFollow - the user that is being followed
+     * @return the user
+     * @throws ClassNotFoundException
+     * @throws NameNotUniqueException
+     */
     public User follow(User user, User toFollow) throws ClassNotFoundException, NameNotUniqueException {
         if(user.getId() <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
@@ -131,6 +179,14 @@ public class UserService {
         return ur.follow(user, toFollow);
     }
 
+    /**
+     * unfollow a user
+     * @param user - the user that wants to unfollow another user
+     * @param toUnfollow - the user that needs to be unfollowed
+     * @return the user
+     * @throws ClassNotFoundException
+     * @throws NameNotUniqueException
+     */
     public User unfollow(User user, User toUnfollow) throws ClassNotFoundException, NameNotUniqueException {
         if(user.getId() <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
@@ -151,10 +207,25 @@ public class UserService {
         return ur.unfollow(user, toUnfollow);
     }
 
+    /**
+     * Login as a user
+     * @param username - the username if the user
+     * @param password - the password of the user
+     * @return a boolean
+     * @throws NoSuchAlgorithmException
+     */
     public boolean login(String username, String password) throws NoSuchAlgorithmException {
         return ur.login(username, tempSha256Encryption(password));
     }
 
+    /**
+     * Change the role of a user
+     * @param user - the user
+     * @param role - the role you want to add
+     * @return the user
+     * @throws ClassNotFoundException
+     * @throws NameNotUniqueException
+     */
     public User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException {
         if(user.getId() <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
@@ -175,6 +246,12 @@ public class UserService {
         return ur.changeRole(user, role);
     }
 
+    /**
+     * Hash a text
+     * @param text - the text to hash
+     * @return a hashed String
+     * @throws NoSuchAlgorithmException
+     */
     private String tempSha256Encryption(String text) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         byte[] hash = messageDigest.digest(text.getBytes(StandardCharsets.UTF_8));

@@ -1,21 +1,68 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name = "users")
+@NamedQueries({
+        @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
+        @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
+        @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
+})
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
+    @JsonIgnore
     private String password;
+
+    @Column(length = 160)
     private String biography;
+
+    @Column
     private String website;
     private double longitude;
     private double latitude;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
     private Role role;
+
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            }
+    )
+    @JoinTable(
+            name = "followers",
+            joinColumns = @JoinColumn(name = "follower"),
+            inverseJoinColumns = @JoinColumn(name = "following")
+    )
     private Set<User> followers;
+
+    @ManyToMany(
+            mappedBy = "followers",
+            fetch = FetchType.LAZY
+    )
     private Set<User> following;
 
     public User() {
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
     }
 
     public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following) {
@@ -55,6 +102,8 @@ public class User {
         this.longitude = longitude;
         this.latitude = latitude;
         this.role = role;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
     }
 
     public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role) {
@@ -66,6 +115,8 @@ public class User {
         this.longitude = longitude;
         this.latitude = latitude;
         this.role = role;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
     }
 
     public int getId() {
