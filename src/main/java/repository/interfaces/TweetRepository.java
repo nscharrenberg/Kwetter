@@ -1,24 +1,22 @@
-/*
- * Copyright (c) 2019. Noah Scharrenberg
- */
-
 package repository.interfaces;
 
-import exception.StringToLongException;
-import model.Tweet;
-import model.User;
+import domain.Tweet;
+import domain.User;
 
+import java.util.Date;
 import java.util.List;
 
 public interface TweetRepository {
-    List<Tweet> getTweets();
-    Tweet getTweetById(int id);
-    List<Tweet> getTweetsByUser(User user);
-    void create(Tweet tweet) throws StringToLongException;
-    void update(Tweet tweet);
-    void delete(Tweet tweet);
-    void like(User user, Tweet tweet) throws Exception;
-    void unlike(User user, Tweet tweet);
-    List<Tweet> getTimeline(User user);
-    List<Tweet> search(String input);
+    List<Tweet> all();
+    Tweet getById(int id);
+    List<Tweet> getByAuthorName(String username);
+    List<Tweet> getByAuthorId(int id);
+    List<Tweet> getByCreatedDate(Date date);
+    Tweet create(Tweet tweet) throws ClassNotFoundException;
+    Tweet update(Tweet tweet);
+    boolean delete(Tweet tweet) throws ClassNotFoundException;
+    Tweet like(Tweet tweet, User user) throws ClassNotFoundException;
+    Tweet unlike(Tweet tweet, User user) throws ClassNotFoundException;
+    Tweet addMention(Tweet tweet, User user) throws ClassNotFoundException;
+    Tweet removeMention(Tweet tweet, User user) throws ClassNotFoundException;
 }

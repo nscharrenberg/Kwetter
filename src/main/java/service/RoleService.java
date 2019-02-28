@@ -1,102 +1,191 @@
-/*
- * Copyright (c) 2019. Noah Scharrenberg
- */
-
 package service;
 
-import exception.UsernameNotUniqueException;
-import model.Permission;
-import model.Role;
+import domain.Permission;
+import domain.Role;
+import exceptions.ActionForbiddenException;
+import exceptions.NameNotUniqueException;
+import repository.interfaces.PermissionRepository;
 import repository.interfaces.RoleRepository;
+import repository.interfaces.SelectedContext;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.ws.rs.NotFoundException;
 import java.util.List;
-import java.util.Set;
 
-@Stateless
 public class RoleService {
 
-    @Inject
-    @Default
+    @Inject @SelectedContext
     private RoleRepository rr;
 
-    public RoleService() {
+    @Inject @SelectedContext
+    private PermissionRepository pr;
+
+    /**
+     * Get all roles
+     * @return a list of roles
+     */
+    List<Role> all() {
+        return rr.all();
     }
 
     /**
-     * Get all Roles
-     * @return
+     * Get a role by its id
+     * @param id - the id of the role
+     * @return a role
      */
-    public List<Role> getRoles() {
-        return rr.getRoles();
+    Role getById(int id) {
+        if(id <= 0) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+
+        Role role = rr.getById(id);
+
+        if(role == null) {
+            throw new NotFoundException("Role not found");
+        }
+
+        return role;
     }
 
     /**
-     * Get role by id
-     * @param id
-     * @return
+     * Get a role by its name
+     * @param name - the name of the role
+     * @return a role
      */
-    public Role getRoleById(int id) {
-        return rr.getRoleById(id);
+    Role getByName(String name) {
+        if(name.isEmpty()) {
+            throw new IllegalArgumentException("name can not be empty");
+        }
+
+        Role role = rr.getByName(name);
+
+        if(role == null) {
+            throw new NotFoundException("Role not found");
+        }
+
+        return role;
     }
 
     /**
-     * Get role by name
-     * @param name
-     * @return
+     * Create a new role
+     * @param role - the role information
+     * @return the newly created role
+     * @throws NameNotUniqueException
+     * @throws ClassNotFoundException
      */
-    public Role getRoleByName(String name) {
-        return getRoleByName(name);
+    Role create(Role role) throws NameNotUniqueException, ClassNotFoundException {
+        if(role.getName().isEmpty()) {
+            throw new IllegalArgumentException("name can not be empty");
+        }
+
+        return rr.create(role);
     }
 
     /**
-     * Create a new Role
-     * @param role
-     * @return
+     * Update an existing role
+     * @param role - the new role information with an existing role id
+     * @return the updated role
+     * @throws NameNotUniqueException
      */
-    public void create(Role role) throws UsernameNotUniqueException {
-        rr.create(role);
+    Role update(Role role) throws NameNotUniqueException {
+        if(role.getName().isEmpty()) {
+            throw new IllegalArgumentException("name can not be empty");
+        }
+
+        if(role.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+
+        return rr.update(role);
     }
 
     /**
-     * Update an existing Role
-     * @param role
-     * @return
+     * Delete an existing role
+     * @param role - the role to be deleted
+     * @return a boolean wether or not the role is deleted.
+     * @throws ClassNotFoundException
      */
-    public void update(Role role) throws UsernameNotUniqueException {
-        rr.update(role);
+    boolean delete(Role role) throws ClassNotFoundException {
+        if(role.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+
+        return rr.delete(role);
+    }
+
+
+    /**
+     * Add a permission to an existing role
+     * @param role - the role
+     * @param permission - the permission
+     * @return the role
+     * @throws ClassNotFoundException
+     * @throws NameNotUniqueException
+     * @throws ActionForbiddenException
+     */
+    Role addPermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
+        if(role.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid role ID");
+        }
+
+        if(permission.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid permission ID");
+        }
+
+        Permission p = pr.getById(permission.getId());
+
+        if(p == null) {
+            throw new NotFoundException("Permission not found");
+        }
+
+        Role r = rr.getById(role.getId());
+
+        if(r == null) {
+            throw new NotFoundException("Role not found");
+        }
+
+        if(r.getPermissions().contains(permission)) {
+            throw new ActionForbiddenException("Role: " + role.getName() + " already has the permission " + permission.getName());
+        }
+
+        return rr.addPermission(role, permission);
     }
 
     /**
-     * Add a permission to a specific role
-     * @param role
-     * @param permission
-     * @return
+     * Remove a permission from an existing role
+     * @param role - the role
+     * @param permission - the permission
+     * @return the role
+     * @throws ClassNotFoundException
+     * @throws NameNotUniqueException
+     * @throws ActionForbiddenException
      */
-    public void addPermission(Role role, Permission permission) {
-        rr.addPermission(role, permission);
-    }
+    Role removePermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
+        if(role.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid role ID");
+        }
 
-    /**
-     * Add multiple permissions to a specific role
-     * @param role
-     * @param permissions
-     * @return
-     */
-    public void addPermissions(Role role, Set<Permission> permissions) {
-        rr.addPermissions(role, permissions);
-    }
+        if(permission.getId() <= 0) {
+            throw new IllegalArgumentException("Invalid permission ID");
+        }
 
-    /**
-     * Remove a permission from a specific role
-     * @param role
-     * @param permission
-     * @return
-     */
-    public void removePermission(Role role, Permission permission) {
-         rr.removePermission(role, permission);
+        Permission p = pr.getById(permission.getId());
+
+        if(p == null) {
+            throw new NotFoundException("Permission not found");
+        }
+
+        Role r = rr.getById(role.getId());
+
+        if(r == null) {
+            throw new NotFoundException("Role not found");
+        }
+
+        if(!r.getPermissions().contains(permission)) {
+            throw new ActionForbiddenException("Role: " + role.getName() + " does not have the permission " + permission.getName());
+        }
+
+        return rr.removePermission(role, permission);
     }
 }

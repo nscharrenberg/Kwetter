@@ -1,26 +1,21 @@
-/*
- * Copyright (c) 2019. Noah Scharrenberg
- */
-
 package repository.interfaces;
 
-import exception.StringToLongException;
-import exception.UsernameNotUniqueException;
-import model.User;
+import domain.Role;
+import domain.User;
+import exceptions.NameNotUniqueException;
 
 import java.util.List;
-import java.util.Set;
 
 public interface UserRepository {
-    List<User> getUsers();
-    User getUserById(int id);
-    User getUserByUsername(String username);
-    void create(User user) throws UsernameNotUniqueException, StringToLongException;
-    void follow(User user, User follower);
-    void unfollow(User user, User follower);
-    Set<User> getFollowersById(int id);
-    Set<User> getFollowersByUsername(String username);
-    Set<User> getFollowingById(int id);
-    Set<User> getFollowingByUsername(String username);
-    void update(User user) throws UsernameNotUniqueException, StringToLongException;
+    List<User> all();
+    User getById(int id);
+    User getByUsername(String username);
+    User getByEmail(String email);
+    User create(User user) throws NameNotUniqueException, ClassNotFoundException;
+    User update(User user) throws NameNotUniqueException;
+    boolean delete(User user) throws ClassNotFoundException;
+    User follow(User user, User toFollow) throws ClassNotFoundException, NameNotUniqueException;
+    User unfollow(User user, User toUnfollow) throws ClassNotFoundException, NameNotUniqueException;
+    boolean login(String username, String password);
+    User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException;
 }
