@@ -36,7 +36,7 @@ public class PermissionController extends Application {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(PermissionRequest request) {
-        Permission permission = new Permission(request.getName(), request.isCanCreate(), request.isCanRead(), request.isCanUpdate(), request.isCanRemove());
+        Permission permission = new Permission(request.getName());
 
         try {
             permissionService.create(permission);

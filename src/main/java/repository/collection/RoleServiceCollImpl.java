@@ -75,14 +75,14 @@ public class RoleServiceCollImpl implements RoleRepository {
     }
 
     @Override
-    public Role addPermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException {
+    public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ClassNotFoundException, NameNotUniqueException {
         Role result = Iterables.tryFind(roles, r -> role.getId() == r.getId()).orNull();
 
         if(result == null) {
             throw new ClassNotFoundException("Role with id: " + role.getId() + " and name: " + role.getName() + " could not be found");
         }
 
-        role.addPermission(permission);
+        role.addPermission(permission, canCreate, canRead, canUpdate, canDelete);
         return update(role);
     }
 

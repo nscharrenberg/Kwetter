@@ -124,7 +124,7 @@ public class RoleService {
      * @throws NameNotUniqueException
      * @throws ActionForbiddenException
      */
-    Role addPermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
+    Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
         if(role.getId() <= 0) {
             throw new IllegalArgumentException("Invalid role ID");
         }
@@ -149,7 +149,7 @@ public class RoleService {
             throw new ActionForbiddenException("Role: " + role.getName() + " already has the permission " + permission.getName());
         }
 
-        return rr.addPermission(role, permission);
+        return rr.addPermission(role, permission, canCreate, canRead, canUpdate, canDelete);
     }
 
     /**

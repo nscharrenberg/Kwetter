@@ -1,6 +1,8 @@
 package domain;
 
 import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "permissions")
@@ -18,36 +20,11 @@ public class Permission {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private boolean canCreate;
-
-    @Column(nullable = false)
-    private boolean canRead;
-
-    @Column(nullable = false)
-    private boolean canUpdate;
-
-    @Column(nullable = false)
-    private boolean canRemove;
-
     public Permission() {
     }
 
-    public Permission(int id, String name, boolean canCreate, boolean canRead, boolean canUpdate, boolean canRemove) {
-        this.id = id;
+    public Permission(String name) {
         this.name = name;
-        this.canCreate = canCreate;
-        this.canRead = canRead;
-        this.canUpdate = canUpdate;
-        this.canRemove = canRemove;
-    }
-
-    public Permission(String name, boolean canCreate, boolean canRead, boolean canUpdate, boolean canRemove) {
-        this.name = name;
-        this.canCreate = canCreate;
-        this.canRead = canRead;
-        this.canUpdate = canUpdate;
-        this.canRemove = canRemove;
     }
 
     public int getId() {
@@ -66,35 +43,19 @@ public class Permission {
         this.name = name;
     }
 
-    public boolean isCanCreate() {
-        return canCreate;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Permission permission = (Permission) o;
+        return Objects.equals(name, permission.name);
     }
 
-    public void setCanCreate(boolean canCreate) {
-        this.canCreate = canCreate;
-    }
-
-    public boolean isCanRead() {
-        return canRead;
-    }
-
-    public void setCanRead(boolean canRead) {
-        this.canRead = canRead;
-    }
-
-    public boolean isCanUpdate() {
-        return canUpdate;
-    }
-
-    public void setCanUpdate(boolean canUpdate) {
-        this.canUpdate = canUpdate;
-    }
-
-    public boolean isCanRemove() {
-        return canRemove;
-    }
-
-    public void setCanRemove(boolean canRemove) {
-        this.canRemove = canRemove;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

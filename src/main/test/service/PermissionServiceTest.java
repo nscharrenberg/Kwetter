@@ -56,13 +56,9 @@ public class PermissionServiceTest {
     public void createPermission() {
         String name = "Tweet";
         try {
-            Permission permission = permissionService.create(new Permission(name, true, true, false, false));
+            Permission permission = permissionService.create(new Permission(name));
 
             assertEquals(name, permission.getName());
-            assertTrue(permission.isCanCreate());
-            assertTrue(permission.isCanRead());
-            assertFalse(permission.isCanUpdate());
-            assertFalse(permission.isCanRemove());
 
         } catch (NameNotUniqueException | ClassNotFoundException e) {
             e.printStackTrace();

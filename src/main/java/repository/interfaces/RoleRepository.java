@@ -13,6 +13,6 @@ public interface RoleRepository {
     Role create(Role role) throws NameNotUniqueException, ClassNotFoundException;
     Role update(Role role) throws NameNotUniqueException;
     boolean delete(Role role) throws ClassNotFoundException;
-    Role addPermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException;
+    Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ClassNotFoundException, NameNotUniqueException;
     Role removePermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException;
 }

@@ -50,8 +50,8 @@ public class RoleServiceJPAImpl implements RoleRepository {
     }
 
     @Override
-    public Role addPermission(Role role, Permission permission) {
-        role.addPermission(permission);
+    public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) {
+        role.addPermission(permission, canCreate, canRead, canUpdate, canDelete);
         return em.merge(role);
     }
 
