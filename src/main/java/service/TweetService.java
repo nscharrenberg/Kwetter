@@ -48,7 +48,7 @@ public class TweetService {
             throw new IllegalArgumentException("username can not be empty");
         }
 
-        List<Tweet> tweets = tr.getByAuthorName(username);
+        List<Tweet> tweets = tr.getByAuthorId(ur.getByUsername(username).getId());
 
         if(tweets == null || tweets.isEmpty()) {
             throw new NotFoundException("No tweets not found");

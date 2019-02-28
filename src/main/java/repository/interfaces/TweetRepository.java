@@ -10,7 +10,6 @@ import java.util.Set;
 public interface TweetRepository {
     List<Tweet> all();
     Tweet getById(int id);
-    List<Tweet> getByAuthorName(String username);
     List<Tweet> getByAuthorId(int id);
     List<Tweet> getByCreatedDate(Date date);
     Tweet create(Tweet tweet) throws ClassNotFoundException;

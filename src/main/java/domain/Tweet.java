@@ -10,7 +10,8 @@ import java.util.Set;
 @NamedQueries({
         @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t"),
         @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
-        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author")
+        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author"),
+        @NamedQuery(name = "tweet.getTweetByDate", query = "SELECT t FROM Tweet t WHERE t.createdAt = :createdAt")
 })
 public class Tweet {
 

@@ -34,11 +34,6 @@ public class TweetServiceCollImpl implements TweetRepository {
     }
 
     @Override
-    public List<Tweet> getByAuthorName(String username) {
-        return tweets.stream().filter(tweet -> username.equals(tweet.getAuthor().getUsername())).collect(Collectors.toList());
-    }
-
-    @Override
     public List<Tweet> getByAuthorId(int id) {
         return tweets.stream().filter(tweet -> id == tweet.getAuthor().getId()).collect(Collectors.toList());
     }
