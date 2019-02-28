@@ -5,6 +5,7 @@ import domain.User;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface TweetRepository {
     List<Tweet> all();
@@ -17,6 +18,4 @@ public interface TweetRepository {
     boolean delete(Tweet tweet) throws ClassNotFoundException;
     Tweet like(Tweet tweet, User user) throws ClassNotFoundException;
     Tweet unlike(Tweet tweet, User user) throws ClassNotFoundException;
-    Tweet addMention(Tweet tweet, User user) throws ClassNotFoundException;
-    Tweet removeMention(Tweet tweet, User user) throws ClassNotFoundException;
 }

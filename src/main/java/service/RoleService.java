@@ -18,8 +18,8 @@ public class RoleService {
     @Inject @SelectedContext
     private RoleRepository rr;
 
-    @Inject @SelectedContext
-    private PermissionRepository pr;
+    @Inject
+    private PermissionService pr;
 
     /**
      * Get all roles

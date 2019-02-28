@@ -12,6 +12,7 @@ import javax.enterprise.inject.Default;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Default
@@ -96,30 +97,6 @@ public class TweetServiceCollImpl implements TweetRepository {
         }
 
         tweet.removeLike(user);
-        return update(tweet);
-    }
-
-    @Override
-    public Tweet addMention(Tweet tweet, User user) throws ClassNotFoundException {
-        Tweet result = Iterables.tryFind(tweets, t -> tweet.getId() == t.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("tweet with id: " + tweet.getId() + " and message: " + tweet.getAuthor() + " could not be found");
-        }
-
-        tweet.addMention(user);
-        return update(tweet);
-    }
-
-    @Override
-    public Tweet removeMention(Tweet tweet, User user) throws ClassNotFoundException {
-        Tweet result = Iterables.tryFind(tweets, t -> tweet.getId() == t.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("tweet with id: " + tweet.getId() + " and message: " + tweet.getAuthor() + " could not be found");
-        }
-
-        tweet.removeMention(user);
         return update(tweet);
     }
 }

@@ -21,8 +21,8 @@ public class UserService {
     @Inject @SelectedContext
     private UserRepository ur;
 
-    @Inject @SelectedContext
-    private RoleRepository rr;
+    @Inject
+    private RoleService rr;
 
     /**
      * Get all Users
