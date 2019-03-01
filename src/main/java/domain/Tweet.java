@@ -22,7 +22,7 @@ public class Tweet {
     @Column(nullable = false, length = 140)
     private String message;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "author", nullable = false)
     private User author;
 
@@ -34,7 +34,7 @@ public class Tweet {
                     CascadeType.PERSIST,
                     CascadeType.MERGE,
                     CascadeType.DETACH
-            }, fetch = FetchType.EAGER
+            }
     )
     @JoinTable(
             name = "mentions",
@@ -48,7 +48,7 @@ public class Tweet {
                     CascadeType.PERSIST,
                     CascadeType.MERGE,
                     CascadeType.DETACH
-            }, fetch = FetchType.EAGER
+            }
     )
     @JoinTable(
             name = "likes",

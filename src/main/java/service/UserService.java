@@ -105,18 +105,19 @@ public class UserService {
      * @throws InvalidContentException
      */
     public User create(User user) throws NameNotUniqueException, CreationFailedException, InvalidContentException, NoSuchAlgorithmException, NotFoundException {
-        if(user.getUsername().isEmpty()) {
+        if(user.getUsername().isEmpty() || user.getUsername() == null) {
             throw new InvalidContentException("username can not be empty");
+        }
+
+        if(user.getEmail().isEmpty() || user.getEmail() == null) {
+            throw new InvalidContentException("email can not be empty");
         }
 
         if(ur.getByUsername(user.getUsername()) != null) {
             throw new NameNotUniqueException("Username already taken");
         }
 
-        if(user.getRole() == null) {
-            user.setRole(rr.getByName("member"));
-        }
-
+        user.setRole(rr.getByName("member"));
         user.setPassword(tempSha256Encryption(user.getPassword()));
         User created = ur.create(user);
 

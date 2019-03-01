@@ -23,13 +23,13 @@ public class TweetServiceJPAImpl implements TweetRepository {
 
     @Override
     public List<Tweet> all() {
-        return em.createNamedQuery("tweet.getAllTweets", Tweet.class).getResultList();
+        return em.createQuery("from Tweet ", Tweet.class).getResultList();
     }
 
     @Override
     public Tweet getById(int id) {
         try {
-            return em.createNamedQuery("tweet.getTweetById", Tweet.class).setParameter("id", id).getSingleResult();
+            return em.find(Tweet.class, id);
         } catch(Exception e) {
             e.printStackTrace();
             return null;

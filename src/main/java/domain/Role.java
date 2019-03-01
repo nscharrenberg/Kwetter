@@ -1,5 +1,6 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;
@@ -16,6 +17,29 @@ import java.util.Set;
         @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
         @NamedQuery(name = "role.getRoleByName", query = "SELECT r FROM Role r WHERE r.name = :name")
 })
+@NamedEntityGraph(
+        name = "role-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode("name"),
+                @NamedAttributeNode(value = "permission", subgraph = "permission-subgraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "permission-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("name"),
+                                @NamedAttributeNode(value = "roles", subgraph = "roles-subgraph"),
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "roles-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("name")
+                        }
+                )
+        }
+)
 public class Role {
 
     @Id
@@ -25,15 +49,17 @@ public class Role {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     @JoinTable(
             name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "roles" })
     private Set<Permission> permissions;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "role")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "role" })
     private Set<User> users;
 
     public Role() {

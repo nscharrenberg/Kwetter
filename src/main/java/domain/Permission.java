@@ -7,10 +7,26 @@ import java.util.Set;
 @Entity
 @Table(name = "permissions")
 @NamedQueries({
-        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p"),
-        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p WHERE p.id = :id"),
-        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p WHERE p.name = :name")
+        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p JOIN FETCH p.roles r"),
+        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.id = :id"),
+        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.name = :name")
 })
+@NamedEntityGraph(
+        name = "permission-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode("name"),
+                @NamedAttributeNode(value = "roles", subgraph = "roles-subgraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "roles-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("name")
+                        }
+                )
+        }
+)
 public class Permission {
 
     @Id
@@ -20,7 +36,7 @@ public class Permission {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "permissions")
     private Set<Role> roles;
 
     public Permission() {

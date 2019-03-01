@@ -23,13 +23,13 @@ public class UserServiceJPAImpl implements UserRepository {
 
     @Override
     public List<User> all() {
-        return em.createNamedQuery("user.getAllUsers", User.class).getResultList();
+        return em.createQuery("from User ", User.class).getResultList();
     }
 
     @Override
     public User getById(int id) {
         try {
-            return em.createNamedQuery("user.getUserById", User.class).setParameter("id", id).getSingleResult();
+            return em.find(User.class, id);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -39,7 +39,7 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public User getByUsername(String username) {
         try {
-            return em.createNamedQuery("user.getUserByUsername", User.class).setParameter("username", username).getSingleResult();
+            return em.find(User.class, username);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -49,7 +49,7 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public User getByEmail(String email) {
         try {
-            return em.createNamedQuery("user.getUserByEmail", User.class).setParameter("email", email).getSingleResult();
+            return em.find(User.class, email);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

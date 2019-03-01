@@ -1,6 +1,7 @@
 package domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -39,26 +40,27 @@ public class User {
     private double latitude;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "users" })
     private Role role;
 
     @ManyToMany(
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
-            }, fetch = FetchType.EAGER
+            }
     )
     @JoinTable(
             name = "followers",
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "followers", "following" })
     private Set<User> followers;
 
     @ManyToMany(
-            mappedBy = "followers",
-            fetch = FetchType.EAGER
+            mappedBy = "followers"
     )
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "followers", "following" })
     private Set<User> following;
 
     public User() {
@@ -128,6 +130,9 @@ public class User {
         this.website = website;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.role = null;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
     }
 
     public int getId() {

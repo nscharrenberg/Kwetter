@@ -6,7 +6,7 @@ import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -22,7 +22,7 @@ public class PermissionServiceJPAImpl implements PermissionRepository {
 
     @Override
     public List<Permission> all() {
-        return em.createNamedQuery("permission.getAllPermissions", Permission.class).getResultList();
+        return em.createQuery("from Permission ", Permission.class).getResultList();
     }
 
     @Override

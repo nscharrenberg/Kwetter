@@ -21,13 +21,13 @@ public class RoleServiceJPAImpl implements RoleRepository {
 
     @Override
     public List<Role> all() {
-        return em.createNamedQuery("role.getAllRoles", Role.class).getResultList();
+        return em.createQuery("from Role ", Role.class).getResultList();
     }
 
     @Override
     public Role getById(int id) {
         try {
-            return em.createNamedQuery("role.getRoleById", Role.class).setParameter("id", id).getSingleResult();
+            return em.find(Role.class, id);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -38,7 +38,7 @@ public class RoleServiceJPAImpl implements RoleRepository {
     @Override
     public Role getByName(String name) {
         try {
-            return em.createNamedQuery("role.getRoleByName", Role.class).setParameter("name", name).getSingleResult();
+            return em.find(Role.class, name);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

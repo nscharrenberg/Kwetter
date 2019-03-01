@@ -78,12 +78,12 @@ public class UserServiceTest {
         double longitude = 123.123;
         double latitude = 654.23;
         try {
-            User user = userService.create(new User(name, email, password, biography, website, longitude, latitude, new Role("member")));
+            User user = userService.create(new User(name, email, password, biography, website, longitude, latitude));
             assertEquals(name, user.getUsername());
             assertEquals(email, user.getEmail());
             assertEquals(biography, user.getBiography());
             assertEquals(website, user.getWebsite());
-        } catch (NameNotUniqueException | NoSuchAlgorithmException | CreationFailedException | InvalidContentException e) {
+        } catch (NameNotUniqueException | NoSuchAlgorithmException | CreationFailedException | InvalidContentException | NotFoundException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
