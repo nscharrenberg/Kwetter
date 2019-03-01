@@ -120,6 +120,16 @@ public class User {
         this.following = new HashSet<>();
     }
 
+    public User(String username, String email, String password, String biography, String website, double longitude, double latitude) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.biography = biography;
+        this.website = website;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
     public int getId() {
         return id;
     }
