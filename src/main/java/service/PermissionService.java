@@ -2,17 +2,20 @@ package service;
 
 import com.sun.nio.sctp.IllegalUnbindException;
 import domain.Permission;
-import exceptions.NameNotUniqueException;
+import exceptions.InvalidContentException;
 import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
-import repository.interfaces.SelectedContext;
 
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Context;
 import java.util.List;
 
 public class PermissionService {
+
+    @Context
+    private HttpServletRequest servletRequest;
 
     @Inject @JPA
     private PermissionRepository pr;
@@ -29,10 +32,12 @@ public class PermissionService {
      * Get a permission by its id
      * @param id - the id of the permission
      * @return a permission
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public Permission getById(int id) throws IllegalUnbindException, NotFoundException {
+    public Permission getById(int id) throws InvalidContentException, NotFoundException {
         if(id <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
         }
 
         Permission permission = pr.getById(id);
@@ -48,10 +53,12 @@ public class PermissionService {
      * Get a permission by its name
      * @param name - the name of the permission
      * @return a permission
+     * @throws IllegalArgumentException
+     * @throws NotFoundException
      */
-    public Permission getByName(String name) throws IllegalArgumentException, NotFoundException {
+    public Permission getByName(String name) throws InvalidContentException, NotFoundException {
         if(name.isEmpty()) {
-            throw new IllegalArgumentException("name can not be empty");
+            throw new InvalidContentException("name can not be empty");
         }
 
         Permission permission = pr.getByName(name);
@@ -67,12 +74,11 @@ public class PermissionService {
      * Create a new permission
      * @param permission - the permission information
      * @return the newly created permission
-     * @throws NameNotUniqueException
-     * @throws ClassNotFoundException
+     * @throws InvalidContentException
      */
-    public Permission create(Permission permission) throws NameNotUniqueException, ClassNotFoundException, IllegalArgumentException {
+    public Permission create(Permission permission) throws InvalidContentException {
         if(permission.getName().isEmpty()) {
-            throw new IllegalArgumentException("name can not be empty");
+            throw new InvalidContentException("name can not be empty");
         }
 
         return pr.create(permission);
@@ -82,15 +88,15 @@ public class PermissionService {
      * Update an existing permission
      * @param permission - the new permission information with an existing permission id
      * @return the updated permission
-     * @throws NameNotUniqueException
+     * @throws InvalidContentException
      */
-    public Permission update(Permission permission) throws NameNotUniqueException, IllegalArgumentException {
+    public Permission update(Permission permission) throws InvalidContentException {
         if(permission.getName().isEmpty()) {
-            throw new IllegalArgumentException("name can not be empty");
+            throw new InvalidContentException("name can not be empty");
         }
 
         if(permission.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
         }
 
         return pr.update(permission);
@@ -100,11 +106,11 @@ public class PermissionService {
      * Delete an existing permission
      * @param permission - the permission to be deleted
      * @return a boolean wether or not the permission is deleted.
-     * @throws ClassNotFoundException
+     * @throws InvalidContentException
      */
-    public boolean delete(Permission permission) throws ClassNotFoundException, IllegalArgumentException {
+    public boolean delete(Permission permission) throws InvalidContentException {
         if(permission.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
         }
 
         return pr.delete(permission);

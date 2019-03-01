@@ -2,6 +2,7 @@ package controllers;
 
 import controllers.viewModels.PermissionViewModel;
 import domain.Permission;
+import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
 import service.PermissionService;
 
@@ -35,15 +36,15 @@ public class PermissionController extends Application {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(PermissionViewModel request) {
-        Permission permission = new Permission(request.getName());
-
         try {
+            Permission permission = new Permission(request.getName());
             permissionService.create(permission);
             return Response.status(Response.Status.CREATED).entity(permission).build();
-        } catch (NameNotUniqueException | ClassNotFoundException e) {
+        } catch (InvalidContentException e) {
             e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
+
     }
 
     @GET
@@ -53,11 +54,9 @@ public class PermissionController extends Application {
         try {
             Permission permission = permissionService.getById(id);
             return Response.status(Response.Status.OK).entity(permission).build();
-        } catch (NotFoundException e) {
+        } catch (InvalidContentException e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
     }
 
@@ -68,11 +67,9 @@ public class PermissionController extends Application {
         try {
             Permission permission = permissionService.getByName(name);
             return Response.status(Response.Status.OK).entity(permission).build();
-        } catch (NotFoundException e) {
+        } catch (InvalidContentException e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
     }
 
@@ -81,18 +78,14 @@ public class PermissionController extends Application {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     public Response update(@PathParam("id") int id, PermissionViewModel request) {
-        Permission permission = new Permission(request.getName());
-        permission.setId(id);
-
         try {
+            Permission permission = new Permission(request.getName());
+            permission.setId(id);
             permissionService.update(permission);
-            return Response.status(Response.Status.CREATED).entity(permission).build();
-        } catch (NameNotUniqueException e) {
+            return Response.status(Response.Status.OK).entity(permission).build();
+        } catch (InvalidContentException e) {
             e.printStackTrace();
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        } catch(Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
     }
 
@@ -104,12 +97,9 @@ public class PermissionController extends Application {
             Permission permission = permissionService.getById(id);
             permissionService.delete(permission);
             return Response.status(Response.Status.OK).entity("Permission " + permission.getName() + " has been deleted").build();
-        } catch (NotFoundException e) {
+        } catch (InvalidContentException e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         }
     }
 }

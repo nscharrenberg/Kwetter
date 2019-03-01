@@ -9,7 +9,7 @@ public interface PermissionRepository {
     List<Permission> all();
     Permission getById(int id);
     Permission getByName(String name);
-    Permission create(Permission permission) throws NameNotUniqueException, ClassNotFoundException;
-    Permission update(Permission permission) throws NameNotUniqueException;
-    boolean delete(Permission permission) throws ClassNotFoundException, IllegalArgumentException;
+    Permission create(Permission permission);
+    Permission update(Permission permission);
+    boolean delete(Permission permission);
 }
