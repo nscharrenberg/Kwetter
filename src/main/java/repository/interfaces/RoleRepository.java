@@ -10,9 +10,9 @@ public interface RoleRepository {
     List<Role> all();
     Role getById(int id);
     Role getByName(String name);
-    Role create(Role role) throws NameNotUniqueException, ClassNotFoundException;
-    Role update(Role role) throws NameNotUniqueException;
-    boolean delete(Role role) throws ClassNotFoundException;
-    Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ClassNotFoundException, NameNotUniqueException;
-    Role removePermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException;
+    Role create(Role role);
+    Role update(Role role);
+    boolean delete(Role role);
+    Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete);
+    Role removePermission(Role role, Permission permission);
 }

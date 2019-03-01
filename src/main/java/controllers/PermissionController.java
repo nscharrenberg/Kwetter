@@ -2,6 +2,7 @@ package controllers;
 
 import controllers.viewModels.PermissionViewModel;
 import domain.Permission;
+import exceptions.CreationFailedException;
 import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
 import service.PermissionService;
@@ -43,6 +44,12 @@ public class PermissionController extends Application {
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
+        } catch (CreationFailedException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (NameNotUniqueException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
 
     }
@@ -86,6 +93,8 @@ public class PermissionController extends Application {
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
+        } catch (NameNotUniqueException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
     }
 

@@ -2,7 +2,10 @@ package service;
 
 import com.sun.nio.sctp.IllegalUnbindException;
 import domain.Permission;
+import domain.User;
+import exceptions.CreationFailedException;
 import exceptions.InvalidContentException;
+import exceptions.NameNotUniqueException;
 import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 
@@ -75,13 +78,24 @@ public class PermissionService {
      * @param permission - the permission information
      * @return the newly created permission
      * @throws InvalidContentException
+     * @throws NameNotUniqueException
+     * @throws CreationFailedException
      */
-    public Permission create(Permission permission) throws InvalidContentException {
+    public Permission create(Permission permission) throws InvalidContentException, NameNotUniqueException, CreationFailedException {
         if(permission.getName().isEmpty()) {
             throw new InvalidContentException("name can not be empty");
         }
 
-        return pr.create(permission);
+        if(pr.getByName(permission.getName()) != null) {
+            throw new NameNotUniqueException("Permission with name " + permission.getName() + " already exists.");
+        }
+
+        Permission created = pr.create(permission);
+        if(created != null) {
+            return permission;
+        } else {
+            throw new CreationFailedException("Could not create a new permission due to an unknown error");
+        }
     }
 
     /**
@@ -89,8 +103,9 @@ public class PermissionService {
      * @param permission - the new permission information with an existing permission id
      * @return the updated permission
      * @throws InvalidContentException
+     * @throws NameNotUniqueException
      */
-    public Permission update(Permission permission) throws InvalidContentException {
+    public Permission update(Permission permission) throws InvalidContentException, NameNotUniqueException {
         if(permission.getName().isEmpty()) {
             throw new InvalidContentException("name can not be empty");
         }
@@ -98,6 +113,13 @@ public class PermissionService {
         if(permission.getId() <= 0) {
             throw new InvalidContentException("Invalid ID");
         }
+
+        Permission uniquePermission = pr.getByName(permission.getName());
+        if(uniquePermission != null && permission.getId() != uniquePermission.getId()) {
+            throw new NameNotUniqueException("Permission with name " + permission.getName() + " already exists.");
+        }
+
+
 
         return pr.update(permission);
     }
@@ -107,10 +129,15 @@ public class PermissionService {
      * @param permission - the permission to be deleted
      * @return a boolean wether or not the permission is deleted.
      * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public boolean delete(Permission permission) throws InvalidContentException {
+    public boolean delete(Permission permission) throws InvalidContentException, NotFoundException {
         if(permission.getId() <= 0) {
             throw new InvalidContentException("Invalid ID");
+        }
+
+        if(pr.getById(permission.getId()) == null) {
+            throw new NotFoundException("Permission not found");
         }
 
         return pr.delete(permission);

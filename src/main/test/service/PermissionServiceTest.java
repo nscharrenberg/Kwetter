@@ -3,6 +3,8 @@ package service;
 import domain.Permission;
 import domain.Tweet;
 import domain.User;
+import exceptions.CreationFailedException;
+import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +62,7 @@ public class PermissionServiceTest {
 
             assertEquals(name, permission.getName());
 
-        } catch (NameNotUniqueException | ClassNotFoundException e) {
+        } catch (NameNotUniqueException | InvalidContentException | CreationFailedException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -82,7 +84,7 @@ public class PermissionServiceTest {
             Permission result = permissionService.update(permissoin);
             assertEquals(id, result.getId());
             assertEquals(name, result.getName());
-        } catch (NameNotUniqueException e) {
+        } catch (NameNotUniqueException | InvalidContentException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -99,7 +101,7 @@ public class PermissionServiceTest {
         try {
             boolean result = permissionService.delete(permissoin);
             assertTrue(result);
-        }catch (ClassNotFoundException e) {
+        } catch (InvalidContentException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }

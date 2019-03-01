@@ -2,6 +2,7 @@ package service;
 
 import domain.Role;
 import domain.User;
+import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
 import repository.interfaces.RoleRepository;
 import repository.interfaces.SelectedContext;
@@ -226,7 +227,7 @@ public class UserService {
      * @throws ClassNotFoundException
      * @throws NameNotUniqueException
      */
-    public User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException {
+    public User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException, exceptions.NotFoundException, InvalidContentException {
         if(user.getId() <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
         }

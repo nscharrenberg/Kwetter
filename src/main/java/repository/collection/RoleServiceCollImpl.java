@@ -36,64 +36,33 @@ public class RoleServiceCollImpl implements RoleRepository {
     }
 
     @Override
-    public Role create(Role role) throws NameNotUniqueException, ClassNotFoundException {
-        Role result = Iterables.tryFind(roles, r -> role.getName().equals(r.getName())).orNull();
-
-        if(result != null) {
-            throw new NameNotUniqueException("Role name already exists.");
-        }
-
+    public Role create(Role role) {
         if(roles.add(role)) {
             return role;
         } else {
-            throw new ClassNotFoundException("Failed to create role");
+            return null;
         }
     }
 
     @Override
-    public Role update(Role role) throws NameNotUniqueException {
-        Role result = Iterables.tryFind(roles, r -> role.getName().equals(r.getName()) && role.getId() == r.getId()).orNull();
-
-        if(result != null) {
-            throw new NameNotUniqueException("Role name already exists.");
-        }
-
+    public Role update(Role role) {
         int index = Iterables.indexOf(roles, r -> role.getId() == r.getId());
-
         return roles.set(index, role);
     }
 
     @Override
-    public boolean delete(Role role) throws ClassNotFoundException {
-        Role result = Iterables.tryFind(roles, r -> role.getId() == r.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("Role with id: " + role.getId() + " and name: " + role.getName() + " could not be found");
-        }
-
+    public boolean delete(Role role) {
         return roles.remove(role);
     }
 
     @Override
-    public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ClassNotFoundException, NameNotUniqueException {
-        Role result = Iterables.tryFind(roles, r -> role.getId() == r.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("Role with id: " + role.getId() + " and name: " + role.getName() + " could not be found");
-        }
-
+    public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) {
         role.addPermission(permission, canCreate, canRead, canUpdate, canDelete);
         return update(role);
     }
 
     @Override
-    public Role removePermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException {
-        Role result = Iterables.tryFind(roles, r -> role.getId() == r.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("Role with id: " + role.getId() + " and name: " + role.getName() + " could not be found");
-        }
-
+    public Role removePermission(Role role, Permission permission) {
         role.removePermission(permission);
         return update(role);
     }
