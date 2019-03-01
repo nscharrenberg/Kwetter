@@ -2,15 +2,14 @@ package service;
 
 import domain.Role;
 import domain.User;
+import exceptions.CreationFailedException;
 import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
-import repository.interfaces.RoleRepository;
-import repository.interfaces.SelectedContext;
+import exceptions.NotFoundException;
+import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.ws.rs.NotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,7 +18,7 @@ import java.util.List;
 
 public class UserService {
 
-    @Inject @SelectedContext
+    @Inject @JPA
     private UserRepository ur;
 
     @Inject
@@ -37,10 +36,12 @@ public class UserService {
      * Get a user by its id
      * @param id - the id of the user
      * @return a user
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public User getById(int id) {
+    public User getById(int id) throws InvalidContentException, NotFoundException {
         if(id <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
         }
 
         User user = ur.getById(id);
@@ -56,10 +57,12 @@ public class UserService {
      * Get a user by its name
      * @param username - the username of the user
      * @return a user
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public User getByUsername(String username) {
+    public User getByUsername(String username) throws InvalidContentException, NotFoundException {
         if(username.isEmpty()) {
-            throw new IllegalArgumentException("username can not be empty");
+            throw new InvalidContentException("username can not be empty");
         }
 
         User user = ur.getByUsername(username);
@@ -75,10 +78,12 @@ public class UserService {
      * Get a user by its email
      * @param email - the email of the user
      * @return a user
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public User getByEmail(String email) {
+    public User getByEmail(String email) throws InvalidContentException, NotFoundException {
         if(email.isEmpty()) {
-            throw new IllegalArgumentException("username can not be empty");
+            throw new InvalidContentException("username can not be empty");
         }
 
         User user = ur.getByEmail(email);
@@ -95,12 +100,13 @@ public class UserService {
      * @param user - the user information
      * @return the newly created user
      * @throws NameNotUniqueException
-     * @throws ClassNotFoundException
+     * @throws CreationFailedException
      * @throws NoSuchAlgorithmException
+     * @throws InvalidContentException
      */
-    public User create(User user) throws NameNotUniqueException, NoSuchAlgorithmException, ClassNotFoundException {
+    public User create(User user) throws NameNotUniqueException, CreationFailedException, InvalidContentException, NoSuchAlgorithmException {
         if(user.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("username can not be empty");
+            throw new InvalidContentException("username can not be empty");
         }
 
         if(ur.getByUsername(user.getUsername()) != null) {
@@ -108,7 +114,13 @@ public class UserService {
         }
 
         user.setPassword(tempSha256Encryption(user.getPassword()));
-        return ur.create(user);
+        User created = ur.create(user);
+
+        if(created != null) {
+            return created;
+        } else {
+            throw new CreationFailedException("Could not create a new user due to an unknown error");
+        }
     }
 
     /**
@@ -117,22 +129,27 @@ public class UserService {
      * @return the updated user
      * @throws NameNotUniqueException
      */
-    public User update(User user) throws NameNotUniqueException {
+    public User update(User user) throws NameNotUniqueException, InvalidContentException, NotFoundException {
         if(user.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("username can not be empty");
+            throw new InvalidContentException("username can not be empty");
         }
 
         if(user.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
         }
 
         if(ur.getById(user.getId()) == null) {
             throw new NotFoundException("User not found");
         }
 
-        User result = ur.getByUsername(user.getUsername());
-        if(result != null && result.getId() != user.getId()) {
-            throw new NameNotUniqueException("Username already taken");
+        User usernameResult = ur.getByUsername(user.getUsername());
+        if(usernameResult != null && usernameResult.getId() != user.getId()) {
+            throw new NameNotUniqueException("User with name " + user.getUsername() + " already exists.");
+        }
+
+        User emailResult = ur.getByEmail(user.getUsername());
+        if(emailResult != null && emailResult.getId() != user.getId()) {
+            throw new NameNotUniqueException("User with email " + user.getEmail() + " already exists.");
         }
 
         return ur.update(user);
@@ -142,11 +159,16 @@ public class UserService {
      * Delete an existing user
      * @param user - the user to be deleted
      * @return a boolean wether or not the user is deleted.
-     * @throws ClassNotFoundException
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public boolean delete(User user) throws ClassNotFoundException {
+    public boolean delete(User user) throws InvalidContentException, NotFoundException {
         if(user.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
+        }
+
+        if(ur.getById(user.getId()) == null) {
+            throw new NotFoundException("User not found");
         }
 
         return ur.delete(user);
@@ -157,16 +179,16 @@ public class UserService {
      * @param user - the user that wants to follow another user
      * @param toFollow - the user that is being followed
      * @return the user
-     * @throws ClassNotFoundException
-     * @throws NameNotUniqueException
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public User follow(User user, User toFollow) throws ClassNotFoundException, NameNotUniqueException {
+    public User follow(User user, User toFollow) throws InvalidContentException, NotFoundException {
         if(user.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid user ID");
+            throw new InvalidContentException("Invalid user ID");
         }
 
         if(toFollow.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID for User you are trying to follow");
+            throw new InvalidContentException("Invalid ID for User you are trying to follow");
         }
 
         if(ur.getById(user.getId()) == null) {
@@ -185,16 +207,16 @@ public class UserService {
      * @param user - the user that wants to unfollow another user
      * @param toUnfollow - the user that needs to be unfollowed
      * @return the user
-     * @throws ClassNotFoundException
-     * @throws NameNotUniqueException
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public User unfollow(User user, User toUnfollow) throws ClassNotFoundException, NameNotUniqueException {
+    public User unfollow(User user, User toUnfollow) throws NotFoundException, InvalidContentException {
         if(user.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid user ID");
+            throw new InvalidContentException("Invalid user ID");
         }
 
         if(toUnfollow.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID for User you are trying to unfollow");
+            throw new InvalidContentException("Invalid ID for User you are trying to unfollow");
         }
 
         if(ur.getById(user.getId()) == null) {
@@ -224,10 +246,10 @@ public class UserService {
      * @param user - the user
      * @param role - the role you want to add
      * @return the user
-     * @throws ClassNotFoundException
-     * @throws NameNotUniqueException
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException, exceptions.NotFoundException, InvalidContentException {
+    public User changeRole(User user, Role role) throws NotFoundException, InvalidContentException {
         if(user.getId() <= 0) {
             throw new IllegalArgumentException("Invalid user ID");
         }

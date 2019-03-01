@@ -5,6 +5,8 @@ import domain.Role;
 import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.RoleRepository;
+
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class RoleService {
      * Get all roles
      * @return a list of roles
      */
-    List<Role> all() {
+    public List<Role> all() {
         return rr.all();
     }
 
@@ -31,7 +33,7 @@ public class RoleService {
      * @throws NotFoundException
      * @throws InvalidContentException
      */
-    Role getById(int id) throws NotFoundException, InvalidContentException {
+    public Role getById(int id) throws NotFoundException, InvalidContentException {
         if(id <= 0) {
             throw new InvalidContentException("Invalid ID");
         }
@@ -52,7 +54,7 @@ public class RoleService {
      * @throws InvalidContentException
      * @throws NotFoundException
      */
-    Role getByName(String name) throws InvalidContentException, NotFoundException {
+    public Role getByName(String name) throws InvalidContentException, NotFoundException {
         if(name.isEmpty()) {
             throw new InvalidContentException("name can not be empty");
         }
@@ -74,7 +76,7 @@ public class RoleService {
      * @throws NameNotUniqueException
      * @throws CreationFailedException
      */
-    Role create(Role role) throws InvalidContentException, NameNotUniqueException, CreationFailedException {
+    public Role create(Role role) throws InvalidContentException, NameNotUniqueException, CreationFailedException {
         if(role.getName().isEmpty()) {
             throw new InvalidContentException("name can not be empty");
         }
@@ -97,14 +99,20 @@ public class RoleService {
      * @param role - the new role information with an existing role id
      * @return the updated role
      * @throws InvalidContentException
+     * @throws NameNotUniqueException
+     * @throws NotFoundException
      */
-    Role update(Role role) throws InvalidContentException, NameNotUniqueException {
+    public Role update(Role role) throws InvalidContentException, NameNotUniqueException, NotFoundException {
         if(role.getName().isEmpty()) {
             throw new InvalidContentException("name can not be empty");
         }
 
         if(role.getId() <= 0) {
             throw new InvalidContentException("Invalid ID");
+        }
+
+        if(rr.getById(role.getId()) == null) {
+            throw new NotFoundException("Role not found");
         }
 
         Role uniqueRole = rr.getByName(role.getName());
@@ -122,7 +130,7 @@ public class RoleService {
      * @throws InvalidContentException
      * @throws NotFoundException
      */
-    boolean delete(Role role) throws InvalidContentException, NotFoundException {
+    public boolean delete(Role role) throws InvalidContentException, NotFoundException {
         if(role.getId() <= 0) {
             throw new InvalidContentException("Invalid ID");
         }
@@ -144,7 +152,7 @@ public class RoleService {
      * @throws ActionForbiddenException
      * @throws NotFoundException
      */
-    Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ActionForbiddenException, InvalidContentException, NotFoundException {
+    public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ActionForbiddenException, InvalidContentException, NotFoundException {
         if(role.getId() <= 0) {
             throw new InvalidContentException("Invalid role ID");
         }
@@ -181,7 +189,7 @@ public class RoleService {
      * @throws ActionForbiddenException
      * @throws NotFoundException
      */
-    Role removePermission(Role role, Permission permission) throws ActionForbiddenException, InvalidContentException, NotFoundException {
+    public Role removePermission(Role role, Permission permission) throws ActionForbiddenException, InvalidContentException, NotFoundException {
         if(role.getId() <= 0) {
             throw new InvalidContentException("Invalid role ID");
         }

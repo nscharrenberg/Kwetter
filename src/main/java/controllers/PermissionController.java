@@ -21,9 +21,6 @@ import java.util.List;
 @Stateless
 @Path("/permissions")
 public class PermissionController extends Application {
-    @Context
-    private HttpServletRequest servletRequest;
-
     @Inject
     private PermissionService permissionService;
 

@@ -8,6 +8,7 @@ import repository.interfaces.TweetRepository;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,45 +26,85 @@ public class TweetServiceJPAImpl implements TweetRepository {
 
     @Override
     public Tweet getById(int id) {
-        return em.createNamedQuery("tweet.getTweetById", Tweet.class).setParameter("id", id).getSingleResult();
+        try {
+            return em.createNamedQuery("tweet.getTweetById", Tweet.class).setParameter("id", id).getSingleResult();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public List<Tweet> getByAuthorId(int id) {
-        return em.createNamedQuery("tweet.getTweetByUser", Tweet.class).setParameter("author", id).getResultList();
+        try {
+            return em.createNamedQuery("tweet.getTweetByUser", Tweet.class).setParameter("author", id).getResultList();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public List<Tweet> getByCreatedDate(Date date) {
-        return em.createNamedQuery("tweet.getTweetByDate", Tweet.class).setParameter("createdAt", date).getResultList();
+        try {
+            return em.createNamedQuery("tweet.getTweetByDate", Tweet.class).setParameter("createdAt", date).getResultList();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public Tweet create(Tweet tweet) throws ClassNotFoundException {
-        em.persist(tweet);
-        return tweet;
+    public Tweet create(Tweet tweet) {
+        try {
+            em.persist(tweet);
+            return tweet;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Tweet update(Tweet tweet) {
-        return em.merge(tweet);
+        try {
+            return em.merge(tweet);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public boolean delete(Tweet tweet) throws ClassNotFoundException {
-        em.remove(tweet);
-        return true;
+    public boolean delete(Tweet tweet) {
+        try {
+            em.remove(tweet);
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    public Tweet like(Tweet tweet, User user) throws ClassNotFoundException {
-        tweet.addLike(user);
-        return em.merge(tweet);
+    public Tweet like(Tweet tweet, User user) {
+        try {
+            tweet.addLike(user);
+            return em.merge(tweet);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public Tweet unlike(Tweet tweet, User user) throws ClassNotFoundException {
-        tweet.removeLike(user);
-        return em.merge(tweet);
+    public Tweet unlike(Tweet tweet, User user) {
+        try {
+            tweet.removeLike(user);
+            return em.merge(tweet);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

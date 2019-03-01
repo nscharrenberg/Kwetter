@@ -9,6 +9,7 @@ import exceptions.NameNotUniqueException;
 import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.NotFoundException;
@@ -16,10 +17,6 @@ import javax.ws.rs.core.Context;
 import java.util.List;
 
 public class PermissionService {
-
-    @Context
-    private HttpServletRequest servletRequest;
-
     @Inject @JPA
     private PermissionRepository pr;
 

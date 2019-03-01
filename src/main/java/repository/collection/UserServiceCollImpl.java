@@ -17,7 +17,7 @@ import java.util.List;
 @Stateless
 public class UserServiceCollImpl implements UserRepository {
 
-    List<User> users = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 
     public UserServiceCollImpl() {
     }
@@ -43,65 +43,35 @@ public class UserServiceCollImpl implements UserRepository {
     }
 
     @Override
-    public User create(User user) throws NameNotUniqueException, ClassNotFoundException {
-        User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername())).orNull();
-
-        if(result != null) {
-            throw new NameNotUniqueException("Username already taken");
-        }
+    public User create(User user) {
 
         if(users.add(user)) {
             return user;
         } else {
-            throw new ClassNotFoundException("Failed to create user");
+            return null;
         }
     }
 
     @Override
-    public User update(User user) throws NameNotUniqueException {
-        User result = Iterables.tryFind(users, u -> user.getUsername().equals(u.getUsername()) && user.getId() == u.getId()).orNull();
-
-        if(result != null) {
-            throw new NameNotUniqueException("Role name already taken");
-        }
-
+    public User update(User user) {
         int index = Iterables.indexOf(users, u -> user.getId() == u.getId());
-
         return users.set(index, user);
     }
 
     @Override
-    public boolean delete(User user) throws ClassNotFoundException {
-        User result = Iterables.tryFind(users, u -> user.getId() == u.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("User with id: " + user.getId() + " and username: " + user.getUsername() + " could not be found");
-        }
-
+    public boolean delete(User user) {
         return users.remove(user);
     }
 
     @Override
-    public User follow(User user, User toFollow) throws ClassNotFoundException, NameNotUniqueException {
-        User result = Iterables.tryFind(users, u -> user.getId() == u.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("User with id: " + user.getId() + " and username: " + user.getUsername() + " could not be found");
-        }
-
+    public User follow(User user, User toFollow) {
         user.addFollowing(toFollow);
         update(toFollow);
         return update(user);
     }
 
     @Override
-    public User unfollow(User user, User toUnfollow) throws ClassNotFoundException, NameNotUniqueException {
-        User result = Iterables.tryFind(users, u -> user.getId() == u.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("User with id: " + user.getId() + " and username: " + user.getUsername() + " could not be found");
-        }
-
+    public User unfollow(User user, User toUnfollow) {
         user.removeFollowing(toUnfollow);
         update(toUnfollow);
         return update(user);
@@ -113,24 +83,13 @@ public class UserServiceCollImpl implements UserRepository {
             return false;
         }
 
-        User user = Iterables.tryFind(users, new Predicate<User>() {
-            @Override
-            public boolean apply(@Nullable User user) {
-                return username.equals(user.getUsername()) && password.equals(user.getPassword());
-            }
-        }).orNull();
+        User user = Iterables.tryFind(users, user1 -> username.equals(user1.getUsername()) && password.equals(user1.getPassword())).orNull();
 
         return user != null;
     }
 
     @Override
-    public User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException {
-        User result = Iterables.tryFind(users, u -> user.getId() == u.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("User with id: " + user.getId() + " and username: " + user.getUsername() + " could not be found");
-        }
-
+    public User changeRole(User user, Role role) {
         user.setRole(role);
         return update(user);
     }

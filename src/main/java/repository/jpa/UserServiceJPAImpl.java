@@ -26,60 +26,110 @@ public class UserServiceJPAImpl implements UserRepository {
 
     @Override
     public User getById(int id) {
-        return em.createNamedQuery("user.getUserById", User.class).setParameter("id", id).getSingleResult();
+        try {
+            return em.createNamedQuery("user.getUserById", User.class).setParameter("id", id).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public User getByUsername(String username) {
-        return em.createNamedQuery("user.getUserByUsername", User.class).setParameter("username", username).getSingleResult();
+        try {
+            return em.createNamedQuery("user.getUserByUsername", User.class).setParameter("username", username).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public User getByEmail(String email) {
-        return em.createNamedQuery("user.getUserByEmail", User.class).setParameter("email", email).getSingleResult();
+        try {
+            return em.createNamedQuery("user.getUserByEmail", User.class).setParameter("email", email).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public User create(User user) throws NameNotUniqueException, ClassNotFoundException {
-        em.persist(user);
-        return user;
+    public User create(User user) {
+        try {
+            em.persist(user);
+            return user;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public User update(User user) throws NameNotUniqueException {
-        return em.merge(user);
+    public User update(User user) {
+        try {
+            return em.merge(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public boolean delete(User user) throws ClassNotFoundException {
-        em.remove(user);
-        return true;
+    public boolean delete(User user) {
+        try {
+            em.remove(user);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    public User follow(User user, User toFollow) throws ClassNotFoundException, NameNotUniqueException {
-        user.addFollowing(toFollow);
-        return em.merge(user);
+    public User follow(User user, User toFollow) {
+        try {
+            user.addFollowing(toFollow);
+            return em.merge(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public User unfollow(User user, User toUnfollow) throws ClassNotFoundException, NameNotUniqueException {
-        user.removeFollowing(toUnfollow);
-        return em.merge(user);
+    public User unfollow(User user, User toUnfollow) {
+        try {
+            user.removeFollowing(toUnfollow);
+            return em.merge(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public boolean login(String username, String password) {
-        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class);
-        query.setParameter("username", username);
-        query.setParameter("password", password);
+        try {
+            TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class);
+            query.setParameter("username", username);
+            query.setParameter("password", password);
 
-        return query.getSingleResult() != null;
+            return query.getSingleResult() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    public User changeRole(User user, Role role) throws ClassNotFoundException, NameNotUniqueException {
-        user.setRole(role);
-        return em.merge(user);
+    public User changeRole(User user, Role role) {
+        try {
+            user.setRole(role);
+            return em.merge(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

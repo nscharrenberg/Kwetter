@@ -24,40 +24,76 @@ public class RoleServiceJPAImpl implements RoleRepository {
 
     @Override
     public Role getById(int id) {
-        return em.createNamedQuery("role.getRoleById", Role.class).setParameter("id", id).getSingleResult();
+        try {
+            return em.createNamedQuery("role.getRoleById", Role.class).setParameter("id", id).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Override
     public Role getByName(String name) {
-        return em.createNamedQuery("role.getRoleByName", Role.class).setParameter("name", name).getSingleResult();
+        try {
+            return em.createNamedQuery("role.getRoleByName", Role.class).setParameter("name", name).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Role create(Role role) {
-        em.persist(role);
-        return role;
+        try {
+            em.persist(role);
+            return role;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Role update(Role role) {
-        return em.merge(role);
+        try {
+            return em.merge(role);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public boolean delete(Role role) {
-        em.remove(role);
-        return true;
+        try {
+            em.remove(role);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) {
-        role.addPermission(permission, canCreate, canRead, canUpdate, canDelete);
-        return em.merge(role);
+        try {
+            role.addPermission(permission, canCreate, canRead, canUpdate, canDelete);
+            return em.merge(role);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Role removePermission(Role role, Permission permission) {
-        role.removePermission(permission);
-        return em.merge(role);
+        try {
+            role.removePermission(permission);
+            return em.merge(role);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

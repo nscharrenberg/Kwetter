@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Default
 @Stateless
 public class TweetServiceCollImpl implements TweetRepository {
-    List<Tweet> tweets = new ArrayList<>();
+    private List<Tweet> tweets = new ArrayList<>();
 
     public TweetServiceCollImpl() {
     }
@@ -44,53 +44,35 @@ public class TweetServiceCollImpl implements TweetRepository {
     }
 
     @Override
-    public Tweet create(Tweet tweet) throws ClassNotFoundException {
+    public Tweet create(Tweet tweet) {
         tweet.setId(all().size() + 1);
         if(tweets.add(tweet)) {
             return tweet;
         } else {
-            throw new ClassNotFoundException("Failed to create tweet");
+            return null;
         }
     }
 
     @Override
     public Tweet update(Tweet tweet) {
         int index = Iterables.indexOf(tweets, t -> tweet.getId() == t.getId());
-
         return tweets.set(index, tweet);
     }
 
     @Override
-    public boolean delete(Tweet tweet) throws ClassNotFoundException {
-        Tweet result = Iterables.tryFind(tweets, t -> tweet.getId() == t.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("tweet with id: " + tweet.getId() + " and message: " + tweet.getAuthor() + " could not be found");
-        }
+    public boolean delete(Tweet tweet) {
 
         return tweets.remove(tweet);
     }
 
     @Override
-    public Tweet like(Tweet tweet, User user) throws ClassNotFoundException {
-        Tweet result = Iterables.tryFind(tweets, t -> tweet.getId() == t.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("tweet with id: " + tweet.getId() + " and message: " + tweet.getAuthor() + " could not be found");
-        }
-
+    public Tweet like(Tweet tweet, User user) {
         tweet.addLike(user);
         return update(tweet);
     }
 
     @Override
-    public Tweet unlike(Tweet tweet, User user) throws ClassNotFoundException {
-        Tweet result = Iterables.tryFind(tweets, t -> tweet.getId() == t.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("tweet with id: " + tweet.getId() + " and message: " + tweet.getAuthor() + " could not be found");
-        }
-
+    public Tweet unlike(Tweet tweet, User user) {
         tweet.removeLike(user);
         return update(tweet);
     }
