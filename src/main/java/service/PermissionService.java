@@ -1,5 +1,6 @@
 package service;
 
+import com.sun.nio.sctp.IllegalUnbindException;
 import domain.Permission;
 import exceptions.NameNotUniqueException;
 import repository.interfaces.JPA;
@@ -29,7 +30,7 @@ public class PermissionService {
      * @param id - the id of the permission
      * @return a permission
      */
-    public Permission getById(int id) {
+    public Permission getById(int id) throws IllegalUnbindException, NotFoundException {
         if(id <= 0) {
             throw new IllegalArgumentException("Invalid ID");
         }
@@ -48,7 +49,7 @@ public class PermissionService {
      * @param name - the name of the permission
      * @return a permission
      */
-    public Permission getByName(String name) {
+    public Permission getByName(String name) throws IllegalArgumentException, NotFoundException {
         if(name.isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
         }
@@ -69,7 +70,7 @@ public class PermissionService {
      * @throws NameNotUniqueException
      * @throws ClassNotFoundException
      */
-    public Permission create(Permission permission) throws NameNotUniqueException, ClassNotFoundException {
+    public Permission create(Permission permission) throws NameNotUniqueException, ClassNotFoundException, IllegalArgumentException {
         if(permission.getName().isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
         }
@@ -83,7 +84,7 @@ public class PermissionService {
      * @return the updated permission
      * @throws NameNotUniqueException
      */
-    public Permission update(Permission permission) throws NameNotUniqueException {
+    public Permission update(Permission permission) throws NameNotUniqueException, IllegalArgumentException {
         if(permission.getName().isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
         }
@@ -101,7 +102,7 @@ public class PermissionService {
      * @return a boolean wether or not the permission is deleted.
      * @throws ClassNotFoundException
      */
-    public boolean delete(Permission permission) throws ClassNotFoundException {
+    public boolean delete(Permission permission) throws ClassNotFoundException, IllegalArgumentException {
         if(permission.getId() <= 0) {
             throw new IllegalArgumentException("Invalid ID");
         }

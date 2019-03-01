@@ -11,5 +11,5 @@ public interface PermissionRepository {
     Permission getByName(String name);
     Permission create(Permission permission) throws NameNotUniqueException, ClassNotFoundException;
     Permission update(Permission permission) throws NameNotUniqueException;
-    boolean delete(Permission permission) throws ClassNotFoundException;
+    boolean delete(Permission permission) throws ClassNotFoundException, IllegalArgumentException;
 }
