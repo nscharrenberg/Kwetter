@@ -38,7 +38,7 @@ public class User {
     private double longitude;
     private double latitude;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
@@ -46,7 +46,7 @@ public class User {
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
-            }
+            }, fetch = FetchType.EAGER
     )
     @JoinTable(
             name = "followers",
@@ -57,7 +57,7 @@ public class User {
 
     @ManyToMany(
             mappedBy = "followers",
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private Set<User> following;
 

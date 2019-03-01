@@ -152,7 +152,7 @@ public class RoleService {
      * @throws ActionForbiddenException
      * @throws NotFoundException
      */
-    public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) throws ActionForbiddenException, InvalidContentException, NotFoundException {
+    public Role addPermission(Role role, Permission permission) throws ActionForbiddenException, InvalidContentException, NotFoundException {
         if(role.getId() <= 0) {
             throw new InvalidContentException("Invalid role ID");
         }
@@ -177,7 +177,7 @@ public class RoleService {
             throw new ActionForbiddenException("Role: " + role.getName() + " already has the permission " + permission.getName());
         }
 
-        return rr.addPermission(role, permission, canCreate, canRead, canUpdate, canDelete);
+        return rr.addPermission(role, permission);
     }
 
     /**

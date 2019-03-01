@@ -20,6 +20,9 @@ public class Permission {
     @Column(unique = true, nullable = false)
     private String name;
 
+    @ManyToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
+    private Set<Role> roles;
+
     public Permission() {
     }
 

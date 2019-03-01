@@ -56,8 +56,8 @@ public class RoleServiceCollImpl implements RoleRepository {
     }
 
     @Override
-    public Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete) {
-        role.addPermission(permission, canCreate, canRead, canUpdate, canDelete);
+    public Role addPermission(Role role, Permission permission) {
+        role.addPermission(permission);
         return update(role);
     }
 

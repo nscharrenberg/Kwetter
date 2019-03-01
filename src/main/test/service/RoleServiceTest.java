@@ -86,6 +86,9 @@ public class RoleServiceTest {
         } catch (NameNotUniqueException | InvalidContentException e) {
             e.printStackTrace();
             fail("Exception not expected");
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            fail("Exception not expected");
         }
     }
 

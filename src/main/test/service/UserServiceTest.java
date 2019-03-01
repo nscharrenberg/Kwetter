@@ -2,7 +2,10 @@ package service;
 
 import domain.Role;
 import domain.User;
+import exceptions.CreationFailedException;
+import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
+import exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,7 +83,7 @@ public class UserServiceTest {
             assertEquals(email, user.getEmail());
             assertEquals(biography, user.getBiography());
             assertEquals(website, user.getWebsite());
-        } catch (NameNotUniqueException | ClassNotFoundException | NoSuchAlgorithmException e) {
+        } catch (NameNotUniqueException | NoSuchAlgorithmException | CreationFailedException | InvalidContentException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -102,7 +105,7 @@ public class UserServiceTest {
             User result = userService.update(user);
             assertEquals(id, result.getId());
             assertEquals(name, result.getUsername());
-        } catch (NameNotUniqueException e) {
+        } catch (NameNotUniqueException | InvalidContentException | NotFoundException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -119,7 +122,7 @@ public class UserServiceTest {
         try {
             boolean result = userService.delete(user);
             assertTrue(result);
-        }catch (ClassNotFoundException e) {
+        }catch (InvalidContentException | NotFoundException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -144,7 +147,7 @@ public class UserServiceTest {
             following = userService.getById(followingId);
             assertTrue(result.getFollowing().contains(following));
             assertTrue(following.getFollowers().contains(result));
-        } catch (ClassNotFoundException | NameNotUniqueException e) {
+        } catch (InvalidContentException |NotFoundException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -169,7 +172,7 @@ public class UserServiceTest {
             following = userService.getById(followingId);
             assertFalse(result.getFollowing().contains(following));
             assertFalse(following.getFollowers().contains(result));
-        } catch (ClassNotFoundException | NameNotUniqueException e) {
+        } catch (InvalidContentException | NotFoundException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }

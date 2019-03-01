@@ -1,6 +1,5 @@
 package controllers;
 
-import controllers.viewModels.RolePermissionViewModel;
 import controllers.viewModels.RoleViewModel;
 import domain.Permission;
 import domain.Role;
@@ -112,7 +111,7 @@ public class RoleController {
         try {
             Role role = roleService.getById(id);
             roleService.delete(role);
-            return Response.status(Response.Status.OK).entity("Permission " + role.getName() + " has been deleted").build();
+            return Response.status(Response.Status.OK).entity("Role " + role.getName() + " has been deleted").build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
@@ -125,12 +124,36 @@ public class RoleController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addPermission(RolePermissionViewModel request) {
+    @Path("/{roleId}/permissions/{permissionId}")
+    public Response addPermission(@PathParam("roleId") int roleId, @PathParam("permissionId") int permissionId) {
         try {
-            Role role = roleService.getById(request.getRoleId());
-            Permission permission = permissionService.getById(request.getPermissionId());
+            Role role = roleService.getById(roleId);
+            Permission permission = permissionService.getById(permissionId);
 
-            roleService.addPermission(role, permission, request.isCanCreate(), request.isCanRead(), request.isCanUpdate(), request.isCanDelete());
+            roleService.addPermission(role, permission);
+            return Response.status(Response.Status.OK).entity(role).build();
+        } catch (InvalidContentException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (ActionForbiddenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+        }
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{roleId}/permissions/{permissionId}")
+    public Response deletePermission(@PathParam("roleId") int roleId, @PathParam("permissionId") int permissionId) {
+        try {
+            Role role = roleService.getById(roleId);
+            Permission permission = permissionService.getById(permissionId);
+
+            roleService.removePermission(role, permission);
             return Response.status(Response.Status.OK).entity(role).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();

@@ -13,6 +13,6 @@ public interface RoleRepository {
     Role create(Role role);
     Role update(Role role);
     boolean delete(Role role);
-    Role addPermission(Role role, Permission permission, boolean canCreate, boolean canRead, boolean canUpdate, boolean canDelete);
+    Role addPermission(Role role, Permission permission);
     Role removePermission(Role role, Permission permission);
 }
