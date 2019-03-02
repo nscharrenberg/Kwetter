@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Transactional
 public class TweetService {
 
-    @Inject @JPA
+    @Inject @Default
     private TweetRepository tr;
 
     @Inject

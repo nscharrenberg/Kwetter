@@ -6,13 +6,14 @@ import domain.Role;
 import exceptions.NameNotUniqueException;
 import repository.interfaces.RoleRepository;
 
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import java.util.ArrayList;
 import java.util.List;
 
 @Default
-@Stateless
+@Stateful
 public class RoleServiceCollImpl implements RoleRepository {
 
     List<Role> roles = new ArrayList<>();
@@ -32,7 +33,7 @@ public class RoleServiceCollImpl implements RoleRepository {
 
     @Override
     public Role getByName(String name) {
-        return Iterables.tryFind(roles, role -> name == role.getName()).orNull();
+        return Iterables.tryFind(roles, role -> name.equals(role.getName())).orNull();
     }
 
     @Override

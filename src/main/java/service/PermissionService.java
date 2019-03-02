@@ -19,7 +19,7 @@ import java.util.List;
 
 @Transactional
 public class PermissionService {
-    @Inject @JPA
+    @Inject @Default
     private PermissionRepository pr;
 
     /**

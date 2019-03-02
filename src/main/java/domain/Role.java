@@ -27,7 +27,6 @@ import java.util.Set;
                         name = "permission-subgraph",
                         attributeNodes = {
                                 @NamedAttributeNode("name"),
-                                @NamedAttributeNode(value = "roles", subgraph = "roles-subgraph"),
                         }
                 ),
                 @NamedSubgraph(
