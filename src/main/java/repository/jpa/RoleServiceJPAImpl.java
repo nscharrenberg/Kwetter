@@ -6,6 +6,8 @@ import repository.interfaces.JPA;
 import repository.interfaces.RoleRepository;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,7 +21,7 @@ import java.util.Map;
 @Stateless
 public class RoleServiceJPAImpl implements RoleRepository {
 
-    @PersistenceContext(unitName = "kwetterDB", type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(unitName = "kwetterDB")
     private EntityManager em;
 
     @Override

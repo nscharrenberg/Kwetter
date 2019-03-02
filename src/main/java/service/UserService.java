@@ -21,7 +21,7 @@ import java.util.List;
 @Transactional
 public class UserService {
 
-    @Inject @JPA
+    @Inject @Default
     private UserRepository ur;
 
     @Inject

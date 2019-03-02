@@ -5,7 +5,7 @@ import exceptions.NameNotUniqueException;
 import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,7 +17,7 @@ import java.util.List;
 @Stateless
 public class PermissionServiceJPAImpl implements PermissionRepository {
 
-    @PersistenceContext(unitName = "kwetterDB", type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(unitName = "kwetterDB")
     private EntityManager em;
 
     @Override

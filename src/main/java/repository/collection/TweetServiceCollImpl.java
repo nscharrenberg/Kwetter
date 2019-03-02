@@ -8,6 +8,7 @@ import exceptions.NameNotUniqueException;
 import repository.interfaces.TweetRepository;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.persistence.TypedQuery;
@@ -15,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Default
-@Stateless
+@Stateful
 public class TweetServiceCollImpl implements TweetRepository {
     private List<Tweet> tweets = new ArrayList<>();
 

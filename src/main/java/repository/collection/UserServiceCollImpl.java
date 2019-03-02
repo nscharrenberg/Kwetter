@@ -8,13 +8,14 @@ import exceptions.NameNotUniqueException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import java.util.ArrayList;
 import java.util.List;
 
 @Default
-@Stateless
+@Stateful
 public class UserServiceCollImpl implements UserRepository {
 
     private List<User> users = new ArrayList<>();
