@@ -5,13 +5,14 @@ import domain.Permission;
 import exceptions.NameNotUniqueException;
 import repository.interfaces.PermissionRepository;
 
+import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import java.util.ArrayList;
 import java.util.List;
 
 @Default
-@Stateless
+@Stateful
 public class PermissionServiceCollImpl implements PermissionRepository {
 
     private List<Permission> permissions = new ArrayList<>();

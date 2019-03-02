@@ -6,6 +6,8 @@ import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
@@ -20,7 +22,7 @@ import java.util.List;
 @Stateless
 public class TweetServiceJPAImpl implements TweetRepository {
 
-    @PersistenceContext(unitName = "kwetterDB", type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(unitName = "kwetterDB")
     private EntityManager em;
 
     @Override

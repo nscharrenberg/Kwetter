@@ -14,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import repository.collection.PermissionServiceCollImpl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,7 +23,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class PermissionServiceTest {
 
     @Mock
-    private PermissionServiceCollImpl pr;
+    PermissionServiceCollImpl pr;
 
     @InjectMocks
     private PermissionService permissionService;

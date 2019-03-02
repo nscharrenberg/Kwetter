@@ -14,7 +14,7 @@ import java.util.List;
 @Transactional
 public class RoleService {
 
-    @Inject @JPA
+    @Inject @Default
     private RoleRepository rr;
 
     @Inject
