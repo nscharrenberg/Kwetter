@@ -1,7 +1,10 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -38,13 +41,16 @@ public class Permission implements Serializable {
     private String name;
 
     @ManyToMany(mappedBy = "permissions")
+    @JsonIgnore
     private Set<Role> roles;
 
     public Permission() {
+        this.roles = new HashSet<>();
     }
 
     public Permission(String name) {
         this.name = name;
+        this.roles = new HashSet<>();
     }
 
     public int getId() {

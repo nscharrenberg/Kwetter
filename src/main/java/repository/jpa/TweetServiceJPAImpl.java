@@ -9,8 +9,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -108,5 +110,30 @@ public class TweetServiceJPAImpl implements TweetRepository {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private List<Tweet> getTweetsByUser(User user) {
+        TypedQuery<Tweet> query = em.createQuery("SELECT t FROM Tweet t WHERE t.author = :author", Tweet.class);
+        query.setParameter("author", user);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Tweet> getTimeLine(User user) {
+        List<Tweet> tweets = getTweetsByUser(user);
+
+        for(User u : user.getFollowers()) {
+            tweets.addAll(getTweetsByUser(u));
+        }
+
+        tweets.sort(Comparator.comparing(Tweet::getCreatedAt));
+
+        return tweets;
+    }
+
+    @Override
+    public List<Tweet> search(String input) {
+        return null;
     }
 }

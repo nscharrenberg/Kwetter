@@ -5,6 +5,8 @@ import domain.User;
 import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
+
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.Date;

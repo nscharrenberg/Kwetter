@@ -6,13 +6,12 @@ import domain.Tweet;
 import domain.User;
 import exceptions.NameNotUniqueException;
 import repository.interfaces.TweetRepository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.TypedQuery;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Default
@@ -75,5 +74,15 @@ public class TweetServiceCollImpl implements TweetRepository {
     public Tweet unlike(Tweet tweet, User user) {
         tweet.removeLike(user);
         return update(tweet);
+    }
+
+    @Override
+    public List<Tweet> getTimeLine(User user) {
+        return null;
+    }
+
+    @Override
+    public List<Tweet> search(String input) {
+        return null;
     }
 }

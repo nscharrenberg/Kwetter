@@ -1,7 +1,6 @@
 package domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -79,6 +78,7 @@ public class User implements Serializable {
     private double latitude;
 
     @ManyToOne
+    @JsonIgnore
     private Role role;
 
     @ManyToMany(
@@ -92,19 +92,25 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
+    @JsonIgnore
     private Set<User> followers;
 
     @ManyToMany(
             mappedBy = "followers"
     )
+    @JsonIgnore
     private Set<User> following;
+
+    @OneToMany(mappedBy = "author")
+    @JsonIgnore
+    private Set<Tweet> tweets;
 
     public User() {
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
     }
 
-    public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following) {
+    public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following, Set<Tweet> tweets) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -116,9 +122,10 @@ public class User implements Serializable {
         this.role = role;
         this.followers = followers;
         this.following = following;
+        this.tweets = tweets;
     }
 
-    public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following) {
+    public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following, Set<Tweet> tweets) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -129,6 +136,7 @@ public class User implements Serializable {
         this.role = role;
         this.followers = followers;
         this.following = following;
+        this.tweets = tweets;
     }
 
     public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role) {
@@ -143,6 +151,7 @@ public class User implements Serializable {
         this.role = role;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
+        this.tweets = new HashSet<>();
     }
 
     public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role) {
@@ -156,6 +165,7 @@ public class User implements Serializable {
         this.role = role;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
+        this.tweets = new HashSet<>();
     }
 
     public User(String username, String email, String password, String biography, String website, double longitude, double latitude) {
@@ -169,6 +179,7 @@ public class User implements Serializable {
         this.role = null;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
+        this.tweets = new HashSet<>();
     }
 
     public int getId() {
@@ -262,6 +273,22 @@ public class User implements Serializable {
     public void addFollowing(User user) {
         this.following.add(user);
         user.addFollower(this);
+    }
+
+    public Set<Tweet> getTweets() {
+        return tweets;
+    }
+
+    public void setTweets(Set<Tweet> tweets) {
+        this.tweets = tweets;
+    }
+
+    public void addTweet(Tweet tweet) {
+        this.tweets.add(tweet);
+    }
+
+    public void removeTweet(Tweet tweet) {
+        this.tweets.remove(tweet);
     }
 
     private void addFollower(User user) {

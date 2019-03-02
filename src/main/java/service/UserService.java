@@ -9,6 +9,7 @@ import exceptions.NotFoundException;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;

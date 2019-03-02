@@ -17,4 +17,6 @@ public interface TweetRepository {
     boolean delete(Tweet tweet);
     Tweet like(Tweet tweet, User user);
     Tweet unlike(Tweet tweet, User user);
+    List<Tweet> getTimeLine(User user);
+    List<Tweet> search(String input);
 }

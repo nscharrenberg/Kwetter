@@ -37,6 +37,7 @@ public class RoleServiceCollImpl implements RoleRepository {
 
     @Override
     public Role create(Role role) {
+        role.setId(all().size() + 1);
         if(roles.add(role)) {
             return role;
         } else {

@@ -36,6 +36,7 @@ public class PermissionServiceCollImpl implements PermissionRepository {
 
     @Override
     public Permission create(Permission permission) {
+        permission.setId(all().size() + 1);
         if(permissions.add(permission)) {
             return permission;
         } else {

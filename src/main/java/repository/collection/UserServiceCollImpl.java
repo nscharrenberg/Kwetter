@@ -44,7 +44,7 @@ public class UserServiceCollImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-
+        user.setId(all().size() + 1);
         if(users.add(user)) {
             return user;
         } else {
