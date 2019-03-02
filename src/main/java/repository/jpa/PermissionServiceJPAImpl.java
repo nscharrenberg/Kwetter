@@ -9,15 +9,15 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 import javax.transaction.Transactional;
 import java.util.List;
 
 @JPA
-@Transactional
 @Stateless
 public class PermissionServiceJPAImpl implements PermissionRepository {
 
-    @PersistenceContext(unitName = "kwetterDB")
+    @PersistenceContext(unitName = "kwetterDB", type = PersistenceContextType.EXTENDED)
     private EntityManager em;
 
     @Override

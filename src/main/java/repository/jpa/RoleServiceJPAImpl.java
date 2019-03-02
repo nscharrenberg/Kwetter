@@ -6,28 +6,35 @@ import repository.interfaces.JPA;
 import repository.interfaces.RoleRepository;
 
 import javax.ejb.Stateless;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @JPA
-@Transactional
 @Stateless
 public class RoleServiceJPAImpl implements RoleRepository {
 
-    @PersistenceContext(unitName = "kwetterDB")
+    @PersistenceContext(unitName = "kwetterDB", type = PersistenceContextType.EXTENDED)
     private EntityManager em;
 
     @Override
     public List<Role> all() {
-        return em.createQuery("from Role ", Role.class).getResultList();
+        EntityGraph eg = em.getEntityGraph("role-entity-graph");
+        return em.createNamedQuery("role.getAllRoles", Role.class).setHint("javax.persistence.fetchgraph", eg).getResultList();
     }
 
     @Override
     public Role getById(int id) {
         try {
-            return em.find(Role.class, id);
+            EntityGraph eg = em.getEntityGraph("role-entity-graph");
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("javax.persistence.loadgraph", eg);
+            return em.find(Role.class, id, properties);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

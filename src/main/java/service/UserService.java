@@ -10,12 +10,14 @@ import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
 
+@Transactional
 public class UserService {
 
     @Inject @JPA

@@ -4,18 +4,56 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@NamedEntityGraph(
+        name = "user-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode("username"),
+                @NamedAttributeNode("email"),
+                @NamedAttributeNode("biography"),
+                @NamedAttributeNode("website"),
+                @NamedAttributeNode("longitude"),
+                @NamedAttributeNode("latitude"),
+                @NamedAttributeNode(value = "role", subgraph = "role-subgraph"),
+                @NamedAttributeNode(value = "followers", subgraph = "followers-subgraph"),
+                @NamedAttributeNode(value = "following", subgraph = "followers-subgraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "role-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("name")
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "followers-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("username"),
+                                @NamedAttributeNode("email"),
+                                @NamedAttributeNode("biography"),
+                                @NamedAttributeNode("website"),
+                                @NamedAttributeNode("longitude"),
+                                @NamedAttributeNode("latitude"),
+                        }
+                ),
+        }
+)
 @NamedQueries({
         @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
         @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
         @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
         @NamedQuery(name = "user.getUserByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
 })
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +67,7 @@ public class User {
 
     @Column(nullable = false)
     @JsonIgnore
+    @XmlTransient
     private String password;
 
     @Column(length = 160)
@@ -39,8 +78,7 @@ public class User {
     private double longitude;
     private double latitude;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "users" })
+    @ManyToOne
     private Role role;
 
     @ManyToMany(
@@ -54,13 +92,11 @@ public class User {
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "followers", "following" })
     private Set<User> followers;
 
     @ManyToMany(
             mappedBy = "followers"
     )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "followers", "following" })
     private Set<User> following;
 
     public User() {

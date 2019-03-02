@@ -1,5 +1,6 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
@@ -7,22 +8,19 @@ import org.hibernate.annotations.NaturalIdCache;
 import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@NamedQueries({
-        @NamedQuery(name = "role.getAllRoles", query = "SELECT r FROM Role r"),
-        @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
-        @NamedQuery(name = "role.getRoleByName", query = "SELECT r FROM Role r WHERE r.name = :name")
-})
 @NamedEntityGraph(
         name = "role-entity-graph",
         attributeNodes = {
                 @NamedAttributeNode("id"),
                 @NamedAttributeNode("name"),
-                @NamedAttributeNode(value = "permission", subgraph = "permission-subgraph"),
+                @NamedAttributeNode(value = "permissions", subgraph = "permission-subgraph"),
+                @NamedAttributeNode(value = "users", subgraph = "user-subgraph"),
         },
         subgraphs = {
                 @NamedSubgraph(
@@ -35,12 +33,26 @@ import java.util.Set;
                 @NamedSubgraph(
                         name = "roles-subgraph",
                         attributeNodes = {
+                                @NamedAttributeNode("id"),
                                 @NamedAttributeNode("name")
                         }
-                )
+                ),
+                @NamedSubgraph(
+                        name = "user-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("username"),
+                                @NamedAttributeNode("email")
+                        }
+                ),
         }
 )
-public class Role {
+@NamedQueries({
+        @NamedQuery(name = "role.getAllRoles", query = "SELECT r FROM Role r"),
+        @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
+        @NamedQuery(name = "role.getRoleByName", query = "SELECT r FROM Role r WHERE r.name = :name")
+})
+public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,11 +67,9 @@ public class Role {
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "roles" })
     private Set<Permission> permissions;
 
     @OneToMany(mappedBy = "role")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "role" })
     private Set<User> users;
 
     public Role() {

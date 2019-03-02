@@ -8,8 +8,10 @@ import repository.interfaces.RoleRepository;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Transactional
 public class RoleService {
 
     @Inject @JPA

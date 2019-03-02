@@ -12,10 +12,12 @@ import repository.interfaces.PermissionRepository;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
 import java.util.List;
 
+@Transactional
 public class PermissionService {
     @Inject @JPA
     private PermissionRepository pr;

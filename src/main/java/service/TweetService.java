@@ -6,6 +6,7 @@ import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Transactional
 public class TweetService {
 
     @Inject @JPA
