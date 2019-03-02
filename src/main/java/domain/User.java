@@ -3,17 +3,56 @@ package domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@NamedEntityGraph(
+        name = "user-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode("username"),
+                @NamedAttributeNode("email"),
+                @NamedAttributeNode("biography"),
+                @NamedAttributeNode("website"),
+                @NamedAttributeNode("longitude"),
+                @NamedAttributeNode("latitude"),
+                @NamedAttributeNode(value = "role", subgraph = "role-subgraph"),
+                @NamedAttributeNode(value = "followers", subgraph = "followers-subgraph"),
+                @NamedAttributeNode(value = "following", subgraph = "followers-subgraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "role-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("name")
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "followers-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("username"),
+                                @NamedAttributeNode("email"),
+                                @NamedAttributeNode("biography"),
+                                @NamedAttributeNode("website"),
+                                @NamedAttributeNode("longitude"),
+                                @NamedAttributeNode("latitude"),
+                        }
+                ),
+        }
+)
 @NamedQueries({
         @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
         @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
-        @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
+        @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
+        @NamedQuery(name = "user.getUserByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
 })
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +66,7 @@ public class User {
 
     @Column(nullable = false)
     @JsonIgnore
+    @XmlTransient
     private String password;
 
     @Column(length = 160)
@@ -37,8 +77,8 @@ public class User {
     private double longitude;
     private double latitude;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
+    @ManyToOne
+    @JsonIgnore
     private Role role;
 
     @ManyToMany(
@@ -52,20 +92,25 @@ public class User {
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
+    @JsonIgnore
     private Set<User> followers;
 
     @ManyToMany(
-            mappedBy = "followers",
-            fetch = FetchType.LAZY
+            mappedBy = "followers"
     )
+    @JsonIgnore
     private Set<User> following;
+
+    @OneToMany(mappedBy = "author")
+    @JsonIgnore
+    private Set<Tweet> tweets;
 
     public User() {
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
     }
 
-    public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following) {
+    public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following, Set<Tweet> tweets) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -77,9 +122,10 @@ public class User {
         this.role = role;
         this.followers = followers;
         this.following = following;
+        this.tweets = tweets;
     }
 
-    public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following) {
+    public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following, Set<Tweet> tweets) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -90,6 +136,7 @@ public class User {
         this.role = role;
         this.followers = followers;
         this.following = following;
+        this.tweets = tweets;
     }
 
     public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role) {
@@ -104,6 +151,7 @@ public class User {
         this.role = role;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
+        this.tweets = new HashSet<>();
     }
 
     public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role) {
@@ -117,6 +165,21 @@ public class User {
         this.role = role;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
+        this.tweets = new HashSet<>();
+    }
+
+    public User(String username, String email, String password, String biography, String website, double longitude, double latitude) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.biography = biography;
+        this.website = website;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.role = null;
+        this.followers = new HashSet<>();
+        this.following = new HashSet<>();
+        this.tweets = new HashSet<>();
     }
 
     public int getId() {
@@ -210,6 +273,22 @@ public class User {
     public void addFollowing(User user) {
         this.following.add(user);
         user.addFollower(this);
+    }
+
+    public Set<Tweet> getTweets() {
+        return tweets;
+    }
+
+    public void setTweets(Set<Tweet> tweets) {
+        this.tweets = tweets;
+    }
+
+    public void addTweet(Tweet tweet) {
+        this.tweets.add(tweet);
+    }
+
+    public void removeTweet(Tweet tweet) {
+        this.tweets.remove(tweet);
     }
 
     private void addFollower(User user) {

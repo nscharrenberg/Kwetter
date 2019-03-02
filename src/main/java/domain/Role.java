@@ -1,17 +1,58 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
+import org.hibernate.annotations.Cache;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
+@NamedEntityGraph(
+        name = "role-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode("name"),
+                @NamedAttributeNode(value = "permissions", subgraph = "permission-subgraph"),
+                @NamedAttributeNode(value = "users", subgraph = "user-subgraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "permission-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("name"),
+                                @NamedAttributeNode(value = "roles", subgraph = "roles-subgraph"),
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "roles-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("name")
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "user-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("username"),
+                                @NamedAttributeNode("email")
+                        }
+                ),
+        }
+)
 @NamedQueries({
         @NamedQuery(name = "role.getAllRoles", query = "SELECT r FROM Role r"),
         @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
         @NamedQuery(name = "role.getRoleByName", query = "SELECT r FROM Role r WHERE r.name = :name")
 })
-public class Role {
+public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,19 +61,16 @@ public class Role {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE,
-                    CascadeType.DETACH
-            }
-    )
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     @JoinTable(
             name = "role_permission",
-            joinColumns = @JoinColumn(name = "permission_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions;
+
+    @OneToMany(mappedBy = "role")
+    private Set<User> users;
 
     public Role() {
     }
@@ -89,4 +127,21 @@ public class Role {
     public void removePermission(Permission permission) {
         this.permissions.remove(permission);
     }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
+    public void removeUser(User user) {
+        this.users.remove(user);
+    }
 }
+

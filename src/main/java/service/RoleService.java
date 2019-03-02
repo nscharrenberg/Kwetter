@@ -2,30 +2,29 @@ package service;
 
 import domain.Permission;
 import domain.Role;
-import exceptions.ActionForbiddenException;
-import exceptions.NameNotUniqueException;
-import repository.interfaces.PermissionRepository;
+import exceptions.*;
+import repository.interfaces.JPA;
 import repository.interfaces.RoleRepository;
-import repository.interfaces.SelectedContext;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.ws.rs.NotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Transactional
 public class RoleService {
 
-    @Inject @SelectedContext
+    @Inject @JPA
     private RoleRepository rr;
 
-    @Inject @SelectedContext
-    private PermissionRepository pr;
+    @Inject
+    private PermissionService pr;
 
     /**
      * Get all roles
      * @return a list of roles
      */
-    List<Role> all() {
+    public List<Role> all() {
         return rr.all();
     }
 
@@ -33,10 +32,12 @@ public class RoleService {
      * Get a role by its id
      * @param id - the id of the role
      * @return a role
+     * @throws NotFoundException
+     * @throws InvalidContentException
      */
-    Role getById(int id) {
+    public Role getById(int id) throws NotFoundException, InvalidContentException {
         if(id <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
         }
 
         Role role = rr.getById(id);
@@ -52,10 +53,12 @@ public class RoleService {
      * Get a role by its name
      * @param name - the name of the role
      * @return a role
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    Role getByName(String name) {
+    public Role getByName(String name) throws InvalidContentException, NotFoundException {
         if(name.isEmpty()) {
-            throw new IllegalArgumentException("name can not be empty");
+            throw new InvalidContentException("name can not be empty");
         }
 
         Role role = rr.getByName(name);
@@ -71,30 +74,52 @@ public class RoleService {
      * Create a new role
      * @param role - the role information
      * @return the newly created role
+     * @throws InvalidContentException
      * @throws NameNotUniqueException
-     * @throws ClassNotFoundException
+     * @throws CreationFailedException
      */
-    Role create(Role role) throws NameNotUniqueException, ClassNotFoundException {
+    public Role create(Role role) throws InvalidContentException, NameNotUniqueException, CreationFailedException {
         if(role.getName().isEmpty()) {
-            throw new IllegalArgumentException("name can not be empty");
+            throw new InvalidContentException("name can not be empty");
         }
 
-        return rr.create(role);
+        if(rr.getByName(role.getName()) != null) {
+            throw new NameNotUniqueException("Role with name " + role.getName() + " already exists.");
+        }
+
+        Role created = rr.create(role);
+
+        if(created != null) {
+            return created;
+        } else {
+            throw new CreationFailedException("Could not create a new role due to an unknown error");
+        }
     }
 
     /**
      * Update an existing role
      * @param role - the new role information with an existing role id
      * @return the updated role
+     * @throws InvalidContentException
      * @throws NameNotUniqueException
+     * @throws NotFoundException
      */
-    Role update(Role role) throws NameNotUniqueException {
+    public Role update(Role role) throws InvalidContentException, NameNotUniqueException, NotFoundException {
         if(role.getName().isEmpty()) {
-            throw new IllegalArgumentException("name can not be empty");
+            throw new InvalidContentException("name can not be empty");
         }
 
         if(role.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
+        }
+
+        if(rr.getById(role.getId()) == null) {
+            throw new NotFoundException("Role not found");
+        }
+
+        Role uniqueRole = rr.getByName(role.getName());
+        if(uniqueRole != null && role.getId() != uniqueRole.getId()) {
+            throw new NameNotUniqueException("Role with name " + role.getName() + " already exists.");
         }
 
         return rr.update(role);
@@ -104,11 +129,16 @@ public class RoleService {
      * Delete an existing role
      * @param role - the role to be deleted
      * @return a boolean wether or not the role is deleted.
-     * @throws ClassNotFoundException
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    boolean delete(Role role) throws ClassNotFoundException {
+    public boolean delete(Role role) throws InvalidContentException, NotFoundException {
         if(role.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw new InvalidContentException("Invalid ID");
+        }
+
+        if(rr.getById(role.getId()) == null) {
+            throw new NotFoundException("Role not found");
         }
 
         return rr.delete(role);
@@ -120,17 +150,17 @@ public class RoleService {
      * @param role - the role
      * @param permission - the permission
      * @return the role
-     * @throws ClassNotFoundException
-     * @throws NameNotUniqueException
+     * @throws InvalidContentException
      * @throws ActionForbiddenException
+     * @throws NotFoundException
      */
-    Role addPermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
+    public Role addPermission(Role role, Permission permission) throws ActionForbiddenException, InvalidContentException, NotFoundException {
         if(role.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid role ID");
+            throw new InvalidContentException("Invalid role ID");
         }
 
         if(permission.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid permission ID");
+            throw new InvalidContentException("Invalid permission ID");
         }
 
         Permission p = pr.getById(permission.getId());
@@ -157,17 +187,17 @@ public class RoleService {
      * @param role - the role
      * @param permission - the permission
      * @return the role
-     * @throws ClassNotFoundException
-     * @throws NameNotUniqueException
+     * @throws InvalidContentException
      * @throws ActionForbiddenException
+     * @throws NotFoundException
      */
-    Role removePermission(Role role, Permission permission) throws ClassNotFoundException, NameNotUniqueException, ActionForbiddenException {
+    public Role removePermission(Role role, Permission permission) throws ActionForbiddenException, InvalidContentException, NotFoundException {
         if(role.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid role ID");
+            throw new InvalidContentException("Invalid role ID");
         }
 
         if(permission.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid permission ID");
+            throw new InvalidContentException("Invalid permission ID");
         }
 
         Permission p = pr.getById(permission.getId());

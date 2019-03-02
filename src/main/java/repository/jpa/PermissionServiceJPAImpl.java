@@ -6,48 +6,75 @@ import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @JPA
 @Stateless
 public class PermissionServiceJPAImpl implements PermissionRepository {
 
-    @PersistenceContext(unitName = "kwetterDB")
+    @PersistenceContext(unitName = "kwetterDB", type = PersistenceContextType.EXTENDED)
     private EntityManager em;
 
     @Override
     public List<Permission> all() {
-        return em.createNamedQuery("permission.getAllPermissions", Permission.class).getResultList();
+        return em.createQuery("from Permission ", Permission.class).getResultList();
     }
 
     @Override
     public Permission getById(int id) {
-        return em.createNamedQuery("permission.getPermissionById", Permission.class).setParameter("id", id).getSingleResult();
+        try {
+            return em.createNamedQuery("permission.getPermissionById", Permission.class).setParameter("id", id).getSingleResult();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Permission getByName(String name) {
-        return em.createNamedQuery("permission.getPermissionByName", Permission.class).setParameter("name", name).getSingleResult();
+        try {
+            return em.createNamedQuery("permission.getPermissionByName", Permission.class).setParameter("name", name).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Override
     public Permission create(Permission permission) {
-        em.persist(permission);
-
-        return permission;
+        try {
+            em.persist(permission);
+            return permission;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Permission update(Permission permission) {
-        return em.merge(permission);
+        try {
+            return em.merge(permission);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public boolean delete(Permission permission) {
-        em.remove(permission);
-        return true;
+        try {
+            em.remove(permission);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
