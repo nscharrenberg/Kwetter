@@ -35,41 +35,23 @@ public class PermissionServiceCollImpl implements PermissionRepository {
     }
 
     @Override
-    public Permission create(Permission permission) throws NameNotUniqueException, ClassNotFoundException {
-        Permission result = Iterables.tryFind(permissions, p -> permission.getName().equals(p.getName())).orNull();
-
-        if(result != null) {
-            throw new NameNotUniqueException("Permission name already exists.");
-        }
-
+    public Permission create(Permission permission) {
+        permission.setId(all().size() + 1);
         if(permissions.add(permission)) {
             return permission;
         } else {
-            throw new ClassNotFoundException("Failed to create permission");
+            return null;
         }
     }
 
     @Override
-    public Permission update(Permission permission) throws NameNotUniqueException {
-        Permission result = Iterables.tryFind(permissions, p -> permission.getName().equals(p.getName()) && permission.getId() == p.getId()).orNull();
-
-        if(result != null) {
-            throw new NameNotUniqueException("Permission name already exists.");
-        }
-
+    public Permission update(Permission permission) {
         int index = Iterables.indexOf(permissions, p -> permission.getId() == p.getId());
-
         return permissions.set(index, permission);
     }
 
     @Override
-    public boolean delete(Permission permission) throws ClassNotFoundException {
-        Permission result = Iterables.tryFind(permissions, p -> permission.getId() == p.getId()).orNull();
-
-        if(result == null) {
-            throw new ClassNotFoundException("Permission with id: " + permission.getId() + " and name: " + permission.getName() + " could not be found");
-        }
-
+    public boolean delete(Permission permission) {
         return permissions.remove(permission);
     }
 }

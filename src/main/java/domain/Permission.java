@@ -1,15 +1,37 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "permissions")
+@NamedEntityGraph(
+        name = "permission-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode("name"),
+                @NamedAttributeNode(value = "roles", subgraph = "roles-subgraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "roles-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("name")
+                        }
+                )
+        }
+)
 @NamedQueries({
-        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p"),
-        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p WHERE p.id = :id"),
-        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p WHERE p.name = :name")
+        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p JOIN FETCH p.roles r"),
+        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.id = :id"),
+        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.name = :name")
 })
-public class Permission {
+public class Permission implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,36 +40,17 @@ public class Permission {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private boolean canCreate;
-
-    @Column(nullable = false)
-    private boolean canRead;
-
-    @Column(nullable = false)
-    private boolean canUpdate;
-
-    @Column(nullable = false)
-    private boolean canRemove;
+    @ManyToMany(mappedBy = "permissions")
+    @JsonIgnore
+    private Set<Role> roles;
 
     public Permission() {
+        this.roles = new HashSet<>();
     }
 
-    public Permission(int id, String name, boolean canCreate, boolean canRead, boolean canUpdate, boolean canRemove) {
-        this.id = id;
+    public Permission(String name) {
         this.name = name;
-        this.canCreate = canCreate;
-        this.canRead = canRead;
-        this.canUpdate = canUpdate;
-        this.canRemove = canRemove;
-    }
-
-    public Permission(String name, boolean canCreate, boolean canRead, boolean canUpdate, boolean canRemove) {
-        this.name = name;
-        this.canCreate = canCreate;
-        this.canRead = canRead;
-        this.canUpdate = canUpdate;
-        this.canRemove = canRemove;
+        this.roles = new HashSet<>();
     }
 
     public int getId() {
@@ -66,35 +69,35 @@ public class Permission {
         this.name = name;
     }
 
-    public boolean isCanCreate() {
-        return canCreate;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setCanCreate(boolean canCreate) {
-        this.canCreate = canCreate;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
-    public boolean isCanRead() {
-        return canRead;
+    public void addRole(Role role) {
+        this.roles.add(role);
     }
 
-    public void setCanRead(boolean canRead) {
-        this.canRead = canRead;
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 
-    public boolean isCanUpdate() {
-        return canUpdate;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Permission permission = (Permission) o;
+        return Objects.equals(name, permission.name);
     }
 
-    public void setCanUpdate(boolean canUpdate) {
-        this.canUpdate = canUpdate;
-    }
-
-    public boolean isCanRemove() {
-        return canRemove;
-    }
-
-    public void setCanRemove(boolean canRemove) {
-        this.canRemove = canRemove;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

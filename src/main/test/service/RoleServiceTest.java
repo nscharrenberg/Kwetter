@@ -1,7 +1,10 @@
 package service;
 
 import domain.Role;
+import exceptions.CreationFailedException;
+import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
+import exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +61,7 @@ public class RoleServiceTest {
             Role role = roleService.create(new Role(name));
 
             assertEquals(name, role.getName());
-        } catch (NameNotUniqueException | ClassNotFoundException e) {
+        } catch (NameNotUniqueException | InvalidContentException | CreationFailedException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -80,7 +83,10 @@ public class RoleServiceTest {
             Role result = roleService.update(role);
             assertEquals(id, result.getId());
             assertEquals(name, result.getName());
-        } catch (NameNotUniqueException e) {
+        } catch (NameNotUniqueException | InvalidContentException e) {
+            e.printStackTrace();
+            fail("Exception not expected");
+        } catch (NotFoundException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }
@@ -97,7 +103,7 @@ public class RoleServiceTest {
         try {
             boolean result = roleService.delete(role);
             assertTrue(result);
-        }catch (ClassNotFoundException e) {
+        }catch (InvalidContentException | NotFoundException e) {
             e.printStackTrace();
             fail("Exception not expected");
         }

@@ -1,18 +1,52 @@
 package domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "tweets")
+@NamedEntityGraph(
+        name = "tweet-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode("message"),
+                @NamedAttributeNode("createdAt"),
+                @NamedAttributeNode(value = "author", subgraph = "author-subgraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "author-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("username"),
+                                @NamedAttributeNode("email"),
+                                @NamedAttributeNode("biography"),
+                                @NamedAttributeNode("website"),
+                                @NamedAttributeNode("longitude"),
+                                @NamedAttributeNode("latitude"),
+                                @NamedAttributeNode(value = "followers", subgraph = "followers-subgraph"),
+                                @NamedAttributeNode(value = "following", subgraph = "followers-subgraph"),
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "followers-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id"),
+                                @NamedAttributeNode("username")
+                        }
+                ),
+        }
+)
 @NamedQueries({
         @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t"),
         @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
-        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author")
+        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author"),
+        @NamedQuery(name = "tweet.getTweetByDate", query = "SELECT t FROM Tweet t WHERE t.createdAt = :createdAt")
 })
-public class Tweet {
+public class Tweet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +55,7 @@ public class Tweet {
     @Column(nullable = false, length = 140)
     private String message;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "author", nullable = false)
     private User author;
 
