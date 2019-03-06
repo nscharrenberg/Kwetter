@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.viewModels.RoleViewModel;
 import domain.Permission;
 import domain.Role;
@@ -7,6 +9,7 @@ import exceptions.*;
 import exceptions.NotFoundException;
 import service.PermissionService;
 import service.RoleService;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -25,8 +28,15 @@ public class RoleController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Role> all() {
-        return roleService.all();
+    public Response all() {
+         List<Role> roles = roleService.all();
+
+        try {
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(roles)).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
     }
 
     @POST
@@ -56,29 +66,35 @@ public class RoleController {
     public Response getById(@PathParam("id") int id) {
         try {
             Role role = roleService.getById(id);
-            return Response.status(Response.Status.OK).entity(role).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/name/{name}")
-    public Response getById(@PathParam("name") String name) {
+    public Response getByName(@PathParam("name") String name) {
         try {
             Role role = roleService.getByName(name);
-            return Response.status(Response.Status.OK).entity(role).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -131,7 +147,7 @@ public class RoleController {
             Permission permission = permissionService.getById(permissionId);
 
             roleService.addPermission(role, permission);
-            return Response.status(Response.Status.OK).entity(role).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
@@ -141,6 +157,9 @@ public class RoleController {
         } catch (ActionForbiddenException e) {
             e.printStackTrace();
             return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -154,7 +173,7 @@ public class RoleController {
             Permission permission = permissionService.getById(permissionId);
 
             roleService.removePermission(role, permission);
-            return Response.status(Response.Status.OK).entity(role).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
@@ -164,6 +183,9 @@ public class RoleController {
         } catch (ActionForbiddenException e) {
             e.printStackTrace();
             return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 }

@@ -9,10 +9,8 @@ import repository.interfaces.UserRepository;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-import javax.persistence.TypedQuery;
+import javax.enterprise.inject.Produces;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -25,7 +23,8 @@ public class UserServiceJPAImpl implements UserRepository {
 
     @Override
     public List<User> all() {
-        return em.createQuery("from User ", User.class).getResultList();
+        EntityGraph eg = em.getEntityGraph("user-entity-graph");
+        return em.createNamedQuery("user.getAllUsers", User.class).setHint("javax.persistence.fetchgraph", eg).getResultList();
     }
 
     @Override

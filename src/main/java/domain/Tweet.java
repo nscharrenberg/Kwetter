@@ -1,5 +1,8 @@
 package domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -46,7 +49,8 @@ import java.util.Set;
         @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author"),
         @NamedQuery(name = "tweet.getTweetByDate", query = "SELECT t FROM Tweet t WHERE t.createdAt = :createdAt")
 })
-public class Tweet implements Serializable {
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+public class Tweet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,7 +59,7 @@ public class Tweet implements Serializable {
     @Column(nullable = false, length = 140)
     private String message;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author", nullable = false)
     private User author;
 
@@ -67,7 +71,7 @@ public class Tweet implements Serializable {
                     CascadeType.PERSIST,
                     CascadeType.MERGE,
                     CascadeType.DETACH
-            }
+            }, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "mentions",
@@ -81,7 +85,7 @@ public class Tweet implements Serializable {
                     CascadeType.PERSIST,
                     CascadeType.MERGE,
                     CascadeType.DETACH
-            }
+            }, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "likes",
@@ -207,4 +211,5 @@ public class Tweet implements Serializable {
     public void removeLike(User user) {
         this.likes.remove(user);
     }
+
 }

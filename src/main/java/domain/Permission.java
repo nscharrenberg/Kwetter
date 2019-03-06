@@ -1,12 +1,10 @@
 package domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "permissions")
@@ -31,7 +29,8 @@ import java.util.Set;
         @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.id = :id"),
         @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.name = :name")
 })
-public class Permission implements Serializable {
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+public class Permission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,8 +39,7 @@ public class Permission implements Serializable {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "permissions")
-    @JsonIgnore
+    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     private Set<Role> roles;
 
     public Permission() {

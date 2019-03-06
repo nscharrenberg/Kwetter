@@ -6,15 +6,17 @@ import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.RoleRepository;
 
+import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
 
-@Transactional
+@Stateless
 public class RoleService {
 
-    @Inject @Default
+    @Inject @JPA
     private RoleRepository rr;
 
     @Inject

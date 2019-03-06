@@ -9,17 +9,21 @@ import exceptions.NameNotUniqueException;
 import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 
+import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
 import java.util.List;
 
-@Transactional
+@Stateless
 public class PermissionService {
-    @Inject @Default
+
+    @Inject @JPA
     private PermissionRepository pr;
 
     /**
