@@ -38,4 +38,3 @@ As this is a school assignment, certain learning objectives have to be met.
 - Service -Repository Pattern
 - MVVM Pattern
 - SOLID principle
-

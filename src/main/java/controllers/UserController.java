@@ -1,5 +1,7 @@
 package controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.viewModels.FollowViewModel;
 import controllers.viewModels.RoleViewModel;
 import controllers.viewModels.UserRoleViewModel;
@@ -33,8 +35,13 @@ public class UserController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> all() {
-        return userService.all();
+    public Response all() {
+        try {
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(userService.all())).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
     }
 
     @POST
@@ -44,11 +51,11 @@ public class UserController {
         try {
             User user = new User(request.getUsername(), request.getEmail(), request.getPassword(), request.getBiography(), request.getWebsite(), request.getLongitude(), request.getLatitude());
             userService.create(user);
-            return Response.status(Response.Status.CREATED).entity(user).build();
+            return Response.status(Response.Status.CREATED).entity(new ObjectMapper().writeValueAsString(user)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (CreationFailedException | NoSuchAlgorithmException e) {
+        } catch (CreationFailedException | NoSuchAlgorithmException | JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         } catch (NameNotUniqueException e) {
@@ -66,13 +73,16 @@ public class UserController {
     public Response getById(@PathParam("id") int id) {
         try {
             User user = userService.getById(id);
-            return Response.status(Response.Status.OK).entity(user).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (exceptions.NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -82,13 +92,16 @@ public class UserController {
     public Response getByUsername(@PathParam("username") String username) {
         try {
             User user = userService.getByUsername(username);
-            return Response.status(Response.Status.OK).entity(user).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (exceptions.NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -98,13 +111,16 @@ public class UserController {
     public Response getByEmail(@PathParam("email") String email) {
         try {
             User user = userService.getByEmail(email);
-            return Response.status(Response.Status.OK).entity(user).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (exceptions.NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -117,7 +133,7 @@ public class UserController {
             User user = new User(request.getUsername(), request.getEmail(), request.getPassword(), request.getBiography(), request.getWebsite(), request.getLongitude(), request.getLatitude());
             user.setId(id);
             userService.update(user);
-            return Response.status(Response.Status.OK).entity(request).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
@@ -127,6 +143,9 @@ public class UserController {
         } catch (exceptions.NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -161,13 +180,16 @@ public class UserController {
             Role role = roleService.getById(request.getRoleId());
 
             userService.changeRole(user, role);
-            return Response.status(Response.Status.OK).entity(user).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (exceptions.NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -185,13 +207,16 @@ public class UserController {
             User follower = userService.getById(request.getUserId());
 
             userService.follow(follower, userToFollow);
-            return Response.status(Response.Status.OK).entity(userToFollow).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(userToFollow)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (exceptions.NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -209,13 +234,16 @@ public class UserController {
             User follower = userService.getById(request.getUserId());
 
             userService.unfollow(follower, userToUnFollow);
-            return Response.status(Response.Status.OK).entity(userToUnFollow).build();
+            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(userToUnFollow)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
         } catch (exceptions.NotFoundException e) {
             e.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 

@@ -6,6 +6,7 @@ import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
 
+import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -16,10 +17,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Transactional
+@Stateless
 public class TweetService {
 
-    @Inject @Default
+    @Inject @JPA
     private TweetRepository tr;
 
     @Inject

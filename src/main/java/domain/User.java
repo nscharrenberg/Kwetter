@@ -1,6 +1,7 @@
 package domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -52,7 +53,8 @@ import java.util.Set;
         @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
         @NamedQuery(name = "user.getUserByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
 })
-public class User implements Serializable {
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,7 +67,6 @@ public class User implements Serializable {
     private String email;
 
     @Column(nullable = false)
-    @JsonIgnore
     @XmlTransient
     private String password;
 
@@ -77,32 +78,29 @@ public class User implements Serializable {
     private double longitude;
     private double latitude;
 
-    @ManyToOne
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     private Role role;
 
     @ManyToMany(
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
-            }
+            }, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "followers",
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
-    @JsonIgnore
     private Set<User> followers;
 
     @ManyToMany(
-            mappedBy = "followers"
+            mappedBy = "followers",
+            fetch = FetchType.LAZY
     )
-    @JsonIgnore
     private Set<User> following;
 
-    @OneToMany(mappedBy = "author")
-    @JsonIgnore
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private Set<Tweet> tweets;
 
     public User() {
