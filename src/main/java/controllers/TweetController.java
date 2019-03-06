@@ -29,8 +29,8 @@ public class TweetController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Tweet> all() {
-        return tweetService.all();
+    public Response all() {
+        return Response.status(Response.Status.OK).entity(tweetService.all()).build();
     }
 
     @POST

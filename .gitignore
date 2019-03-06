@@ -114,3 +114,5 @@ modules.xml
 
 **/target/*/
 **/out/*/
+
+*.iml

@@ -9,6 +9,7 @@ import exceptions.NotFoundException;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
+import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -18,10 +19,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
 
-@Transactional
+@Stateless
 public class UserService {
 
-    @Inject @Default
+    @Inject @JPA
     private UserRepository ur;
 
     @Inject
