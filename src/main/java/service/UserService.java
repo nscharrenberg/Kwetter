@@ -156,7 +156,7 @@ public class UserService {
             throw new NameNotUniqueException("User with name " + user.getUsername() + " already exists.");
         }
 
-        User emailResult = ur.getByEmail(user.getUsername());
+        User emailResult = ur.getByEmail(user.getEmail());
         if(emailResult != null && emailResult.getId() != user.getId()) {
             throw new NameNotUniqueException("User with email " + user.getEmail() + " already exists.");
         }
@@ -200,6 +200,10 @@ public class UserService {
             throw new InvalidContentException("Invalid ID for User you are trying to follow");
         }
 
+        if(ur.getById(user.getId()).getFollowing().contains(toFollow) || ur.getById(toFollow.getId()).getFollowers().contains(user)) {
+            throw new InvalidContentException(user.getUsername() + " is already following " + toFollow.getUsername());
+        }
+
         if(ur.getById(user.getId()) == null) {
             throw new NotFoundException("User not found");
         }
@@ -226,6 +230,10 @@ public class UserService {
 
         if(toUnfollow.getId() <= 0) {
             throw new InvalidContentException("Invalid ID for User you are trying to unfollow");
+        }
+
+        if(!ur.getById(user.getId()).getFollowing().contains(toUnfollow) || !ur.getById(toUnfollow.getId()).getFollowers().contains(user)) {
+            throw new InvalidContentException(user.getUsername() + " is not following " + toUnfollow.getUsername());
         }
 
         if(ur.getById(user.getId()) == null) {

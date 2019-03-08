@@ -8,8 +8,8 @@ public class UserViewModel implements Serializable {
     private String password;
     private String biography;
     private String website;
-    private double longitude;
-    private double latitude;
+    private Double longitude;
+    private Double latitude;
 
     public String getUsername() {
         return username;
@@ -51,7 +51,7 @@ public class UserViewModel implements Serializable {
         this.website = website;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
@@ -59,7 +59,7 @@ public class UserViewModel implements Serializable {
         this.longitude = longitude;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
