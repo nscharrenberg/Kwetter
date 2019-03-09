@@ -28,7 +28,7 @@ public class TweetServiceJPAImpl implements TweetRepository {
 
     @Override
     public List<Tweet> all() {
-        return em.createQuery("from Tweet ", Tweet.class).getResultList();
+        return em.createNamedQuery("tweet.getAllTweets", Tweet.class).getResultList();
     }
 
     @Override

@@ -1,40 +1,32 @@
 package service;
 
-import domain.Role;
 import domain.User;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
-import exceptions.NotFoundException;
+import exceptions.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import repository.collection.RoleServiceCollImpl;
-import repository.collection.UserServiceCollImpl;
-
-import javax.inject.Inject;
+import repository.interfaces.UserRepository;
 
 import java.security.NoSuchAlgorithmException;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
-    @Inject
-    private UserServiceCollImpl ur;
-
-    @InjectMocks
-    private RoleServiceCollImpl rr;
-
     @InjectMocks
     private UserService userService;
+
+    @Mock
+    private UserRepository ur;
+
+    @Mock
+    private RoleService roleService;
 
     @Before
     public void setUp() {
@@ -42,34 +34,45 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserById() {
+    public void UserServiceTest() {
+        assertNotNull(userService);
+    }
+
+    @Test
+    public void getUserById() throws InvalidContentException, NotFoundException {
         int id = 6;
         User user = mock(User.class);
-        when(user.getId()).thenReturn(id);
+        user.setId(id);
+        when(ur.getById(id)).thenReturn(user);
 
-        assertEquals(user.getId(), id);
+        userService.getById(id);
+        verify(ur, atLeastOnce()).getById(id);
     }
 
     @Test
-    public void getUserByUsername() {
+    public void getUserByUsername() throws InvalidContentException, NotFoundException {
         String name = "testUser";
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn(name);
+        user.setUsername(name);
+        when(ur.getByUsername(name)).thenReturn(user);
 
-        assertEquals(user.getUsername(), name);
+        userService.getByUsername(name);
+        verify(ur, atLeastOnce()).getByUsername(name);
     }
 
     @Test
-    public void getUserByEmail() {
+    public void getUserByEmail() throws InvalidContentException, NotFoundException {
         String email = "testUSer@mail.com";
         User user = mock(User.class);
-        when(user.getEmail()).thenReturn(email);
+        user.setEmail(email);
+        when(ur.getByEmail(email)).thenReturn(user);
 
-        assertEquals(user.getEmail(), email);
+        userService.getByEmail(email);
+        verify(ur, atLeastOnce()).getByEmail(email);
     }
 
     @Test
-    public void createUser() {
+    public void createUser() throws NoSuchAlgorithmException, CreationFailedException, NotFoundException, InvalidContentException, NameNotUniqueException {
         String name = "testUser";
         String email = "testUser@mail.com";
         String password = "password123";
@@ -77,104 +80,221 @@ public class UserServiceTest {
         String website = "www.site.com";
         double longitude = 123.123;
         double latitude = 654.23;
-        try {
-            User user = userService.create(new User(name, email, password, biography, website, longitude, latitude));
-            assertEquals(name, user.getUsername());
-            assertEquals(email, user.getEmail());
-            assertEquals(biography, user.getBiography());
-            assertEquals(website, user.getWebsite());
-        } catch (NameNotUniqueException | NoSuchAlgorithmException | CreationFailedException | InvalidContentException | NotFoundException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
+
+        User user = new User(name, email, password, biography, website, longitude, latitude);
+        when(ur.create(user)).thenReturn(user);
+
+        userService.create(user);
+        verify(ur, atLeastOnce()).create(user);
     }
 
     @Test
-    public void updateUser() {
+    public void updateUser() throws InvalidContentException, NameNotUniqueException, NotFoundException {
         int id = 6;
-        String name = "a new name";
-        User user = mock(User.class);
-        when(user.getId()).thenReturn(id);
-
-        assertEquals(user.getId(), id);
-        assertNotEquals(name, user.getUsername());
-
+        String name = "testUser";
+        String email = "testUser@mail.com";
+        String password = "password123";
+        String biography = "my bio";
+        String website = "www.site.com";
+        double longitude = 123.123;
+        double latitude = 654.23;
+        User user = new User(name, email, password, biography, website, longitude, latitude);
+        user.setId(id);
         user.setUsername(name);
 
-        try {
-            User result = userService.update(user);
-            assertEquals(id, result.getId());
-            assertEquals(name, result.getUsername());
-        } catch (NameNotUniqueException | InvalidContentException | NotFoundException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
+        when(ur.getById(id)).thenReturn(user);
+        when(ur.update(user)).thenReturn(user);
+
+        userService.update(user);
+        verify(ur, atLeastOnce()).update(user);
     }
 
-    @Test
-    public void deleteUser() {
+    @Test(expected = NameNotUniqueException.class)
+    public void updateUserDuplicateUsername() throws InvalidContentException, NameNotUniqueException, NotFoundException {
+        /**
+         * User 1
+         */
+        int id = 1;
+        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        user.setId(id);
+
+        /**
+         * User 2
+         */
+        int id2 = 2;
+        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        user2.setId(id2);
+        user2.setUsername("testUser");
+
+        when(ur.getById(id2)).thenReturn(user2);
+        when(ur.getByUsername("testUser")).thenReturn(user);
+
+        userService.update(user2);
+        verify(ur, never()).update(user2);
+    }
+
+    @Test(expected = NameNotUniqueException.class)
+    public void updateUserDuplicateEmail() throws InvalidContentException, NameNotUniqueException, NotFoundException {
+        /**
+         * User 1
+         */
+        int id = 1;
+        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        user.setId(id);
+
+        /**
+         * User 2
+         */
+        int id2 = 2;
+        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        user2.setId(id2);
+        user2.setEmail("testUser@mail.com");
+
+        when(ur.getById(id2)).thenReturn(user2);
+        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
+
+        userService.update(user2);
+        verify(ur, never()).update(user2);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void getUserIdNotFound() throws InvalidContentException, NotFoundException {
         int id = 6;
-        User user = mock(User.class);
-        when(user.getId()).thenReturn(id);
+        when(ur.getById(id)).thenReturn(null);
 
-        assertEquals(user.getId(), id);
+        userService.getById(id);
+        verify(ur, never()).getById(id);
+    }
 
-        try {
-            boolean result = userService.delete(user);
-            assertTrue(result);
-        }catch (InvalidContentException | NotFoundException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
+    @Test(expected = NotFoundException.class)
+    public void getUserNameNotFound() throws InvalidContentException, NotFoundException {
+        String name = "myUserName";
+        when(ur.getByUsername(name)).thenReturn(null);
+
+        userService.getByUsername(name);
+        verify(ur, never()).getByUsername(name);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void getEmailNotFound() throws InvalidContentException, NotFoundException {
+        String email = "my@mail.com";
+        when(ur.getByEmail(email)).thenReturn(null);
+
+        userService.getByEmail(email);
+        verify(ur, never()).getByEmail(email);
     }
 
     @Test
-    public void followUser() {
-        int followerId = 12;
-        int followingId = 85;
+    public void deleteUser() throws InvalidContentException, NotFoundException {
+        int id = 6;
+        String name = "testUser";
+        String email = "testUser@mail.com";
+        String password = "password123";
+        String biography = "my bio";
+        String website = "www.site.com";
+        double longitude = 123.123;
+        double latitude = 654.23;
+        User user = new User(name, email, password, biography, website, longitude, latitude);
+        user.setId(id);
+        when(ur.getById(id)).thenReturn(user);
+        when(ur.delete(user)).thenReturn(true);
 
-        User user = mock(User.class);
-        User following = mock(User.class);
-
-        when(user.getId()).thenReturn(followerId);
-        when(following.getId()).thenReturn(followingId);
-
-        assertEquals(user.getId(), followerId);
-        assertEquals(following.getId(), followingId);
-
-        try {
-            User result = userService.follow(user, following);
-            following = userService.getById(followingId);
-            assertTrue(result.getFollowing().contains(following));
-            assertTrue(following.getFollowers().contains(result));
-        } catch (InvalidContentException |NotFoundException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
+        userService.delete(user);
+        verify(ur, atLeastOnce()).delete(user);
     }
 
     @Test
-    public void unfollowUser() {
-        int followerId = 12;
-        int followingId = 85;
+    public void followUser() throws InvalidContentException, NotFoundException, ActionForbiddenException {
+        /**
+         * User 1
+         */
+        int id = 1;
+        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        user.setId(id);
 
-        User user = mock(User.class);
-        User following = mock(User.class);
+        /**
+         * User 2
+         */
+        int id2 = 2;
+        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        user2.setId(id2);
 
-        when(user.getId()).thenReturn(followerId);
-        when(following.getId()).thenReturn(followingId);
+        when(ur.getById(id)).thenReturn(user);
+        when(ur.getById(id2)).thenReturn(user2);
+        when(ur.follow(user, user2)).thenReturn(user2);
 
-        assertEquals(user.getId(), followerId);
-        assertEquals(following.getId(), followingId);
+        userService.follow(user, user2);
+        verify(ur, atLeastOnce()).follow(user, user2);
+    }
 
-        try {
-            User result = userService.unfollow(user, following);
-            following = userService.getById(followingId);
-            assertFalse(result.getFollowing().contains(following));
-            assertFalse(following.getFollowers().contains(result));
-        } catch (InvalidContentException | NotFoundException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
+    @Test(expected = ActionForbiddenException.class)
+    public void followUserAlreadyFollowing() throws InvalidContentException, NotFoundException, ActionForbiddenException {
+        /**
+         * User 1
+         */
+        int id = 1;
+        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        user.setId(id);
+
+        /**
+         * User 2
+         */
+        int id2 = 2;
+        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        user2.setId(id2);
+
+        user.addFollowing(user2);
+
+        when(ur.getById(id)).thenReturn(user);
+
+        userService.follow(user, user2);
+        verify(ur, never()).follow(user, user2);
+    }
+
+    @Test
+    public void unfollowUser() throws InvalidContentException, NotFoundException, ActionForbiddenException {
+        /**
+         * User 1
+         */
+        int id = 1;
+        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        user.setId(id);
+
+        /**
+         * User 2
+         */
+        int id2 = 2;
+        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        user2.setId(id2);
+        user.addFollowing(user2);
+
+        when(ur.getById(id)).thenReturn(user);
+        when(ur.getById(id2)).thenReturn(user2);
+        when(ur.unfollow(user, user2)).thenReturn(user2);
+
+        userService.unfollow(user, user2);
+        verify(ur, atLeastOnce()).unfollow(user, user2);
+    }
+
+    @Test(expected = ActionForbiddenException.class)
+    public void unfollowUserYouAreNotFollowing() throws InvalidContentException, NotFoundException, ActionForbiddenException {
+        /**
+         * User 1
+         */
+        int id = 1;
+        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        user.setId(id);
+
+        /**
+         * User 2
+         */
+        int id2 = 2;
+        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        user2.setId(id2);
+
+        when(ur.getById(id)).thenReturn(user);
+
+        userService.unfollow(user, user2);
+        verify(ur, never()).follow(user, user2);
     }
 }

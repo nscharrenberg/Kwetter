@@ -13,20 +13,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import repository.collection.PermissionServiceCollImpl;
+import repository.interfaces.PermissionRepository;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PermissionServiceTest {
 
-    @Mock
-    PermissionServiceCollImpl pr;
-
     @InjectMocks
     private PermissionService permissionService;
+
+    @Mock
+    PermissionRepository pr;
 
     @Before
     public void setUp() {
@@ -35,73 +35,90 @@ public class PermissionServiceTest {
 
 
     @Test
-    public void getPermissionById() {
+    public void getPermissionById() throws InvalidContentException {
         int id = 6;
-        Permission permissoin = mock(Permission.class);
-        when(permissoin.getId()).thenReturn(id);
+        Permission permission = mock(Permission.class);
+        permission.setId(id);
 
-        assertEquals(permissoin.getId(), id);
+        when(pr.getById(id)).thenReturn(permission);
+
+        permissionService.getById(id);
+        verify(pr, atLeastOnce()).getById(id);
     }
 
     @Test
-    public void getPermissionByName() {
+    public void getPermissionByName() throws InvalidContentException {
         String name = "Tweet";
-        Permission permissoin = mock(Permission.class);
-        when(permissoin.getName()).thenReturn(name);
+        Permission permission = mock(Permission.class);
+        permission.setName(name);
+        when(pr.getByName(name)).thenReturn(permission);
 
-        assertEquals(permissoin.getName(), name);
+        permissionService.getByName(name);
+        verify(pr, atLeastOnce()).getByName(name);
     }
 
     @Test
-    public void createPermission() {
+    public void createPermission() throws InvalidContentException, NameNotUniqueException, CreationFailedException {
         String name = "Tweet";
-        try {
-            Permission permission = permissionService.create(new Permission(name));
+        Permission permission = new Permission(name);
+        when(pr.create(permission)).thenReturn(permission);
+        permissionService.create(permission);
 
-            assertEquals(name, permission.getName());
+        verify(pr, atLeastOnce()).create(permission);
 
-        } catch (NameNotUniqueException | InvalidContentException | CreationFailedException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
     }
 
     @Test
-    public void updatePermission() {
+    public void updatePermission() throws InvalidContentException, NameNotUniqueException {
         int id = 6;
         String name = "a new name";
-        Permission permissoin = mock(Permission.class);
-        when(permissoin.getId()).thenReturn(id);
+        String newName = "a new name";
+        Permission permission = new Permission();
+        permission.setId(id);
+        permission.setName(name);
 
-        assertEquals(permissoin.getId(), id);
-        assertNotEquals(name, permissoin.getName());
+        permission.setName(newName);
 
-        permissoin.setName(name);
+        when(pr.getByName(newName)).thenReturn(null);
+        when(pr.update(permission)).thenReturn(permission);
 
-        try {
-            Permission result = permissionService.update(permissoin);
-            assertEquals(id, result.getId());
-            assertEquals(name, result.getName());
-        } catch (NameNotUniqueException | InvalidContentException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
+        permissionService.update(permission);
+        verify(pr, atLeastOnce()).update(permission);
     }
 
     @Test
-    public void deletePermission() {
+    public void updatePermissionDuplicateName() throws InvalidContentException, NameNotUniqueException {
         int id = 6;
-        Permission permissoin = mock(Permission.class);
-        when(permissoin.getId()).thenReturn(id);
+        String name = "a new name";
+        Permission permission = new Permission();
+        permission.setId(id);
+        permission.setName(name);
 
-        assertEquals(permissoin.getId(), id);
+        int id2 = 43452;
+        String name2 = "another name";
+        Permission permission2 = new Permission();
+        permission2.setId(id2);
+        permission2.setName(name2);
 
-        try {
-            boolean result = permissionService.delete(permissoin);
-            assertTrue(result);
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            fail("Exception not expected");
-        }
+        permission2.setName(name);
+
+        when(pr.getByName(name)).thenReturn(permission);
+        when(pr.update(permission)).thenReturn(null);
+
+        permissionService.update(permission);
+        verify(pr, atLeastOnce()).update(permission);
+    }
+
+    @Test
+    public void deletePermission() throws InvalidContentException {
+        int id = 6;
+        Permission permission = new Permission();
+        permission.setId(id);
+
+        when(pr.getById(id)).thenReturn(permission);
+        when(pr.delete(permission)).thenReturn(true);
+
+        permissionService.delete(permission);
+        verify(pr, atLeastOnce()).delete(permission);
     }
 }
