@@ -123,15 +123,15 @@ public class TweetService {
      * @param tweet - the tweet information
      * @return the newly created tweet
      * @throws InvalidContentException
-     * @throws NameNotUniqueException
+     * @throws NotFoundException
      * @throws CreationFailedException
      */
     public Tweet create(Tweet tweet) throws InvalidContentException, NotFoundException, CreationFailedException {
-        if(tweet.getMentions().isEmpty()) {
+        if(tweet.getMessage() == null || tweet.getMessage().isEmpty()) {
             throw new InvalidContentException("Tweet must have a message");
         }
 
-        if(ur.getById(tweet.getAuthor().getId()) == null) {
+        if(tweet.getAuthor() == null || ur.getById(tweet.getAuthor().getId()) == null) {
             throw new NotFoundException("Author not found");
         }
 
@@ -151,6 +151,7 @@ public class TweetService {
      * @param tweet - the new tweet information with an existing tweet id
      * @return the updated tweet
      * @throws InvalidContentException
+     * @throws NotFoundException
      */
     public Tweet update(Tweet tweet) throws InvalidContentException, NotFoundException {
         if(tweet.getMessage().isEmpty()) {

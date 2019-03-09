@@ -106,6 +106,7 @@ public class User {
     public User() {
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
+        this.tweets = new HashSet<>();
     }
 
     public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following, Set<Tweet> tweets) {
@@ -283,6 +284,7 @@ public class User {
 
     public void addTweet(Tweet tweet) {
         this.tweets.add(tweet);
+        tweet.setAuthor(this);
     }
 
     public void removeTweet(Tweet tweet) {

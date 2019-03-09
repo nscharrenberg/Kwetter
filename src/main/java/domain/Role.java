@@ -70,6 +70,7 @@ public class Role {
     private Set<User> users;
 
     public Role() {
+        this.permissions = new HashSet<>();
     }
 
     public Role(int id, String name, Set<Permission> permissions) {
@@ -119,10 +120,12 @@ public class Role {
 
     public void addPermission(Permission permission) {
         this.permissions.add(permission);
+        permission.addRole(this);
     }
 
     public void removePermission(Permission permission) {
         this.permissions.remove(permission);
+        permission.removeRole(this);
     }
 
     public Set<User> getUsers() {

@@ -1,27 +1,18 @@
 package service;
 
-import domain.Role;
 import domain.User;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
-import exceptions.NotFoundException;
+import exceptions.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import repository.collection.RoleServiceCollImpl;
-import repository.collection.UserServiceCollImpl;
-
-import javax.inject.Inject;
+import repository.interfaces.UserRepository;
 
 import java.security.NoSuchAlgorithmException;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -32,13 +23,10 @@ public class UserServiceTest {
     private UserService userService;
 
     @Mock
-    private UserServiceCollImpl ur;
+    private UserRepository ur;
 
     @Mock
     private RoleService roleService;
-
-    @Mock
-    private RoleServiceCollImpl rr;
 
     @Before
     public void setUp() {
@@ -51,30 +39,36 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserById() {
+    public void getUserById() throws InvalidContentException, NotFoundException {
         int id = 6;
         User user = mock(User.class);
-        when(user.getId()).thenReturn(id);
+        user.setId(id);
+        when(ur.getById(id)).thenReturn(user);
 
-        assertEquals(user.getId(), id);
+        userService.getById(id);
+        verify(ur, atLeastOnce()).getById(id);
     }
 
     @Test
-    public void getUserByUsername() {
+    public void getUserByUsername() throws InvalidContentException, NotFoundException {
         String name = "testUser";
         User user = mock(User.class);
-        when(user.getUsername()).thenReturn(name);
+        user.setUsername(name);
+        when(ur.getByUsername(name)).thenReturn(user);
 
-        assertEquals(user.getUsername(), name);
+        userService.getByUsername(name);
+        verify(ur, atLeastOnce()).getByUsername(name);
     }
 
     @Test
-    public void getUserByEmail() {
+    public void getUserByEmail() throws InvalidContentException, NotFoundException {
         String email = "testUSer@mail.com";
         User user = mock(User.class);
-        when(user.getEmail()).thenReturn(email);
+        user.setEmail(email);
+        when(ur.getByEmail(email)).thenReturn(user);
 
-        assertEquals(user.getEmail(), email);
+        userService.getByEmail(email);
+        verify(ur, atLeastOnce()).getByEmail(email);
     }
 
     @Test
@@ -86,11 +80,9 @@ public class UserServiceTest {
         String website = "www.site.com";
         double longitude = 123.123;
         double latitude = 654.23;
-        Role role = new Role("member");
-        rr.create(role);
-        verify(rr, atLeastOnce()).create(role);
 
         User user = new User(name, email, password, biography, website, longitude, latitude);
+        when(ur.create(user)).thenReturn(user);
 
         userService.create(user);
         verify(ur, atLeastOnce()).create(user);
@@ -108,11 +100,10 @@ public class UserServiceTest {
         double latitude = 654.23;
         User user = new User(name, email, password, biography, website, longitude, latitude);
         user.setId(id);
-        when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername(name)).thenReturn(user);
-        when(ur.getByEmail(email)).thenReturn(user);
-
         user.setUsername(name);
+
+        when(ur.getById(id)).thenReturn(user);
+        when(ur.update(user)).thenReturn(user);
 
         userService.update(user);
         verify(ur, atLeastOnce()).update(user);
@@ -126,9 +117,6 @@ public class UserServiceTest {
         int id = 1;
         User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
         user.setId(id);
-        when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername("testUser")).thenReturn(user);
-        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
 
         /**
          * User 2
@@ -136,14 +124,13 @@ public class UserServiceTest {
         int id2 = 2;
         User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
         user2.setId(id2);
-        when(ur.getById(id2)).thenReturn(user2);
-        when(ur.getByUsername("testUser2")).thenReturn(user2);
-        when(ur.getByEmail("testUser2@mail.com")).thenReturn(user2);
-
         user2.setUsername("testUser");
 
+        when(ur.getById(id2)).thenReturn(user2);
+        when(ur.getByUsername("testUser")).thenReturn(user);
+
         userService.update(user2);
-        verify(ur, atLeastOnce()).update(user2);
+        verify(ur, never()).update(user2);
     }
 
     @Test(expected = NameNotUniqueException.class)
@@ -154,9 +141,6 @@ public class UserServiceTest {
         int id = 1;
         User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
         user.setId(id);
-        when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername("testUser")).thenReturn(user);
-        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
 
         /**
          * User 2
@@ -164,14 +148,13 @@ public class UserServiceTest {
         int id2 = 2;
         User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
         user2.setId(id2);
-        when(ur.getById(id2)).thenReturn(user2);
-        when(ur.getByUsername("testUser2")).thenReturn(user2);
-        when(ur.getByEmail("testUser2@mail.com")).thenReturn(user2);
-
         user2.setEmail("testUser@mail.com");
 
+        when(ur.getById(id2)).thenReturn(user2);
+        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
+
         userService.update(user2);
-        verify(ur, atLeastOnce()).update(user2);
+        verify(ur, never()).update(user2);
     }
 
     @Test(expected = NotFoundException.class)
@@ -180,7 +163,7 @@ public class UserServiceTest {
         when(ur.getById(id)).thenReturn(null);
 
         userService.getById(id);
-        verify(ur, atLeastOnce()).getById(id);
+        verify(ur, never()).getById(id);
     }
 
     @Test(expected = NotFoundException.class)
@@ -189,7 +172,7 @@ public class UserServiceTest {
         when(ur.getByUsername(name)).thenReturn(null);
 
         userService.getByUsername(name);
-        verify(ur, atLeastOnce()).getByUsername(name);
+        verify(ur, never()).getByUsername(name);
     }
 
     @Test(expected = NotFoundException.class)
@@ -198,7 +181,7 @@ public class UserServiceTest {
         when(ur.getByEmail(email)).thenReturn(null);
 
         userService.getByEmail(email);
-        verify(ur, atLeastOnce()).getByEmail(email);
+        verify(ur, never()).getByEmail(email);
     }
 
     @Test
@@ -214,24 +197,20 @@ public class UserServiceTest {
         User user = new User(name, email, password, biography, website, longitude, latitude);
         user.setId(id);
         when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername(name)).thenReturn(user);
-        when(ur.getByEmail(email)).thenReturn(user);
+        when(ur.delete(user)).thenReturn(true);
 
         userService.delete(user);
         verify(ur, atLeastOnce()).delete(user);
     }
 
     @Test
-    public void followUser() throws InvalidContentException, NotFoundException {
+    public void followUser() throws InvalidContentException, NotFoundException, ActionForbiddenException {
         /**
          * User 1
          */
         int id = 1;
         User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
         user.setId(id);
-        when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername("testUser")).thenReturn(user);
-        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
 
         /**
          * User 2
@@ -239,25 +218,23 @@ public class UserServiceTest {
         int id2 = 2;
         User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
         user2.setId(id2);
+
+        when(ur.getById(id)).thenReturn(user);
         when(ur.getById(id2)).thenReturn(user2);
-        when(ur.getByUsername("testUser2")).thenReturn(user2);
-        when(ur.getByEmail("testUser2@mail.com")).thenReturn(user2);
+        when(ur.follow(user, user2)).thenReturn(user2);
 
         userService.follow(user, user2);
         verify(ur, atLeastOnce()).follow(user, user2);
     }
 
-    @Test(expected = InvalidContentException.class)
-    public void followUserAlreadyFollowing() throws InvalidContentException, NotFoundException {
+    @Test(expected = ActionForbiddenException.class)
+    public void followUserAlreadyFollowing() throws InvalidContentException, NotFoundException, ActionForbiddenException {
         /**
          * User 1
          */
         int id = 1;
         User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
         user.setId(id);
-        when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername("testUser")).thenReturn(user);
-        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
 
         /**
          * User 2
@@ -265,28 +242,23 @@ public class UserServiceTest {
         int id2 = 2;
         User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
         user2.setId(id2);
-        when(ur.getById(id2)).thenReturn(user2);
-        when(ur.getByUsername("testUser2")).thenReturn(user2);
-        when(ur.getByEmail("testUser2@mail.com")).thenReturn(user2);
+
+        user.addFollowing(user2);
+
+        when(ur.getById(id)).thenReturn(user);
 
         userService.follow(user, user2);
-        verify(ur, atLeastOnce()).follow(user, user2);
-
-        userService.follow(user, user2);
-        verify(ur, atLeastOnce()).follow(user, user2);
+        verify(ur, never()).follow(user, user2);
     }
 
     @Test
-    public void unfollowUser() throws InvalidContentException, NotFoundException {
+    public void unfollowUser() throws InvalidContentException, NotFoundException, ActionForbiddenException {
         /**
          * User 1
          */
         int id = 1;
         User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
         user.setId(id);
-        when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername("testUser")).thenReturn(user);
-        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
 
         /**
          * User 2
@@ -294,28 +266,24 @@ public class UserServiceTest {
         int id2 = 2;
         User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
         user2.setId(id2);
-        when(ur.getById(id2)).thenReturn(user2);
-        when(ur.getByUsername("testUser2")).thenReturn(user2);
-        when(ur.getByEmail("testUser2@mail.com")).thenReturn(user2);
+        user.addFollowing(user2);
 
-        userService.follow(user, user2);
-        verify(ur, atLeastOnce()).follow(user, user2);
+        when(ur.getById(id)).thenReturn(user);
+        when(ur.getById(id2)).thenReturn(user2);
+        when(ur.unfollow(user, user2)).thenReturn(user2);
 
         userService.unfollow(user, user2);
-        verify(ur, atLeastOnce()).follow(user, user2);
+        verify(ur, atLeastOnce()).unfollow(user, user2);
     }
 
-    @Test(expected = InvalidContentException.class)
-    public void unfollowUserYouAreNotFollowing() throws InvalidContentException, NotFoundException {
+    @Test(expected = ActionForbiddenException.class)
+    public void unfollowUserYouAreNotFollowing() throws InvalidContentException, NotFoundException, ActionForbiddenException {
         /**
          * User 1
          */
         int id = 1;
         User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
         user.setId(id);
-        when(ur.getById(id)).thenReturn(user);
-        when(ur.getByUsername("testUser")).thenReturn(user);
-        when(ur.getByEmail("testUser@mail.com")).thenReturn(user);
 
         /**
          * User 2
@@ -323,11 +291,10 @@ public class UserServiceTest {
         int id2 = 2;
         User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
         user2.setId(id2);
-        when(ur.getById(id2)).thenReturn(user2);
-        when(ur.getByUsername("testUser2")).thenReturn(user2);
-        when(ur.getByEmail("testUser2@mail.com")).thenReturn(user2);
+
+        when(ur.getById(id)).thenReturn(user);
 
         userService.unfollow(user, user2);
-        verify(ur, atLeastOnce()).follow(user, user2);
+        verify(ur, never()).follow(user, user2);
     }
 }
