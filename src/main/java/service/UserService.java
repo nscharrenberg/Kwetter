@@ -2,10 +2,7 @@ package service;
 
 import domain.Role;
 import domain.User;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
-import exceptions.NotFoundException;
+import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
@@ -156,7 +153,7 @@ public class UserService {
             throw new NameNotUniqueException("User with name " + user.getUsername() + " already exists.");
         }
 
-        User emailResult = ur.getByEmail(user.getUsername());
+        User emailResult = ur.getByEmail(user.getEmail());
         if(emailResult != null && emailResult.getId() != user.getId()) {
             throw new NameNotUniqueException("User with email " + user.getEmail() + " already exists.");
         }
@@ -191,13 +188,17 @@ public class UserService {
      * @throws InvalidContentException
      * @throws NotFoundException
      */
-    public User follow(User user, User toFollow) throws InvalidContentException, NotFoundException {
+    public User follow(User user, User toFollow) throws InvalidContentException, NotFoundException, ActionForbiddenException {
         if(user.getId() <= 0) {
             throw new InvalidContentException("Invalid user ID");
         }
 
         if(toFollow.getId() <= 0) {
             throw new InvalidContentException("Invalid ID for User you are trying to follow");
+        }
+
+        if(ur.getById(user.getId()).getFollowing().contains(toFollow) || ur.getById(toFollow.getId()).getFollowers().contains(user)) {
+            throw new ActionForbiddenException(user.getUsername() + " is already following " + toFollow.getUsername());
         }
 
         if(ur.getById(user.getId()) == null) {
@@ -219,13 +220,17 @@ public class UserService {
      * @throws InvalidContentException
      * @throws NotFoundException
      */
-    public User unfollow(User user, User toUnfollow) throws NotFoundException, InvalidContentException {
+    public User unfollow(User user, User toUnfollow) throws NotFoundException, InvalidContentException, ActionForbiddenException {
         if(user.getId() <= 0) {
             throw new InvalidContentException("Invalid user ID");
         }
 
         if(toUnfollow.getId() <= 0) {
             throw new InvalidContentException("Invalid ID for User you are trying to unfollow");
+        }
+
+        if(!ur.getById(user.getId()).getFollowing().contains(toUnfollow) || !ur.getById(toUnfollow.getId()).getFollowers().contains(user)) {
+            throw new ActionForbiddenException(user.getUsername() + " is not following " + toUnfollow.getUsername());
         }
 
         if(ur.getById(user.getId()) == null) {

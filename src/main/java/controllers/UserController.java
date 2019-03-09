@@ -130,8 +130,14 @@ public class UserController {
     @Path("/{id}")
     public Response update(@PathParam("id") int id, UserViewModel request) {
         try {
-            User user = new User(request.getUsername(), request.getEmail(), request.getPassword(), request.getBiography(), request.getWebsite(), request.getLongitude(), request.getLatitude());
-            user.setId(id);
+            User user = userService.getById(id);
+            user.setUsername(request.getUsername() != null ? request.getUsername() : user.getUsername());
+            user.setEmail(request.getEmail() != null ? request.getEmail() : user.getEmail());
+            user.setBiography(request.getBiography() != null ? request.getBiography() : user.getBiography());
+            user.setWebsite(request.getWebsite() != null ? request.getWebsite() : user.getWebsite());
+            user.setLongitude(request.getLongitude() != null ? request.getLongitude() : user.getLatitude());
+            user.setLatitude(request.getLatitude() != null ? request.getLatitude() : user.getLatitude());
+
             userService.update(user);
             return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
         } catch (InvalidContentException e) {
@@ -217,6 +223,9 @@ public class UserController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (ActionForbiddenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         }
     }
 
@@ -244,8 +253,9 @@ public class UserController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (ActionForbiddenException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         }
     }
-
-
 }
