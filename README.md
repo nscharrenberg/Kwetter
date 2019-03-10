@@ -38,3 +38,4 @@ As this is a school assignment, certain learning objectives have to be met.
 - Service -Repository Pattern
 - MVC Pattern
 - SOLID principle
+- Facade
