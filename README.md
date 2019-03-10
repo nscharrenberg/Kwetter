@@ -24,7 +24,7 @@ As this is a school assignment, certain learning objectives have to be met.
 - CDI
 - EJB
 - JPA
-- Hibernate
+- EclipseLink
 - Google Guava
 - Cucumber
 - Rest Assured
