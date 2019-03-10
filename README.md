@@ -36,5 +36,5 @@ As this is a school assignment, certain learning objectives have to be met.
 
 ### Patterns
 - Service -Repository Pattern
-- MVVM Pattern
+- MVC Pattern
 - SOLID principle
