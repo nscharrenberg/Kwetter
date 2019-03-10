@@ -1,6 +1,7 @@
 package domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
@@ -11,44 +12,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@NamedEntityGraph(
-        name = "role-entity-graph",
-        attributeNodes = {
-                @NamedAttributeNode("id"),
-                @NamedAttributeNode("name"),
-                @NamedAttributeNode(value = "permissions", subgraph = "permission-subgraph"),
-                @NamedAttributeNode(value = "users", subgraph = "user-subgraph"),
-        },
-        subgraphs = {
-                @NamedSubgraph(
-                        name = "permission-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("name"),
-                        }
-                ),
-                @NamedSubgraph(
-                        name = "roles-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id"),
-                                @NamedAttributeNode("name")
-                        }
-                ),
-                @NamedSubgraph(
-                        name = "user-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id"),
-                                @NamedAttributeNode("username"),
-                                @NamedAttributeNode("email")
-                        }
-                ),
-        }
-)
 @NamedQueries({
         @NamedQuery(name = "role.getAllRoles", query = "SELECT r FROM Role r"),
         @NamedQuery(name = "role.getRoleById", query = "SELECT r FROM Role r WHERE r.id = :id"),
         @NamedQuery(name = "role.getRoleByName", query = "SELECT r FROM Role r WHERE r.name = :name")
 })
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Role {
 
     @Id
@@ -67,6 +35,7 @@ public class Role {
     private Set<Permission> permissions;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"role", "tweets", "followers", "following"})
     private Set<User> users;
 
     public Role() {

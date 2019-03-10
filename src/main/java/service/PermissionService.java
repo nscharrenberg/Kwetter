@@ -1,23 +1,15 @@
 package service;
 
-import com.sun.nio.sctp.IllegalUnbindException;
 import domain.Permission;
-import domain.User;
 import exceptions.CreationFailedException;
 import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
+import exceptions.NotFoundException;
 import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Context;
 import java.util.List;
 
 @Stateless
@@ -59,7 +51,7 @@ public class PermissionService {
      * Get a permission by its name
      * @param name - the name of the permission
      * @return a permission
-     * @throws IllegalArgumentException
+     * @throws InvalidContentException
      * @throws NotFoundException
      */
     public Permission getByName(String name) throws InvalidContentException, NotFoundException {
@@ -107,8 +99,9 @@ public class PermissionService {
      * @return the updated permission
      * @throws InvalidContentException
      * @throws NameNotUniqueException
+     * @throws NotFoundException
      */
-    public Permission update(Permission permission) throws InvalidContentException, NameNotUniqueException {
+    public Permission update(Permission permission) throws InvalidContentException, NameNotUniqueException, NotFoundException {
         if(permission.getName().isEmpty()) {
             throw new InvalidContentException("name can not be empty");
         }
@@ -117,7 +110,12 @@ public class PermissionService {
             throw new InvalidContentException("Invalid ID");
         }
 
+        if(pr.getById(permission.getId()) == null) {
+            throw new NotFoundException("Role not found");
+        }
+
         Permission uniquePermission = pr.getByName(permission.getName());
+
         if(uniquePermission != null && permission.getId() != uniquePermission.getId()) {
             throw new NameNotUniqueException("Permission with name " + permission.getName() + " already exists.");
         }
