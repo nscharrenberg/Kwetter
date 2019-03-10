@@ -1,6 +1,7 @@
 package domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
@@ -8,28 +9,11 @@ import java.util.*;
 
 @Entity
 @Table(name = "permissions")
-@NamedEntityGraph(
-        name = "permission-entity-graph",
-        attributeNodes = {
-                @NamedAttributeNode("id"),
-                @NamedAttributeNode("name"),
-                @NamedAttributeNode(value = "roles", subgraph = "roles-subgraph"),
-        },
-        subgraphs = {
-                @NamedSubgraph(
-                        name = "roles-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("name")
-                        }
-                )
-        }
-)
 @NamedQueries({
-        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p JOIN FETCH p.roles r"),
-        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.id = :id"),
-        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p JOIN FETCH p.roles r WHERE p.name = :name")
+        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p"),
+        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p WHERE p.id = :id"),
+        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p WHERE p.name = :name")
 })
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Permission {
 
     @Id
@@ -40,6 +24,7 @@ public class Permission {
     private String name;
 
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"permissions", "users"})
     private Set<Role> roles;
 
     public Permission() {

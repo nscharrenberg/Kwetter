@@ -1,6 +1,7 @@
 package domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
@@ -11,49 +12,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@NamedEntityGraph(
-        name = "user-entity-graph",
-        attributeNodes = {
-                @NamedAttributeNode("id"),
-                @NamedAttributeNode("username"),
-                @NamedAttributeNode("email"),
-                @NamedAttributeNode("biography"),
-                @NamedAttributeNode("website"),
-                @NamedAttributeNode("longitude"),
-                @NamedAttributeNode("latitude"),
-                @NamedAttributeNode(value = "role", subgraph = "role-subgraph"),
-                @NamedAttributeNode(value = "followers", subgraph = "followers-subgraph"),
-                @NamedAttributeNode(value = "following", subgraph = "followers-subgraph"),
-        },
-        subgraphs = {
-                @NamedSubgraph(
-                        name = "role-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id"),
-                                @NamedAttributeNode("name")
-                        }
-                ),
-                @NamedSubgraph(
-                        name = "followers-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id"),
-                                @NamedAttributeNode("username"),
-                                @NamedAttributeNode("email"),
-                                @NamedAttributeNode("biography"),
-                                @NamedAttributeNode("website"),
-                                @NamedAttributeNode("longitude"),
-                                @NamedAttributeNode("latitude"),
-                        }
-                ),
-        }
-)
 @NamedQueries({
         @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
         @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
         @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
         @NamedQuery(name = "user.getUserByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
 })
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class User {
 
     @Id
@@ -79,6 +43,7 @@ public class User {
     private double latitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"users"})
     private Role role;
 
     @ManyToMany(
@@ -92,15 +57,18 @@ public class User {
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
+    @JsonIgnoreProperties({"followers", "following", "role"})
     private Set<User> followers;
 
     @ManyToMany(
             mappedBy = "followers",
             fetch = FetchType.LAZY
     )
+    @JsonIgnoreProperties({"followers", "following", "role"})
     private Set<User> following;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"mentions", "likes"})
     private Set<Tweet> tweets;
 
     public User() {

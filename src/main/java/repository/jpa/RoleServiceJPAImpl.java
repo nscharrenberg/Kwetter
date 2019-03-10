@@ -27,17 +27,13 @@ public class RoleServiceJPAImpl implements RoleRepository {
 
     @Override
     public List<Role> all() {
-        EntityGraph eg = em.getEntityGraph("role-entity-graph");
-        return em.createNamedQuery("role.getAllRoles", Role.class).setHint("javax.persistence.fetchgraph", eg).getResultList();
+        return em.createNamedQuery("role.getAllRoles", Role.class).getResultList();
     }
 
     @Override
     public Role getById(int id) {
         try {
-            EntityGraph eg = em.getEntityGraph("role-entity-graph");
-            Map<String, Object> properties = new HashMap<>();
-            properties.put("javax.persistence.loadgraph", eg);
-            return em.find(Role.class, id, properties);
+            return em.createNamedQuery("role.getRoleById", Role.class).setParameter("id", id).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -48,7 +44,7 @@ public class RoleServiceJPAImpl implements RoleRepository {
     @Override
     public Role getByName(String name) {
         try {
-            return em.find(Role.class, name);
+            return em.createNamedQuery("role.getRoleByName", Role.class).setParameter("name", name).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
