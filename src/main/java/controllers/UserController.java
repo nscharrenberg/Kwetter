@@ -3,15 +3,11 @@ package controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.viewModels.FollowViewModel;
-import controllers.viewModels.RoleViewModel;
 import controllers.viewModels.UserRoleViewModel;
 import controllers.viewModels.UserViewModel;
 import domain.Role;
 import domain.User;
-import exceptions.ActionForbiddenException;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
+import exceptions.*;
 import exceptions.NotFoundException;
 import service.RoleService;
 import service.UserService;
@@ -22,7 +18,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 @Stateless
 @Path("/users")

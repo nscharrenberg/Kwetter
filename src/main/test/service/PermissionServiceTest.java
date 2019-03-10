@@ -6,6 +6,7 @@ import domain.User;
 import exceptions.CreationFailedException;
 import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
+import exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +36,7 @@ public class PermissionServiceTest {
 
 
     @Test
-    public void getPermissionById() throws InvalidContentException {
+    public void getPermissionById() throws InvalidContentException, NotFoundException {
         int id = 6;
         Permission permission = mock(Permission.class);
         permission.setId(id);
@@ -47,7 +48,7 @@ public class PermissionServiceTest {
     }
 
     @Test
-    public void getPermissionByName() throws InvalidContentException {
+    public void getPermissionByName() throws InvalidContentException, NotFoundException {
         String name = "Tweet";
         Permission permission = mock(Permission.class);
         permission.setName(name);
@@ -69,7 +70,7 @@ public class PermissionServiceTest {
     }
 
     @Test
-    public void updatePermission() throws InvalidContentException, NameNotUniqueException {
+    public void updatePermission() throws InvalidContentException, NameNotUniqueException, NotFoundException {
         int id = 6;
         String name = "a new name";
         String newName = "a new name";
@@ -87,7 +88,7 @@ public class PermissionServiceTest {
     }
 
     @Test
-    public void updatePermissionDuplicateName() throws InvalidContentException, NameNotUniqueException {
+    public void updatePermissionDuplicateName() throws InvalidContentException, NameNotUniqueException, NotFoundException {
         int id = 6;
         String name = "a new name";
         Permission permission = new Permission();
@@ -110,7 +111,7 @@ public class PermissionServiceTest {
     }
 
     @Test
-    public void deletePermission() throws InvalidContentException {
+    public void deletePermission() throws InvalidContentException, NotFoundException {
         int id = 6;
         Permission permission = new Permission();
         permission.setId(id);

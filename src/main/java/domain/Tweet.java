@@ -1,6 +1,7 @@
 package domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
@@ -11,45 +12,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tweets")
-@NamedEntityGraph(
-        name = "tweet-entity-graph",
-        attributeNodes = {
-                @NamedAttributeNode("id"),
-                @NamedAttributeNode("message"),
-                @NamedAttributeNode("createdAt"),
-                @NamedAttributeNode(value = "author", subgraph = "author-subgraph"),
-        },
-        subgraphs = {
-                @NamedSubgraph(
-                        name = "author-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id"),
-                                @NamedAttributeNode("username"),
-                                @NamedAttributeNode("email"),
-                                @NamedAttributeNode("biography"),
-                                @NamedAttributeNode("website"),
-                                @NamedAttributeNode("longitude"),
-                                @NamedAttributeNode("latitude"),
-                                @NamedAttributeNode(value = "followers", subgraph = "followers-subgraph"),
-                                @NamedAttributeNode(value = "following", subgraph = "followers-subgraph"),
-                        }
-                ),
-                @NamedSubgraph(
-                        name = "followers-subgraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id"),
-                                @NamedAttributeNode("username")
-                        }
-                ),
-        }
-)
 @NamedQueries({
         @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t"),
         @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
-        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author = :author"),
+        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author.id = :author"),
         @NamedQuery(name = "tweet.getTweetByDate", query = "SELECT t FROM Tweet t WHERE t.createdAt = :createdAt")
 })
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Tweet {
 
     @Id
@@ -61,6 +29,7 @@ public class Tweet {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author", nullable = false)
+    @JsonIgnoreProperties({"tweets", "folowers", "following", "role"})
     private User author;
 
     @Column
@@ -78,6 +47,7 @@ public class Tweet {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "tweet_id")
     )
+    @JsonIgnoreProperties({"tweets", "folowers", "following", "role"})
     private Set<User> mentions;
 
     @ManyToMany(
@@ -92,6 +62,7 @@ public class Tweet {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "tweet_id")
     )
+    @JsonIgnoreProperties({"tweets", "folowers", "following", "role"})
     private Set<User> likes;
 
     public Tweet() {

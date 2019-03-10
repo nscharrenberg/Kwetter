@@ -2,16 +2,13 @@ package repository.jpa;
 
 import domain.Role;
 import domain.User;
-import exceptions.NameNotUniqueException;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.inject.Produces;
-import javax.persistence.*;
-import javax.transaction.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @JPA
@@ -23,14 +20,13 @@ public class UserServiceJPAImpl implements UserRepository {
 
     @Override
     public List<User> all() {
-        EntityGraph eg = em.getEntityGraph("user-entity-graph");
-        return em.createNamedQuery("user.getAllUsers", User.class).setHint("javax.persistence.fetchgraph", eg).getResultList();
+        return em.createNamedQuery("user.getAllUsers", User.class).getResultList();
     }
 
     @Override
     public User getById(int id) {
         try {
-            return em.find(User.class, id);
+            return em.createNamedQuery("user.getUserById", User.class).setParameter("id", id).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -40,7 +36,7 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public User getByUsername(String username) {
         try {
-            return em.find(User.class, username);
+            return em.createNamedQuery("user.getUserByUsername", User.class).setParameter("username", username).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -50,7 +46,7 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public User getByEmail(String email) {
         try {
-            return em.find(User.class, email);
+            return em.createNamedQuery("user.getUserByEmail", User.class).setParameter("email", email).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
