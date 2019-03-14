@@ -165,7 +165,7 @@ public class RoleService {
             throw new InvalidContentException("Invalid permission ID");
         }
 
-        Permission p = pr.getById(permission.getId());
+        Permission p = pr.getById(permission.getId()).getObject();
 
         if(p == null) {
             throw new NotFoundException("Permission not found");
@@ -202,7 +202,7 @@ public class RoleService {
             throw new InvalidContentException("Invalid permission ID");
         }
 
-        Permission p = pr.getById(permission.getId());
+        Permission p = pr.getById(permission.getId()).getObject();
 
         if(p == null) {
             throw new NotFoundException("Permission not found");

@@ -81,7 +81,14 @@ public class UserServiceTest {
         double longitude = 123.123;
         double latitude = 654.23;
 
-        User user = new User(name, email, password, biography, website, longitude, latitude);
+        User user = new User();
+        user.setUsername(name);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setBiography(biography);
+        user.setWebsite(website);
+        user.setLongitude(longitude);
+        user.setLatitude(latitude);
         when(ur.create(user)).thenReturn(user);
 
         userService.create(user);
@@ -98,7 +105,14 @@ public class UserServiceTest {
         String website = "www.site.com";
         double longitude = 123.123;
         double latitude = 654.23;
-        User user = new User(name, email, password, biography, website, longitude, latitude);
+        User user = new User();
+        user.setUsername(name);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setBiography(biography);
+        user.setWebsite(website);
+        user.setLongitude(longitude);
+        user.setLatitude(latitude);
         user.setId(id);
         user.setUsername(name);
 
@@ -115,14 +129,28 @@ public class UserServiceTest {
          * User 1
          */
         int id = 1;
-        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        User user = new User();
+        user.setUsername("testUser");
+        user.setPassword("password123");
+        user.setEmail("testUser@mail.com");
+        user.setBiography("my bio");
+        user.setWebsite("www.site.com");
+        user.setLongitude(123.123);
+        user.setLatitude(654.23);
         user.setId(id);
 
         /**
          * User 2
          */
         int id2 = 2;
-        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        User user2 = new User();
+        user.setUsername("testUser2");
+        user.setPassword("password1234567");
+        user.setEmail("testUser2@mail.com");
+        user.setBiography("my bio2");
+        user.setWebsite("www.site2.com");
+        user.setLongitude(1235.423);
+        user.setLatitude(674.234);
         user2.setId(id2);
         user2.setUsername("testUser");
 
@@ -139,14 +167,28 @@ public class UserServiceTest {
          * User 1
          */
         int id = 1;
-        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        User user = new User();
+        user.setUsername("testUser");
+        user.setPassword("password123");
+        user.setEmail("testUser@mail.com");
+        user.setBiography("my bio");
+        user.setWebsite("www.site.com");
+        user.setLongitude(123.123);
+        user.setLatitude(654.23);
         user.setId(id);
 
         /**
          * User 2
          */
         int id2 = 2;
-        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        User user2 = new User();
+        user.setUsername("testUser2");
+        user.setPassword("password1234567");
+        user.setEmail("testUser2@mail.com");
+        user.setBiography("my bio2");
+        user.setWebsite("www.site2.com");
+        user.setLongitude(1235.423);
+        user.setLatitude(674.234);
         user2.setId(id2);
         user2.setEmail("testUser@mail.com");
 
@@ -194,7 +236,14 @@ public class UserServiceTest {
         String website = "www.site.com";
         double longitude = 123.123;
         double latitude = 654.23;
-        User user = new User(name, email, password, biography, website, longitude, latitude);
+        User user = new User();
+        user.setUsername(name);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setBiography(biography);
+        user.setWebsite(website);
+        user.setLongitude(longitude);
+        user.setLatitude(latitude);
         user.setId(id);
         when(ur.getById(id)).thenReturn(user);
         when(ur.delete(user)).thenReturn(true);
@@ -209,14 +258,28 @@ public class UserServiceTest {
          * User 1
          */
         int id = 1;
-        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        User user = new User();
+        user.setUsername("testUser");
+        user.setPassword("password1234567");
+        user.setEmail("testUser@mail.com");
+        user.setBiography("my bio");
+        user.setWebsite("www.site.com");
+        user.setLongitude(1235.423);
+        user.setLatitude(674.234);
         user.setId(id);
 
         /**
          * User 2
          */
         int id2 = 2;
-        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        User user2 = new User();
+        user.setUsername("testUser2");
+        user.setPassword("password1234567");
+        user.setEmail("testUser2@mail.com");
+        user.setBiography("my bio2");
+        user.setWebsite("www.site2.com");
+        user.setLongitude(1235.423);
+        user.setLatitude(674.234);
         user2.setId(id2);
 
         when(ur.getById(id)).thenReturn(user);
@@ -233,14 +296,28 @@ public class UserServiceTest {
          * User 1
          */
         int id = 1;
-        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        User user = new User();
+        user.setUsername("testUser");
+        user.setPassword("password123");
+        user.setEmail("testUser@mail.com");
+        user.setBiography("my bio");
+        user.setWebsite("www.site.com");
+        user.setLongitude(123.123);
+        user.setLatitude(654.23);
         user.setId(id);
 
         /**
          * User 2
          */
         int id2 = 2;
-        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        User user2 = new User();
+        user.setUsername("testUser2");
+        user.setPassword("password1234567");
+        user.setEmail("testUser2@mail.com");
+        user.setBiography("my bio2");
+        user.setWebsite("www.site2.com");
+        user.setLongitude(1235.423);
+        user.setLatitude(674.234);
         user2.setId(id2);
 
         user.addFollowing(user2);
@@ -257,14 +334,28 @@ public class UserServiceTest {
          * User 1
          */
         int id = 1;
-        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        User user = new User();
+        user.setUsername("testUser");
+        user.setPassword("password123");
+        user.setEmail("testUser@mail.com");
+        user.setBiography("my bio");
+        user.setWebsite("www.site.com");
+        user.setLongitude(123.123);
+        user.setLatitude(654.23);
         user.setId(id);
 
         /**
          * User 2
          */
         int id2 = 2;
-        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        User user2 = new User();
+        user.setUsername("testUser2");
+        user.setPassword("password1234567");
+        user.setEmail("testUser2@mail.com");
+        user.setBiography("my bio2");
+        user.setWebsite("www.site2.com");
+        user.setLongitude(1235.423);
+        user.setLatitude(674.234);
         user2.setId(id2);
         user.addFollowing(user2);
 
@@ -282,14 +373,28 @@ public class UserServiceTest {
          * User 1
          */
         int id = 1;
-        User user = new User("testUser", "testUser@mail.com", "password123", "my bio", "www.site.com", 123.123, 654.23);
+        User user = new User();
+        user.setUsername("testUser");
+        user.setPassword("password123");
+        user.setEmail("testUser@mail.com");
+        user.setBiography("my bio");
+        user.setWebsite("www.site.com");
+        user.setLongitude(123.123);
+        user.setLatitude(654.23);
         user.setId(id);
 
         /**
          * User 2
          */
         int id2 = 2;
-        User user2 = new User("testUser2", "testUser2@mail.com", "password1234567", "my bio2", "www.site2.com", 1235.423, 674.234);
+        User user2 = new User();
+        user.setUsername("testUser2");
+        user.setPassword("password1234567");
+        user.setEmail("testUser2@mail.com");
+        user.setBiography("my bio2");
+        user.setWebsite("www.site2.com");
+        user.setLongitude(1235.423);
+        user.setLatitude(674.234);
         user2.setId(id2);
 
         when(ur.getById(id)).thenReturn(user);

@@ -172,7 +172,7 @@ public class RoleServiceTest {
         permission.setId(permissionId);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
+        when(pr.getById(permissionId).getObject()).thenReturn(permission);
         when(rr.addPermission(role, permission)).thenReturn(role);
 
         roleService.addPermission(role, permission);
@@ -194,7 +194,7 @@ public class RoleServiceTest {
         role.addPermission(permission);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
+        when(pr.getById(permissionId).getObject()).thenReturn(permission);
 
         roleService.addPermission(role, permission);
         verify(rr, never()).addPermission(role, permission);
@@ -215,7 +215,7 @@ public class RoleServiceTest {
         role.addPermission(permission);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
+        when(pr.getById(permissionId).getObject()).thenReturn(permission);
         when(rr.removePermission(role, permission)).thenReturn(role);
 
         roleService.removePermission(role, permission);
@@ -235,7 +235,7 @@ public class RoleServiceTest {
         permission.setId(permissionId);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
+        when(pr.getById(permissionId).getObject()).thenReturn(permission);
 
         roleService.removePermission(role, permission);
         verify(rr, never()).removePermission(role, permission);

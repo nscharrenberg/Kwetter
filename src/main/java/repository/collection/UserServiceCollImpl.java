@@ -79,17 +79,6 @@ public class UserServiceCollImpl implements UserRepository {
     }
 
     @Override
-    public boolean login(String username, String password) {
-        if(username == null || username.isEmpty() || password == null || password.isEmpty()) {
-            return false;
-        }
-
-        User user = Iterables.tryFind(users, user1 -> username.equals(user1.getUsername()) && password.equals(user1.getPassword())).orNull();
-
-        return user != null;
-    }
-
-    @Override
     public User changeRole(User user, Role role) {
         user.setRole(role);
         return update(user);

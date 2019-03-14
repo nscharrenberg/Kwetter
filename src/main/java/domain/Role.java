@@ -42,23 +42,6 @@ public class Role {
         this.permissions = new HashSet<>();
     }
 
-    public Role(int id, String name, Set<Permission> permissions) {
-        this.id = id;
-        this.name = name;
-        this.permissions = permissions;
-    }
-
-    public Role(String name, Set<Permission> permissions) {
-        this.name = name;
-        this.permissions = permissions;
-    }
-
-    public Role(int id, String name) {
-        this.id = id;
-        this.name = name;
-        this.permissions = new HashSet<>();
-    }
-
     public Role(String name) {
         this.name = name;
     }

@@ -12,11 +12,13 @@ import service.UserService;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.security.NoSuchAlgorithmException;
 
 @Singleton
 @Startup
+@ApplicationScoped
 public class StartUp {
     @Inject
     private UserService userService;
@@ -40,7 +42,7 @@ public class StartUp {
     private void setPermissions() {
         try {
             permissionService.create(new Permission("create_user"));
-        } catch (CreationFailedException | InvalidContentException | NameNotUniqueException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
@@ -48,7 +50,7 @@ public class StartUp {
 
         try {
             permissionService.create(new Permission("create_tweet"));
-        } catch (CreationFailedException | InvalidContentException | NameNotUniqueException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
@@ -79,7 +81,15 @@ public class StartUp {
     private void setUsers()  {
         try {
             // USER: Create admin user
-                userService.create(new User("admin", "password123", "admin@admin.com", "admin biography", "www.admin.nl", 000.000, 000.000));
+            User user = new User();
+            user.setUsername("admin");
+            user.setPassword("password123");
+            user.setEmail("admin@admin.com");
+            user.setBiography("admin biography");
+            user.setWebsite("www.admin.nl");
+            user.setLatitude(000.000);
+            user.setLongitude(000.000);
+            userService.create(user);
         } catch (NoSuchAlgorithmException | NameNotUniqueException | InvalidContentException | CreationFailedException | NotFoundException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

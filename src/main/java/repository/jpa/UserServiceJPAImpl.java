@@ -108,20 +108,6 @@ public class UserServiceJPAImpl implements UserRepository {
     }
 
     @Override
-    public boolean login(String username, String password) {
-        try {
-            TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class);
-            query.setParameter("username", username);
-            query.setParameter("password", password);
-
-            return query.getSingleResult() != null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
     public User changeRole(User user, Role role) {
         try {
             user.setRole(role);

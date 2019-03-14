@@ -1,5 +1,6 @@
 package service;
 
+import authentication.PasswordAuthentication;
 import domain.Role;
 import domain.User;
 import exceptions.*;
@@ -118,8 +119,12 @@ public class UserService {
             throw new NameNotUniqueException("Username already taken");
         }
 
+        if(user.getBiography().length() > 160) {
+            throw new InvalidContentException("Biography can not be longer then 160 characters.");
+        }
+
         user.setRole(rr.getByName("member"));
-        user.setPassword(tempSha256Encryption(user.getPassword()));
+        user.setPassword(PasswordAuthentication.hash(user.getPassword()));
         User created = ur.create(user);
 
         if(created != null) {
@@ -148,14 +153,18 @@ public class UserService {
             throw new NotFoundException("User not found");
         }
 
+        if(user.getBiography().length() > 160) {
+            throw new InvalidContentException("Biography can not be longer then 160 characters");
+        }
+
         User usernameResult = ur.getByUsername(user.getUsername());
         if(usernameResult != null && usernameResult.getId() != user.getId()) {
-            throw new NameNotUniqueException("User with name " + user.getUsername() + " already exists.");
+            throw new NameNotUniqueException("User with name " + user.getUsername() + " already exists");
         }
 
         User emailResult = ur.getByEmail(user.getEmail());
         if(emailResult != null && emailResult.getId() != user.getId()) {
-            throw new NameNotUniqueException("User with email " + user.getEmail() + " already exists.");
+            throw new NameNotUniqueException("User with email " + user.getEmail() + " already exists");
         }
 
         return ur.update(user);
@@ -248,11 +257,18 @@ public class UserService {
      * Login as a user
      * @param username - the username if the user
      * @param password - the password of the user
-     * @return a boolean
-     * @throws NoSuchAlgorithmException
+     * @return a User
+     * @throws InvalidContentException
+     * @throws NotFoundException
      */
-    public boolean login(String username, String password) throws NoSuchAlgorithmException {
-        return ur.login(username, tempSha256Encryption(password));
+    public User login(String username, String password) throws InvalidContentException, NotFoundException {
+        User user = this.getByUsername(username);
+
+        if(PasswordAuthentication.verifyHash(password, user.getPassword())) {
+            return user;
+        }
+
+        return null;
     }
 
     /**
@@ -281,18 +297,5 @@ public class UserService {
         }
 
         return ur.changeRole(user, role);
-    }
-
-    /**
-     * Hash a text
-     * @param text - the text to hash
-     * @return a hashed String
-     * @throws NoSuchAlgorithmException
-     */
-    private String tempSha256Encryption(String text) throws NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = messageDigest.digest(text.getBytes(StandardCharsets.UTF_8));
-
-        return Base64.getEncoder().encodeToString(hash);
     }
 }

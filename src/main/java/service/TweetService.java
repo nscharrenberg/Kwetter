@@ -135,6 +135,10 @@ public class TweetService {
             throw new NotFoundException("Author not found");
         }
 
+        if(tweet.getMessage().length() > 140) {
+            throw new InvalidContentException("Tweet can not be longer then 140 characters");
+        }
+
         tweet.setMentions(getMentionsByMessage(tweet.getMessage()));
         tweet.setCreatedAt(new Date());
         Tweet created = tr.create(tweet);
@@ -160,6 +164,10 @@ public class TweetService {
 
         if(tweet.getId() <= 0) {
             throw new InvalidContentException("Invalid ID");
+        }
+
+        if(tweet.getMessage().length() > 140) {
+            throw new InvalidContentException("Tweet can not be longer then 140 characters");
         }
 
         if(tr.getById(tweet.getId()) == null) {

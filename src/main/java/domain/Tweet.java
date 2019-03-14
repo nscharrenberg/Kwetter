@@ -70,55 +70,6 @@ public class Tweet {
         this.likes = new HashSet<>();
     }
 
-    public Tweet(int id, String message, User author, Date createdAt, Set<User> mentions, Set<User> likes) {
-        this.id = id;
-        this.message = message;
-        this.author = author;
-        this.createdAt = createdAt;
-        this.mentions = mentions;
-        this.likes = likes;
-    }
-
-    public Tweet(int id, String message, User author, Date createdAt) {
-        this.id = id;
-        this.message = message;
-        this.author = author;
-        this.createdAt = createdAt;
-        this.mentions = new HashSet<>();
-        this.likes = new HashSet<>();
-    }
-
-    public Tweet(String message, User author, Date createdAt, Set<User> mentions, Set<User> likes) {
-        this.message = message;
-        this.author = author;
-        this.createdAt = createdAt;
-        this.mentions = mentions;
-        this.likes = likes;
-    }
-
-    public Tweet(String message, User author, Date createdAt) {
-        this.message = message;
-        this.author = author;
-        this.createdAt = createdAt;
-        this.mentions = new HashSet<>();
-        this.likes = new HashSet<>();
-    }
-
-    public Tweet(int id, String message, User author) {
-        this.id = id;
-        this.message = message;
-        this.author = author;
-        this.mentions = new HashSet<>();
-        this.likes = new HashSet<>();
-    }
-
-    public Tweet(String message, User author) {
-        this.message = message;
-        this.author = author;
-        this.mentions = new HashSet<>();
-        this.likes = new HashSet<>();
-    }
-
     public int getId() {
         return id;
     }

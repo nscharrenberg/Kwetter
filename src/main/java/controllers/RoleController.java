@@ -144,7 +144,7 @@ public class RoleController {
     public Response addPermission(@PathParam("roleId") int roleId, @PathParam("permissionId") int permissionId) {
         try {
             Role role = roleService.getById(roleId);
-            Permission permission = permissionService.getById(permissionId);
+            Permission permission = permissionService.getById(permissionId).getObject();
 
             roleService.addPermission(role, permission);
             return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
@@ -170,7 +170,7 @@ public class RoleController {
     public Response deletePermission(@PathParam("roleId") int roleId, @PathParam("permissionId") int permissionId) {
         try {
             Role role = roleService.getById(roleId);
-            Permission permission = permissionService.getById(permissionId);
+            Permission permission = permissionService.getById(permissionId).getObject();
 
             roleService.removePermission(role, permission);
             return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();

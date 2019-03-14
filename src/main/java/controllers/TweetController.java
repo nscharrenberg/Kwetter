@@ -45,7 +45,9 @@ public class TweetController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(TweetViewModel request) {
         try {
-            Tweet tweet = new Tweet(request.getMessage(), userService.getById(request.getAuthor()));
+            Tweet tweet = new Tweet();
+            tweet.setMessage(request.getMessage());
+            tweet.setAuthor(userService.getById(request.getAuthor()));
             tweetService.create(tweet);
             return Response.status(Response.Status.CREATED).entity(new ObjectMapper().writeValueAsString(tweet)).build();
         } catch (InvalidContentException e) {
@@ -123,7 +125,9 @@ public class TweetController {
     @Path("/{id}")
     public Response update(@PathParam("id") int id, TweetViewModel request) {
         try {
-            Tweet tweet = new Tweet(request.getMessage(), userService.getById(request.getAuthor()));
+            Tweet tweet = new Tweet();
+            tweet.setMessage(request.getMessage());
+            tweet.setAuthor(userService.getById(request.getAuthor()));
             tweet.setId(id);
             tweetService.update(tweet);
             return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
