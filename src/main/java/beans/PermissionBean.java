@@ -2,6 +2,7 @@ package beans;
 
 import domain.Permission;
 import domain.Role;
+import responses.ObjectResponse;
 import service.PermissionService;
 
 import javax.enterprise.context.RequestScoped;
@@ -21,7 +22,7 @@ public class PermissionBean implements Serializable {
     private String name;
     private Set<Role> roles;
 
-    public List<Permission> getPermissions() {
+    public ObjectResponse<List<Permission>> getPermissions() {
         return permissionService.all();
     }
 

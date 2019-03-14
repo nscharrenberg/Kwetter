@@ -7,6 +7,8 @@ import domain.Permission;
 import domain.Role;
 import exceptions.*;
 import exceptions.NotFoundException;
+import responses.JaxResponse;
+import responses.ObjectResponse;
 import service.PermissionService;
 import service.RoleService;
 
@@ -29,10 +31,9 @@ public class RoleController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response all() {
-         List<Role> roles = roleService.all();
-
         try {
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(roles)).build();
+            ObjectResponse<List<Role>> response = roleService.all();
+            return JaxResponse.checkObjectResponse(response);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -44,18 +45,14 @@ public class RoleController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(RoleViewModel request) {
         try {
-            Role role = new Role(request.getName());
-            roleService.create(role);
-            return Response.status(Response.Status.CREATED).entity(role).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (CreationFailedException e) {
+            Role object = new Role(request.getName());
+
+            ObjectResponse<Role> response = roleService.create(object);
+
+            return JaxResponse.checkObjectResponse(response);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (NameNotUniqueException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
 
     }
@@ -65,15 +62,10 @@ public class RoleController {
     @Path("/{id}")
     public Response getById(@PathParam("id") int id) {
         try {
-            Role role = roleService.getById(id);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<Role> response = roleService.getById(id);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -84,15 +76,10 @@ public class RoleController {
     @Path("/name/{name}")
     public Response getByName(@PathParam("name") String name) {
         try {
-            Role role = roleService.getByName(name);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<Role> response = roleService.getByName(name);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -106,17 +93,12 @@ public class RoleController {
         try {
             Role role = new Role(request.getName());
             role.setId(id);
-            roleService.update(role);
-            return Response.status(Response.Status.OK).entity(request).build();
-        } catch (InvalidContentException e) {
+            ObjectResponse<Role> response = roleService.update(role);
+
+            return JaxResponse.checkObjectResponse(response);
+        } catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NameNotUniqueException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -125,15 +107,18 @@ public class RoleController {
     @Path("/{id}")
     public Response delete(@PathParam("id") int id) {
         try {
-            Role role = roleService.getById(id);
-            roleService.delete(role);
-            return Response.status(Response.Status.OK).entity("Role " + role.getName() + " has been deleted").build();
-        } catch (InvalidContentException e) {
+            ObjectResponse<Role> response = roleService.getById(id);
+
+            if(response.getObject() == null) {
+                return JaxResponse.checkObjectResponse(response);
+            }
+
+            ObjectResponse<Role> result = roleService.delete(response.getObject());
+
+            return JaxResponse.checkObjectResponse(result);
+        }catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -143,21 +128,20 @@ public class RoleController {
     @Path("/{roleId}/permissions/{permissionId}")
     public Response addPermission(@PathParam("roleId") int roleId, @PathParam("permissionId") int permissionId) {
         try {
-            Role role = roleService.getById(roleId);
-            Permission permission = permissionService.getById(permissionId).getObject();
+            ObjectResponse<Role> getRoleByIdResponse = roleService.getById(roleId);
+            ObjectResponse<Permission> getPermissionByIdResponse = permissionService.getById(permissionId);
 
-            roleService.addPermission(role, permission);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (ActionForbiddenException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            if(getRoleByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getRoleByIdResponse);
+            }
+
+            if(getPermissionByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getPermissionByIdResponse);
+            }
+
+            ObjectResponse<Role> result = roleService.addPermission(getRoleByIdResponse.getObject(), getPermissionByIdResponse.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -169,21 +153,20 @@ public class RoleController {
     @Path("/{roleId}/permissions/{permissionId}")
     public Response deletePermission(@PathParam("roleId") int roleId, @PathParam("permissionId") int permissionId) {
         try {
-            Role role = roleService.getById(roleId);
-            Permission permission = permissionService.getById(permissionId).getObject();
+            ObjectResponse<Role> getRoleByIdResponse = roleService.getById(roleId);
+            ObjectResponse<Permission> getPermissionByIdResponse = permissionService.getById(permissionId);
 
-            roleService.removePermission(role, permission);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(role)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (ActionForbiddenException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            if(getRoleByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getRoleByIdResponse);
+            }
+
+            if(getPermissionByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getPermissionByIdResponse);
+            }
+
+            ObjectResponse<Role> result = roleService.removePermission(getRoleByIdResponse.getObject(), getPermissionByIdResponse.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

@@ -62,14 +62,14 @@ public class StartUp {
     private void setRoles() {
         try {
             roleService.create(new Role("admin"));
-        } catch (InvalidContentException | CreationFailedException | NameNotUniqueException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
 
         try {
             roleService.create(new Role("member"));
-        } catch (InvalidContentException | CreationFailedException | NameNotUniqueException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
@@ -90,7 +90,7 @@ public class StartUp {
             user.setLatitude(000.000);
             user.setLongitude(000.000);
             userService.create(user);
-        } catch (NoSuchAlgorithmException | NameNotUniqueException | InvalidContentException | CreationFailedException | NotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }

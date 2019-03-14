@@ -9,6 +9,7 @@ import domain.Tweet;
 import domain.User;
 import exceptions.*;
 import exceptions.NotFoundException;
+import responses.ObjectResponse;
 import service.TweetService;
 import service.UserService;
 
@@ -45,9 +46,15 @@ public class TweetController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(TweetViewModel request) {
         try {
+            ObjectResponse<User> getUserById = userService.getById(request.getAuthor());
+
+            if(getUserById.getObject() == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("User could not be found").build();
+            }
+
             Tweet tweet = new Tweet();
             tweet.setMessage(request.getMessage());
-            tweet.setAuthor(userService.getById(request.getAuthor()));
+            tweet.setAuthor(getUserById.getObject());
             tweetService.create(tweet);
             return Response.status(Response.Status.CREATED).entity(new ObjectMapper().writeValueAsString(tweet)).build();
         } catch (InvalidContentException e) {
@@ -125,9 +132,15 @@ public class TweetController {
     @Path("/{id}")
     public Response update(@PathParam("id") int id, TweetViewModel request) {
         try {
+            ObjectResponse<User> getUserById = userService.getById(request.getAuthor());
+
+            if(getUserById.getObject() == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("User could not be found").build();
+            }
+
             Tweet tweet = new Tweet();
             tweet.setMessage(request.getMessage());
-            tweet.setAuthor(userService.getById(request.getAuthor()));
+            tweet.setAuthor(getUserById.getObject());
             tweet.setId(id);
             tweetService.update(tweet);
             return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
@@ -170,10 +183,15 @@ public class TweetController {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
-            Tweet tweet = tweetService.getById(request.getTweetId());
-            User user = userService.getById(request.getUserId());
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
 
-            tweetService.like(tweet, user);
+            if(getUserByIdResponse.getObject() == null) {
+                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
+            }
+
+            Tweet tweet = tweetService.getById(request.getTweetId());
+
+            tweetService.like(tweet, getUserByIdResponse.getObject());
             return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();
@@ -200,10 +218,15 @@ public class TweetController {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
-            Tweet tweet = tweetService.getById(request.getTweetId());
-            User user = userService.getById(request.getUserId());
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
 
-            tweetService.unlike(tweet, user);
+            if(getUserByIdResponse.getObject() == null) {
+                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
+            }
+
+            Tweet tweet = tweetService.getById(request.getTweetId());
+
+            tweetService.unlike(tweet, getUserByIdResponse.getObject());
             return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
         } catch (InvalidContentException e) {
             e.printStackTrace();

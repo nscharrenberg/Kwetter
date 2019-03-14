@@ -25,16 +25,15 @@ public class PermissionService {
      * Get all permissions
      * @return a list of permissions
      */
-    public List<Permission> all() {
-        return pr.all();
+    public ObjectResponse<List<Permission>> all() {
+        List<Permission> permissions = pr.all();
+        return new ObjectResponse<>(HttpStatusCodes.OK, permissions.size() + " permissions loaded", permissions);
     }
 
     /**
      * Get a permission by its id
      * @param id - the id of the permission
      * @return a permission
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
     public ObjectResponse<Permission> getById(int id) {
         if(id <= 0) {
@@ -54,8 +53,6 @@ public class PermissionService {
      * Get a permission by its name
      * @param name - the name of the permission
      * @return a permission
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
     public ObjectResponse<Permission> getByName(String name) {
         if(name.isEmpty()) {
@@ -81,11 +78,14 @@ public class PermissionService {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
-        if(pr.getByName(permission.getName()) != null) {
+        ObjectResponse<Permission> getByNameResponse = getByName(permission.getName());
+
+        if(getByNameResponse.getObject() != null) {
             return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "Permission with name " + permission.getName() + " already exists.");
         }
 
         Permission created = pr.create(permission);
+
         if(created != null) {
             return new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " created", permission);
         } else {

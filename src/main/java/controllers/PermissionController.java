@@ -30,9 +30,9 @@ public class PermissionController extends Application {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response all() {
-        List<Permission> permissions = permissionService.all();
         try {
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(permissions)).build();
+            ObjectResponse<List<Permission>> response = permissionService.all();
+            return JaxResponse.checkObjectResponse(response);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

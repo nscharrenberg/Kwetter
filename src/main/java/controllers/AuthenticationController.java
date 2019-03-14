@@ -9,6 +9,8 @@ import exceptions.CreationFailedException;
 import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
 import exceptions.NotFoundException;
+import responses.JaxResponse;
+import responses.ObjectResponse;
 import service.UserService;
 
 import javax.ejb.Stateless;
@@ -33,15 +35,9 @@ public class AuthenticationController {
     @Path("/login")
     public Response login(LoginViewModel loginViewModel) {
         try {
-            User user = userService.login(loginViewModel.getUsername(), loginViewModel.getPassword());
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<User> result = userService.login(loginViewModel.getUsername(), loginViewModel.getPassword());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -61,20 +57,11 @@ public class AuthenticationController {
             user.setWebsite(request.getWebsite());
             user.setLongitude(request.getLongitude());
             user.setLatitude(request.getLatitude());
-            userService.create(user);
-            return Response.status(Response.Status.CREATED).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (CreationFailedException | NoSuchAlgorithmException | JsonProcessingException e) {
+            ObjectResponse<User> result = userService.create(user);
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (NameNotUniqueException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 }

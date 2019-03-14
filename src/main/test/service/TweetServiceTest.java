@@ -92,7 +92,7 @@ public class TweetServiceTest {
         user.addTweet(tweet);
         user.addTweet(tweet2);
 
-        when(ur.getByUsername(username)).thenReturn(user);
+        when(ur.getByUsername(username).getObject()).thenReturn(user);
         when(tr.getByAuthorId(userId)).thenReturn(new ArrayList<>(user.getTweets()));
 
         tweetService.getByAuthorName(username);
@@ -188,7 +188,7 @@ public class TweetServiceTest {
         Tweet tweet = new Tweet();
         tweet.setMessage(text);
         tweet.setAuthor(user);
-        when(ur.getById(id)).thenReturn(user);
+        when(ur.getById(id).getObject()).thenReturn(user);
         when(tr.create(tweet)).thenReturn(tweet);
 
         tweetService.create(tweet);
@@ -271,7 +271,7 @@ public class TweetServiceTest {
         user.setId(userId);
 
         when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId)).thenReturn(user);
+        when(ur.getById(userId).getObject()).thenReturn(user);
         when(tr.like(tweet, user)).thenReturn(tweet);
 
         tweetService.like(tweet, user);
@@ -293,7 +293,7 @@ public class TweetServiceTest {
         tweet.addLike(user);
 
         when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId)).thenReturn(user);
+        when(ur.getById(userId).getObject()).thenReturn(user);
 
         tweetService.like(tweet, user);
         verify(tr, never()).like(tweet, user);
@@ -314,7 +314,7 @@ public class TweetServiceTest {
         tweet.addLike(user);
 
         when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId)).thenReturn(user);
+        when(ur.getById(userId).getObject()).thenReturn(user);
         when(tr.unlike(tweet, user)).thenReturn(tweet);
 
         tweetService.unlike(tweet, user);
@@ -335,7 +335,7 @@ public class TweetServiceTest {
 
 
         when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId)).thenReturn(user);
+        when(ur.getById(userId).getObject()).thenReturn(user);
 
         tweetService.unlike(tweet, user);
         verify(tr, never()).unlike(tweet, user);
@@ -379,9 +379,9 @@ public class TweetServiceTest {
         tweet.setMessage(message);
         tweet.setAuthor(user4);
 
-        when(ur.getById(userId4)).thenReturn(user4);
-        when(ur.getByUsername(username3)).thenReturn(user3);
-        when(ur.getByUsername(username2)).thenReturn(user2);
+        when(ur.getById(userId4).getObject()).thenReturn(user4);
+        when(ur.getByUsername(username3).getObject()).thenReturn(user3);
+        when(ur.getByUsername(username2).getObject()).thenReturn(user2);
         when(tr.create(tweet)).thenReturn(tweet);
 
         Tweet result = tweetService.create(tweet);

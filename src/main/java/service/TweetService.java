@@ -5,11 +5,13 @@ import domain.User;
 import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
+import responses.ObjectResponse;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +69,14 @@ public class TweetService {
             throw new InvalidContentException("username can not be empty");
         }
 
-        List<Tweet> tweets = tr.getByAuthorId(ur.getByUsername(username).getId());
+        ObjectResponse<User> getUserById = ur.getByUsername(username);
+
+        if(getUserById.getObject() == null) {
+            throw new NotFoundException("User not found");
+        }
+
+
+        List<Tweet> tweets = tr.getByAuthorId(getUserById.getObject().getId());
 
         if(tweets == null || tweets.isEmpty()) {
             throw new NotFoundException("No tweets not found");
@@ -282,7 +291,10 @@ public class TweetService {
         Set<User> users = new HashSet<>();
 
         while(matcher.find()) {
-            users.add(ur.getByUsername(matcher.group(0).replace(" ", "").replace("@", "")));
+            ObjectResponse<User> u = ur.getByUsername(matcher.group(0).replace(" ", "").replace("@", ""));
+            if(u.getObject() != null) {
+                users.add(u.getObject());
+            }
         }
 
         return users;

@@ -5,6 +5,8 @@ import domain.Role;
 import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.RoleRepository;
+import responses.HttpStatusCodes;
+import responses.ObjectResponse;
 
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
@@ -26,75 +28,70 @@ public class RoleService {
      * Get all roles
      * @return a list of roles
      */
-    public List<Role> all() {
-        return rr.all();
+    public ObjectResponse<List<Role>> all() {
+        List<Role> roles = rr.all();
+        return new ObjectResponse<>(HttpStatusCodes.OK, roles.size() + " permissions loaded", roles);
     }
 
     /**
      * Get a role by its id
      * @param id - the id of the role
      * @return a role
-     * @throws NotFoundException
-     * @throws InvalidContentException
      */
-    public Role getById(int id) throws NotFoundException, InvalidContentException {
+    public ObjectResponse<Role> getById(int id) {
         if(id <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         Role role = rr.getById(id);
 
         if(role == null) {
-            throw new NotFoundException("Role not found");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Role not found");
         }
 
-        return role;
+        return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + role.getName() + " found", role);
     }
 
     /**
      * Get a role by its name
      * @param name - the name of the role
      * @return a role
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public Role getByName(String name) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<Role> getByName(String name) {
         if(name.isEmpty()) {
-            throw new InvalidContentException("name can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
         Role role = rr.getByName(name);
 
         if(role == null) {
-            throw new NotFoundException("Role not found");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Role not found");
         }
 
-        return role;
+        return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + role.getName() + " found", role);
     }
 
     /**
      * Create a new role
      * @param role - the role information
      * @return the newly created role
-     * @throws InvalidContentException
-     * @throws NameNotUniqueException
-     * @throws CreationFailedException
      */
-    public Role create(Role role) throws InvalidContentException, NameNotUniqueException, CreationFailedException {
+    public ObjectResponse<Role> create(Role role) {
         if(role.getName().isEmpty()) {
-            throw new InvalidContentException("name can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
-        if(rr.getByName(role.getName()) != null) {
-            throw new NameNotUniqueException("Role with name " + role.getName() + " already exists.");
+        ObjectResponse<Role> getByNameResponse = getByName(role.getName());
+        if(getByNameResponse.getObject() != null) {
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "Role with name " + role.getName() + " already exists.");
         }
 
         Role created = rr.create(role);
 
         if(created != null) {
-            return created;
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + role.getName() + " created", role);
         } else {
-            throw new CreationFailedException("Could not create a new role due to an unknown error");
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new role due to an unknown error");
         }
     }
 
@@ -102,48 +99,57 @@ public class RoleService {
      * Update an existing role
      * @param role - the new role information with an existing role id
      * @return the updated role
-     * @throws InvalidContentException
-     * @throws NameNotUniqueException
-     * @throws NotFoundException
      */
-    public Role update(Role role) throws InvalidContentException, NameNotUniqueException, NotFoundException {
+    public ObjectResponse<Role> update(Role role) {
         if(role.getName().isEmpty()) {
-            throw new InvalidContentException("name can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
         if(role.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
-        if(rr.getById(role.getId()) == null) {
-            throw new NotFoundException("Role not found");
+        ObjectResponse<Role> getByIdResponse = getById(role.getId());
+
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        Role uniqueRole = rr.getByName(role.getName());
-        if(uniqueRole != null && role.getId() != uniqueRole.getId()) {
-            throw new NameNotUniqueException("Role with name " + role.getName() + " already exists.");
+        ObjectResponse<Role> getByNameResponse = getByName(role.getName());
+        if(getByNameResponse.getObject() != null && role.getId() != getByNameResponse.getObject().getId()) {
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "Role with name " + role.getName() + " already exists.");
         }
 
-        return rr.update(role);
+        Role result = rr.update(role);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + result.getName() + " has been updated", result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not update an existing role due to an unknown error");
+        }
     }
 
     /**
      * Delete an existing role
      * @param role - the role to be deleted
      * @return a boolean wether or not the role is deleted.
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public boolean delete(Role role) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<Role> delete(Role role) {
         if(role.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
-        if(rr.getById(role.getId()) == null) {
-            throw new NotFoundException("Role not found");
+        ObjectResponse<Role> getByIdResponse = getById(role.getId());
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        return rr.delete(role);
+        boolean deleted = rr.delete(role);
+
+        if(deleted) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name " + role.getName() + " has been deleted");
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Role with name " + role.getName() + "could not be deleted due to an unknown error");
+        }
     }
 
 
@@ -152,36 +158,38 @@ public class RoleService {
      * @param role - the role
      * @param permission - the permission
      * @return the role
-     * @throws InvalidContentException
-     * @throws ActionForbiddenException
-     * @throws NotFoundException
      */
-    public Role addPermission(Role role, Permission permission) throws ActionForbiddenException, InvalidContentException, NotFoundException {
+    public ObjectResponse<Role> addPermission(Role role, Permission permission) {
         if(role.getId() <= 0) {
-            throw new InvalidContentException("Invalid role ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Role ID");
         }
 
         if(permission.getId() <= 0) {
-            throw new InvalidContentException("Invalid permission ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Permission ID");
         }
 
-        Permission p = pr.getById(permission.getId()).getObject();
+        ObjectResponse<Permission> getPermissionByIdResponse = pr.getById(permission.getId());
 
-        if(p == null) {
-            throw new NotFoundException("Permission not found");
+        if(getPermissionByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getPermissionByIdResponse.getCode(), getPermissionByIdResponse.getMessage());
         }
 
-        Role r = rr.getById(role.getId());
+        ObjectResponse<Role> getByIdResponse = getById(role.getId());
 
-        if(r == null) {
-            throw new NotFoundException("Role not found");
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        if(r.getPermissions().contains(permission)) {
-            throw new ActionForbiddenException("Role: " + role.getName() + " already has the permission " + permission.getName());
+        if(getByIdResponse.getObject().getPermissions().contains(permission)) {
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "Role: " + role.getName() + " already has the permission " + permission.getName());
         }
 
-        return rr.addPermission(role, permission);
+        Role result = rr.addPermission(role, permission);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " has been added to Role with name: " + role.getName(), result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not add Permission to an existing role due to an unknown error");
+        }
     }
 
     /**
@@ -189,35 +197,37 @@ public class RoleService {
      * @param role - the role
      * @param permission - the permission
      * @return the role
-     * @throws InvalidContentException
-     * @throws ActionForbiddenException
-     * @throws NotFoundException
      */
-    public Role removePermission(Role role, Permission permission) throws ActionForbiddenException, InvalidContentException, NotFoundException {
+    public ObjectResponse<Role> removePermission(Role role, Permission permission) {
         if(role.getId() <= 0) {
-            throw new InvalidContentException("Invalid role ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Role ID");
         }
 
         if(permission.getId() <= 0) {
-            throw new InvalidContentException("Invalid permission ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Permissions ID");
         }
 
-        Permission p = pr.getById(permission.getId()).getObject();
+        ObjectResponse<Permission> getPermissionByIdResponse = pr.getById(permission.getId());
 
-        if(p == null) {
-            throw new NotFoundException("Permission not found");
+        if(getPermissionByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getPermissionByIdResponse.getCode(), getPermissionByIdResponse.getMessage());
         }
 
-        Role r = rr.getById(role.getId());
+        ObjectResponse<Role> getByIdResponse = getById(role.getId());
 
-        if(r == null) {
-            throw new NotFoundException("Role not found");
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        if(!r.getPermissions().contains(permission)) {
-            throw new ActionForbiddenException("Role: " + role.getName() + " does not have the permission " + permission.getName());
+        if(!getByIdResponse.getObject().getPermissions().contains(permission)) {
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "Role: " + role.getName() + " does not have the permission " + permission.getName());
         }
 
-        return rr.removePermission(role, permission);
+        Role result = rr.removePermission(role, permission);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " has been remove from Role with name: " + role.getName(), result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not remove Permission from an existing role due to an unknown error");
+        }
     }
 }
