@@ -13,6 +13,11 @@ import repository.collection.PermissionServiceCollImpl;
 import repository.collection.RoleServiceCollImpl;
 import repository.interfaces.RoleRepository;
 import repository.jpa.RoleServiceJPAImpl;
+import responses.HttpStatusCodes;
+import responses.ObjectResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
@@ -39,205 +44,684 @@ public class RoleServiceTest {
         initMocks(this);
     }
 
+    /*
+     * Get All Permissions Test
+     */
     @Test
-    public void getRoleById() throws NotFoundException, InvalidContentException {
+    public void all_StatusCodeOk() {
+        // Arrange
+        List<Role> roleList = new ArrayList<>();
+        roleList.add(new Role("Admin"));
+        roleList.add(new Role("Member"));
+        roleList.add(new Role("Moderator"));
+        when(rr.all()).thenReturn(roleList);
+
+        // Act
+        ObjectResponse<List<Role>> response = roleService.all();
+
+        // Assert
+        verify(rr, atLeastOnce()).all();
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(roleList, response.getObject());
+        assertEquals(roleList.size(), response.getObject().size());
+    }
+
+
+    /*
+     * Get Permission By Id Tests
+     */
+    @Test
+    public void getById_ExistingId_StatusCodeOk() {
+        // Arange
         int id = 6;
-        Role role = mock(Role.class);
+        String name = "Admin";
+        Role role = new Role();
         role.setId(id);
+        role.setName(name);
         when(rr.getById(id)).thenReturn(role);
 
-        roleService.getById(id);
+        // Act
+        ObjectResponse<Role> response = roleService.getById(id);
+
+        // Assert
         verify(rr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(role, response.getObject());
     }
 
     @Test
-    public void getRoleByName() throws InvalidContentException, NotFoundException {
-        String name = "Adminstrator";
-        Role role = mock(Role.class);
+    public void getById_IdNull_StatusCodeNotAceptable() {
+        // Arange
+        int id = 0;
+
+        // Act
+        ObjectResponse<Role> response = roleService.getById(id);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void getById_NotExistingId_StatusCodeNotFound() {
+        // Arange
+        int id = 6;
+        when(rr.getById(id)).thenReturn(null);
+
+        // Act
+        ObjectResponse<Role> response = roleService.getById(id);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Get Permission By Name Tests
+     */
+    @Test
+    public void getByName_ExistingName_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String name = "Admin";
+        Role role = new Role();
+        role.setId(id);
         role.setName(name);
         when(rr.getByName(name)).thenReturn(role);
 
-        roleService.getByName(name);
+        // Act
+        ObjectResponse<Role> response = roleService.getByName(name);
+
+        // Assert
         verify(rr, atLeastOnce()).getByName(name);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void getRoleByNameNotFound() throws NotFoundException, InvalidContentException {
-        String name = "Adminstrator";
-        when(rr.getByName(name)).thenReturn(null);
-
-        roleService.getByName(name);
-        verify(rr, never()).getByName(name);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void getRoleByIdNotFound() throws NotFoundException, InvalidContentException {
-        int id = 543;
-        when(rr.getById(id)).thenReturn(null);
-
-        roleService.getById(id);
-        verify(rr, never()).getById(id);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(role, response.getObject());
     }
 
     @Test
-    public void createRole() throws InvalidContentException, NameNotUniqueException, CreationFailedException, NotFoundException {
-        String name = "Tweet";
-        Role role = new Role(name);
-        role.setId(1);
-
-        when(rr.create(role)).thenReturn(role);
-
-        roleService.create(role);
-        verify(rr, atLeastOnce()).create(role);
-    }
-
-    @Test(expected = NameNotUniqueException.class)
-    public void createRoleDuplicate() throws InvalidContentException, NameNotUniqueException, CreationFailedException, NotFoundException {
-        String name = "Tweet";
-        Role role = new Role(name);
-        Role role2 = new Role(name);
-        role.setId(1);
-        role2.setId(2);
-
-        when(rr.getByName(role.getName())).thenReturn(role);
-
-        when(rr.getByName(role2.getName())).thenReturn(role);
-
-        roleService.create(role2);
-        verify(rr, never()).create(role);
-    }
-
-    @Test
-    public void updateRole() throws InvalidContentException, NameNotUniqueException, NotFoundException {
+    public void getByName_NoName_StatusCodeNotAcceptable() {
+        // Arange
         int id = 6;
-        String name = "a new name";
-        Role role = new Role("member");
+        String name = "Admin";
+        Role role = new Role();
         role.setId(id);
-        when(rr.getById(id)).thenReturn(role);
-
         role.setName(name);
 
+        // Act
+        ObjectResponse<Role> response = roleService.getByName("");
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void getByName_NotExistingName_StatusCodeNotFound() {
+        // Arange
+        String name = "Admin";
+
+        // Act
+        ObjectResponse<Role> response = roleService.getByName(name);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+
+
+    /*
+     * Create Permission Tests
+     */
+    @Test
+    public void create_NewWithName_StatusCodeCreated() {
+        // Arrange
+        String name = "Admin";
+        Role role = new Role(name);
+        when(rr.create(role)).thenReturn(role);
+
+        // Act
+        ObjectResponse<Role> response = roleService.create(role);
+
+        // Assert
+        verify(rr, atLeastOnce()).create(role);
+        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(role.getName(), response.getObject().getName());
+    }
+
+    @Test
+    public void create_NewWithoutName_StatusCodeNotAcceptable() {
+        // Arrange
+        String name = "";
+        Role role = new Role(name);
+
+        // Act
+        ObjectResponse<Role> response = roleService.create(role);
+
+        // Assert
+        verify(rr, never()).create(role);
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void create_NewWithDuplicateName_StatusCodeConflict() {
+        // Arrange
+        String name = "Admin";
+        Role role = new Role(name);
+
+        when(rr.getByName(name)).thenReturn(role);
+
+        // Act
+        ObjectResponse<Role> response = roleService.create(role);
+
+        // Assert
+        verify(rr, atLeastOnce()).getByName(name);
+        verify(rr, never()).create(role);
+        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+        assertNull(response.getObject());
+    }
+
+
+    /*
+     * Update Permission Tests
+     */
+    @Test
+    public void update_ExistingWithNewName_StatusCodeOk() {
+        //Arange
+        int id = 6;
+        String name = "Admin";
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+        when(rr.getById(id)).thenReturn(role);
+        when(rr.getByName(name)).thenReturn(null);
         when(rr.update(role)).thenReturn(role);
 
-        roleService.update(role);
+        //Act
+        ObjectResponse<Role> response = roleService.update(role);
+
+        //Assert
+        verify(rr, atLeastOnce()).getById(id);
+        verify(rr, atLeastOnce()).getByName(name);
         verify(rr, atLeastOnce()).update(role);
-    }
-
-    @Test(expected = NameNotUniqueException.class)
-    public void updateRoleDuplicateName() throws InvalidContentException, NameNotUniqueException, NotFoundException {
-        /**
-         * Role 1
-         */
-        int id = 1;
-        Role role = new Role("Member");
-        role.setId(id);
-        when(rr.getByName("Member")).thenReturn(role);
-
-        /**
-         * Role 2
-         */
-        int id2 = 2643;
-        Role role2 = new Role("Administrator");
-        role2.setId(id2);
-        when(rr.getById(id2)).thenReturn(role2);
-        role2.setName("Member");
-
-        roleService.update(role2);
-        verify(rr, never()).update(role2);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(role.getName(), response.getObject().getName());
     }
 
     @Test
-    public void deleteRole() throws InvalidContentException, NotFoundException {
-        int id = 6;
-        Role role = new Role("member");
-        role.setId(id);
-        when(rr.getById(id)).thenReturn(role);
+    public void update_ExistingWithDuplicateName_StatusCodeConflict() {
+        //Arange
+        String name = "Admin";
 
+        int existingId = 654;
+        Role existingRole = new Role();
+        existingRole.setId(existingId);
+        existingRole.setName(name);
+
+        int id = 6;
+
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+        when(rr.getById(id)).thenReturn(role);
+        when(rr.getByName(name)).thenReturn(existingRole);
+
+        //Act
+        ObjectResponse<Role> response = roleService.update(role);
+
+        //Assert
+        verify(rr, atLeastOnce()).getById(id);
+        verify(rr, atLeastOnce()).getByName(name);
+        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void update_withNoName_StatusCodeNotAcceptable() {
+        //Arange
+        int id = 6;
+        String name = "";
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+
+        //Act
+        ObjectResponse<Role> response = roleService.update(role);
+
+        //Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void update_withIdNull_StatusCodeNotAcceptable() {
+        //Arange
+        int id = 0;
+        String name = "Admin";
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+
+        //Act
+        ObjectResponse<Role> response = roleService.update(role);
+
+        //Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void update_IdDoesNotExist_StatusCodeOk() {
+        //Arange
+        int id = 6;
+        String name = "Admin";
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+        when(rr.getById(id)).thenReturn(null);
+
+        //Act
+        ObjectResponse<Role> response = roleService.update(role);
+
+        //Assert
+        verify(rr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Delete Permission Tests
+     */
+    @Test
+    public void delete_ExistingId_StatusCodeOk() {
+        // Arrange
+        int id = 6;
+        String name = "Admin";
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+        when(rr.getById(id)).thenReturn(role);
         when(rr.delete(role)).thenReturn(true);
 
-        roleService.delete(role);
+        // Act
+        ObjectResponse<Role> response = roleService.delete(role);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(id);
         verify(rr, atLeastOnce()).delete(role);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertNull(response.getObject());
     }
 
     @Test
-    public void addPermission() throws InvalidContentException, ActionForbiddenException, NotFoundException {
-        // Role
-        int roleId = 543;
+    public void delete_IdNull_StatusCodeNotAcceptable() {
+        // Arrange
+        int id = 0;
+        String name = "permission name";
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+
+        // Act
+        ObjectResponse<Role> response = roleService.delete(role);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void delete_IdDoesNotExist_StatusCodeNotFound() {
+        // Arrange
+        int id = 6;
+        String name = "Admin";
+        Role role = new Role();
+        role.setId(id);
+        role.setName(name);
+        when(rr.getById(id)).thenReturn(null);
+
+        // Act
+        ObjectResponse<Role> response = roleService.delete(role);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Add Permission Tests
+     */
+    @Test
+    public void addPermission_withExistingRoleAndPermission_StatusCodeOk() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
         Role role = new Role();
         role.setId(roleId);
+        role.setName(roleName);
 
-        // Permission
-        int permissionId = 9373;
+        int permissionId = 563;
+        String permissionName = "create_tweet";
         Permission permission = new Permission();
         permission.setId(permissionId);
+        permission.setName(permissionName);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
         when(rr.addPermission(role, permission)).thenReturn(role);
 
-        roleService.addPermission(role, permission);
+        // Act
+        ObjectResponse<Role> response = roleService.addPermission(role, permission);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(roleId);
+        verify(pr, atLeastOnce()).getById(permissionId);
         verify(rr, atLeastOnce()).addPermission(role, permission);
-    }
-
-    @Test(expected = ActionForbiddenException.class)
-    public void addPermissionDuplicate() throws InvalidContentException, ActionForbiddenException, NotFoundException {
-        // Role
-        int roleId = 543;
-        Role role = new Role();
-        role.setId(roleId);
-
-        // Permission
-        int permissionId = 9373;
-        Permission permission = new Permission();
-        permission.setId(permissionId);
-
-        role.addPermission(permission);
-
-        when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
-
-        roleService.addPermission(role, permission);
-        verify(rr, never()).addPermission(role, permission);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(role, response.getObject());
     }
 
     @Test
-    public void removePermission() throws InvalidContentException, ActionForbiddenException, NotFoundException {
-        // Role
-        int roleId = 543;
+    public void addPermission_RoleIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int roleId = 0;
+        String roleName = "Admin";
         Role role = new Role();
         role.setId(roleId);
+        role.setName(roleName);
 
-        // Permission
-        int permissionId = 9373;
+        int permissionId = 563;
+        String permissionName = "create_tweet";
         Permission permission = new Permission();
         permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        // Act
+        ObjectResponse<Role> response = roleService.addPermission(role, permission);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void addPermission_PermissionIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int roleId = 654;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 0;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        // Act
+        ObjectResponse<Role> response = roleService.addPermission(role, permission);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void addPermission_PermissionDoesNotExist_StatusCodeOk() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 563;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Permission not found"));
+
+        // Act
+        ObjectResponse<Role> response = roleService.addPermission(role, permission);
+
+        // Assert
+        verify(pr, atLeastOnce()).getById(permissionId);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void addPermission_RoleDoesNotExist_StatusCodeOk() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 563;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        when(rr.getById(roleId)).thenReturn(null);
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+
+        // Act
+        ObjectResponse<Role> response = roleService.addPermission(role, permission);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(roleId);
+        verify(pr, atLeastOnce()).getById(permissionId);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void addPermission_RoleAndPermissionAlreadyAdded_StatusCodeOk() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 563;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
 
         role.addPermission(permission);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
-        when(rr.removePermission(role, permission)).thenReturn(role);
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
 
-        roleService.removePermission(role, permission);
-        verify(rr, atLeastOnce()).removePermission(role, permission);
+        // Act
+        ObjectResponse<Role> response = roleService.addPermission(role, permission);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(roleId);
+        verify(pr, atLeastOnce()).getById(permissionId);
+        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertNull(response.getObject());
     }
 
-    @Test(expected = ActionForbiddenException.class)
-    public void removePermissionThatIsNotAdded() throws InvalidContentException, ActionForbiddenException, NotFoundException {
-        // Role
-        int roleId = 543;
+    /*
+     * Remove Permission Tests
+     */
+    @Test
+    public void removePermission_withExistingRoleAndPermission_StatusCodeOk() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
         Role role = new Role();
         role.setId(roleId);
+        role.setName(roleName);
 
-        // Permission
-        int permissionId = 9373;
+        int permissionId = 563;
+        String permissionName = "create_tweet";
         Permission permission = new Permission();
         permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        role.addPermission(permission);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(permission);
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+        when(rr.removePermission(role, permission)).thenReturn(role);
 
-        roleService.removePermission(role, permission);
-        verify(rr, never()).removePermission(role, permission);
+        // Act
+        ObjectResponse<Role> response = roleService.removePermission(role, permission);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(roleId);
+        verify(pr, atLeastOnce()).getById(permissionId);
+        verify(rr, atLeastOnce()).removePermission(role, permission);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(role, response.getObject());
+    }
+
+    @Test
+    public void removePermission_RoleIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int roleId = 0;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 563;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        role.addPermission(permission);
+
+        // Act
+        ObjectResponse<Role> response = roleService.removePermission(role, permission);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void removePermission_PermissionIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int roleId = 654;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 0;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        role.addPermission(permission);
+
+        // Act
+        ObjectResponse<Role> response = roleService.removePermission(role, permission);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void removePermission_PermissionDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 563;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        role.addPermission(permission);
+
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Permission not found"));
+
+        // Act
+        ObjectResponse<Role> response = roleService.removePermission(role, permission);
+
+        // Assert
+        verify(pr, atLeastOnce()).getById(permissionId);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void removePermission_RoleDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 563;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        role.addPermission(permission);
+
+        when(rr.getById(roleId)).thenReturn(null);
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+
+        // Act
+        ObjectResponse<Role> response = roleService.removePermission(role, permission);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(roleId);
+        verify(pr, atLeastOnce()).getById(permissionId);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void removePermission_RoleAndPermissionAreNotAdded_StatusCodeForbidden() {
+        // Arange
+        int roleId = 6;
+        String roleName = "Admin";
+        Role role = new Role();
+        role.setId(roleId);
+        role.setName(roleName);
+
+        int permissionId = 563;
+        String permissionName = "create_tweet";
+        Permission permission = new Permission();
+        permission.setId(permissionId);
+        permission.setName(permissionName);
+
+        when(rr.getById(roleId)).thenReturn(role);
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+
+        // Act
+        ObjectResponse<Role> response = roleService.removePermission(role, permission);
+
+        // Assert
+        verify(rr, atLeastOnce()).getById(roleId);
+        verify(pr, atLeastOnce()).getById(permissionId);
+        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertNull(response.getObject());
     }
 }

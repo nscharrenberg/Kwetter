@@ -1,6 +1,7 @@
 package domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -32,6 +33,7 @@ public class User {
 
     @Column(nullable = false)
     @XmlTransient
+    @JsonIgnore
     private String password;
 
     @Column(length = 160)
@@ -72,78 +74,6 @@ public class User {
     private Set<Tweet> tweets;
 
     public User() {
-        this.followers = new HashSet<>();
-        this.following = new HashSet<>();
-        this.tweets = new HashSet<>();
-    }
-
-    public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following, Set<Tweet> tweets) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.biography = biography;
-        this.website = website;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.role = role;
-        this.followers = followers;
-        this.following = following;
-        this.tweets = tweets;
-    }
-
-    public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role, Set<User> followers, Set<User> following, Set<Tweet> tweets) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.biography = biography;
-        this.website = website;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.role = role;
-        this.followers = followers;
-        this.following = following;
-        this.tweets = tweets;
-    }
-
-    public User(int id, String username, String email, String password, String biography, String website, double longitude, double latitude, Role role) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.biography = biography;
-        this.website = website;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.role = role;
-        this.followers = new HashSet<>();
-        this.following = new HashSet<>();
-        this.tweets = new HashSet<>();
-    }
-
-    public User(String username, String email, String password, String biography, String website, double longitude, double latitude, Role role) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.biography = biography;
-        this.website = website;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.role = role;
-        this.followers = new HashSet<>();
-        this.following = new HashSet<>();
-        this.tweets = new HashSet<>();
-    }
-
-    public User(String username, String email, String password, String biography, String website, double longitude, double latitude) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.biography = biography;
-        this.website = website;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.role = null;
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
         this.tweets = new HashSet<>();

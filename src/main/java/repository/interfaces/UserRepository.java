@@ -15,6 +15,5 @@ public interface UserRepository {
     boolean delete(User user);
     User follow(User user, User toFollow);
     User unfollow(User user, User toUnfollow);
-    boolean login(String username, String password);
     User changeRole(User user, Role role);
 }

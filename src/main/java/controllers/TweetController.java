@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.viewModels.LikeViewModel;
 import controllers.viewModels.TweetViewModel;
 import controllers.viewModels.UserViewModel;
+import domain.Role;
 import domain.Tweet;
 import domain.User;
 import exceptions.*;
 import exceptions.NotFoundException;
+import responses.JaxResponse;
+import responses.ObjectResponse;
 import service.TweetService;
 import service.UserService;
 
@@ -33,7 +36,8 @@ public class TweetController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response all() {
         try {
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweetService.all())).build();
+            ObjectResponse<List<Tweet>> response = tweetService.all();
+            return JaxResponse.checkObjectResponse(response);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -45,18 +49,22 @@ public class TweetController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(TweetViewModel request) {
         try {
-            Tweet tweet = new Tweet(request.getMessage(), userService.getById(request.getAuthor()));
-            tweetService.create(tweet);
-            return Response.status(Response.Status.CREATED).entity(new ObjectMapper().writeValueAsString(tweet)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (CreationFailedException | JsonProcessingException e) {
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getAuthor());
+
+            if(getUserByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+            }
+
+            Tweet tweet = new Tweet();
+            tweet.setMessage(request.getMessage());
+            tweet.setAuthor(getUserByIdResponse.getObject());
+
+            ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+            return JaxResponse.checkObjectResponse(response);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }  catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
@@ -65,15 +73,10 @@ public class TweetController {
     @Path("/{id}")
     public Response getById(@PathParam("id") int id) {
         try {
-            Tweet tweet = tweetService.getById(id);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<Tweet> response = tweetService.getById(id);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -84,15 +87,10 @@ public class TweetController {
     @Path("/author/name/{name}")
     public Response getByUsername(@PathParam("name") String username) {
         try {
-            List<Tweet> tweets = tweetService.getByAuthorName(username);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweets)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<List<Tweet>> response = tweetService.getByAuthorName(username);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -103,15 +101,10 @@ public class TweetController {
     @Path("/author/{id}")
     public Response getByAuthorId(@PathParam("id") int id) {
         try {
-            List<Tweet> tweets = tweetService.getByAuthorId(id);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweets)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<List<Tweet>> response = tweetService.getByAuthorId(id);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -123,17 +116,21 @@ public class TweetController {
     @Path("/{id}")
     public Response update(@PathParam("id") int id, TweetViewModel request) {
         try {
-            Tweet tweet = new Tweet(request.getMessage(), userService.getById(request.getAuthor()));
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getAuthor());
+
+            if(getUserByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+            }
+
+            Tweet tweet = new Tweet();
+            tweet.setMessage(request.getMessage());
+            tweet.setAuthor(getUserByIdResponse.getObject());
             tweet.setId(id);
-            tweetService.update(tweet);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+
+            ObjectResponse<Tweet> response = tweetService.update(tweet);
+
+            return JaxResponse.checkObjectResponse(response);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -144,15 +141,18 @@ public class TweetController {
     @Path("/{id}")
     public Response delete(@PathParam("id") int id) {
         try {
-            Tweet tweet = tweetService.getById(id);
-            tweetService.delete(tweet);
-            return Response.status(Response.Status.OK).entity("Tweet by " + tweet.getAuthor().getUsername() + " has been deleted").build();
-        } catch (InvalidContentException e) {
+            ObjectResponse<Tweet> response = tweetService.getById(id);
+
+            if(response.getObject() == null) {
+                return JaxResponse.checkObjectResponse(response);
+            }
+
+            ObjectResponse<Tweet> result = tweetService.delete(response.getObject());
+
+            return JaxResponse.checkObjectResponse(result);
+        }catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -162,25 +162,20 @@ public class TweetController {
     @Path("/{id}/like")
     public Response like(@PathParam("id") int id, LikeViewModel request) {
         try {
-            if(id != request.getTweetId()) {
-                return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
+            ObjectResponse<Tweet> getTweetByIdResponse = tweetService.getById(request.getTweetId());
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
+
+            if(getTweetByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getTweetByIdResponse);
             }
 
-            Tweet tweet = tweetService.getById(request.getTweetId());
-            User user = userService.getById(request.getUserId());
+            if(getUserByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+            }
 
-            tweetService.like(tweet, user);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (ActionForbiddenException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<Tweet> result = tweetService.like(getTweetByIdResponse.getObject(), getUserByIdResponse.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -192,25 +187,20 @@ public class TweetController {
     @Path("/{id}/unlike")
     public Response unlike(@PathParam("id") int id, LikeViewModel request) {
         try {
-            if(id != request.getTweetId()) {
-                return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
+            ObjectResponse<Tweet> getTweetByIdResponse = tweetService.getById(request.getTweetId());
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
+
+            if(getTweetByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getTweetByIdResponse);
             }
 
-            Tweet tweet = tweetService.getById(request.getTweetId());
-            User user = userService.getById(request.getUserId());
+            if(getUserByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+            }
 
-            tweetService.unlike(tweet, user);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(tweet)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (ActionForbiddenException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<Tweet> result = tweetService.unlike(getTweetByIdResponse.getObject(), getUserByIdResponse.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

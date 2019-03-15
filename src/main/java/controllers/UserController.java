@@ -9,6 +9,8 @@ import domain.Role;
 import domain.User;
 import exceptions.*;
 import exceptions.NotFoundException;
+import responses.JaxResponse;
+import responses.ObjectResponse;
 import service.RoleService;
 import service.UserService;
 
@@ -18,6 +20,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 @Stateless
 @Path("/users")
@@ -32,33 +35,11 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response all() {
         try {
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(userService.all())).build();
+            ObjectResponse<List<User>> response = userService.all();
+            return JaxResponse.checkObjectResponse(response);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(UserViewModel request) {
-        try {
-            User user = new User(request.getUsername(), request.getEmail(), request.getPassword(), request.getBiography(), request.getWebsite(), request.getLongitude(), request.getLatitude());
-            userService.create(user);
-            return Response.status(Response.Status.CREATED).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (CreationFailedException | NoSuchAlgorithmException | JsonProcessingException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (NameNotUniqueException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
@@ -67,15 +48,10 @@ public class UserController {
     @Path("/{id}")
     public Response getById(@PathParam("id") int id) {
         try {
-            User user = userService.getById(id);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<User> response = userService.getById(id);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -86,15 +62,10 @@ public class UserController {
     @Path("/username/{username}")
     public Response getByUsername(@PathParam("username") String username) {
         try {
-            User user = userService.getByUsername(username);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<User> response = userService.getByUsername(username);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -105,15 +76,10 @@ public class UserController {
     @Path("/email/{email}")
     public Response getByEmail(@PathParam("email") String email) {
         try {
-            User user = userService.getByEmail(email);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<User> response = userService.getByEmail(email);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -125,26 +91,22 @@ public class UserController {
     @Path("/{id}")
     public Response update(@PathParam("id") int id, UserViewModel request) {
         try {
-            User user = userService.getById(id);
-            user.setUsername(request.getUsername() != null ? request.getUsername() : user.getUsername());
-            user.setEmail(request.getEmail() != null ? request.getEmail() : user.getEmail());
-            user.setBiography(request.getBiography() != null ? request.getBiography() : user.getBiography());
-            user.setWebsite(request.getWebsite() != null ? request.getWebsite() : user.getWebsite());
-            user.setLongitude(request.getLongitude() != null ? request.getLongitude() : user.getLatitude());
-            user.setLatitude(request.getLatitude() != null ? request.getLatitude() : user.getLatitude());
+            ObjectResponse<User> response = userService.getById(id);
 
-            userService.update(user);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NameNotUniqueException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            if(response.getObject() == null) {
+                return JaxResponse.checkObjectResponse(response);
+            }
+
+            response.getObject().setUsername(request.getUsername() != null ? request.getUsername() : response.getObject().getUsername());
+            response.getObject().setEmail(request.getEmail() != null ? request.getEmail() : response.getObject().getEmail());
+            response.getObject().setBiography(request.getBiography() != null ? request.getBiography() : response.getObject().getBiography());
+            response.getObject().setWebsite(request.getWebsite() != null ? request.getWebsite() : response.getObject().getWebsite());
+            response.getObject().setLongitude(request.getLongitude() != null ? request.getLongitude() : response.getObject().getLatitude());
+            response.getObject().setLatitude(request.getLatitude() != null ? request.getLatitude() : response.getObject().getLatitude());
+
+            ObjectResponse<User> result = userService.update(response.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -155,15 +117,17 @@ public class UserController {
     @Path("/{id}")
     public Response delete(@PathParam("id") int id) {
         try {
-            User user = userService.getById(id);
-            userService.delete(user);
-            return Response.status(Response.Status.OK).entity("User " + user.getUsername() + " has been deleted").build();
-        } catch (InvalidContentException e) {
+            ObjectResponse<User> response = userService.getById(id);
+
+            if(response.getObject() == null) {
+                return JaxResponse.checkObjectResponse(response);
+            }
+
+            ObjectResponse<User> result = userService.delete(response.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -177,18 +141,20 @@ public class UserController {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
-            User user = userService.getById(request.getUserId());
-            Role role = roleService.getById(request.getRoleId());
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
+            ObjectResponse<Role> getRoleByIdResponse = roleService.getById(request.getRoleId());
 
-            userService.changeRole(user, role);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(user)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            if(getUserByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+            }
+
+            if(getRoleByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getRoleByIdResponse);
+            }
+
+            ObjectResponse<User> result = userService.changeRole(getUserByIdResponse.getObject(), getRoleByIdResponse.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -204,23 +170,22 @@ public class UserController {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
-            User userToFollow = userService.getById(request.getUserToFollowId());
-            User follower = userService.getById(request.getUserId());
+            ObjectResponse<User> getUserToFollowByIdResponse = userService.getById(request.getUserToFollowId());
+            ObjectResponse<User> getFollowerByIdResponse = userService.getById(request.getUserId());
 
-            userService.follow(follower, userToFollow);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(userToFollow)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            if(getUserToFollowByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getUserToFollowByIdResponse);
+            }
+
+            if(getFollowerByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getFollowerByIdResponse);
+            }
+
+            ObjectResponse<User> result = userService.follow(getFollowerByIdResponse.getObject(), getUserToFollowByIdResponse.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (ActionForbiddenException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         }
     }
 
@@ -234,23 +199,22 @@ public class UserController {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
-            User userToUnFollow = userService.getById(request.getUserToFollowId());
-            User follower = userService.getById(request.getUserId());
+            ObjectResponse<User> getUserToFollowByIdResponse = userService.getById(request.getUserToFollowId());
+            ObjectResponse<User> getFollowerByIdResponse = userService.getById(request.getUserId());
 
-            userService.unfollow(follower, userToUnFollow);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(userToUnFollow)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (exceptions.NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            if(getUserToFollowByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getUserToFollowByIdResponse);
+            }
+
+            if(getFollowerByIdResponse.getObject() == null) {
+                return JaxResponse.checkObjectResponse(getFollowerByIdResponse);
+            }
+
+            ObjectResponse<User> result = userService.unfollow(getFollowerByIdResponse.getObject(), getUserToFollowByIdResponse.getObject());
+            return JaxResponse.checkObjectResponse(result);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (ActionForbiddenException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         }
     }
 }

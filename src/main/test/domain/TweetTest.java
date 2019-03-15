@@ -25,7 +25,17 @@ public class TweetTest {
         Role role = new Role("Member");
 
         for(int i = 0; i < 10; i++) {
-            users.add(new User(i, "testUser" + i, "testUser" + i + "@mail.com", "password", "this is my bio", "www.mysite" + i + ".com", 123123.123123, 123123.123132, role));
+            User u = new User();
+            u.setId(i);
+            u.setUsername("testUser" + i);
+            u.setPassword("password");
+            u.setEmail("testUser" + i + "@mail.com");
+            u.setBiography("this is my bio");
+            u.setWebsite("www.mysite" + i + ".com");
+            u.setLongitude(123123.123123);
+            u.setLatitude(123123.123132);
+            u.setRole(role);
+            users.add(u);
         }
 
         int userId = 4;
@@ -37,7 +47,11 @@ public class TweetTest {
         }
 
         message = "This is a new tweet";
-        tweet = new Tweet(1,message,user, new Date());
+        tweet = new Tweet();
+        tweet.setId(1);
+        tweet.setMessage(message);
+        tweet.setAuthor(user);
+        tweet.setCreatedAt(new Date());
     }
 
     @After
