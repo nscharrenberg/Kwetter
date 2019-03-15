@@ -5,6 +5,7 @@ import domain.User;
 import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.TweetRepository;
+import responses.HttpStatusCodes;
 import responses.ObjectResponse;
 
 import javax.ejb.Stateless;
@@ -32,130 +33,131 @@ public class TweetService {
      * Get all tweets
      * @return a list of tweets
      */
-    public List<Tweet> all() {
-        return tr.all();
+    public ObjectResponse<List<Tweet>> all() {
+        List<Tweet> tweets = tr.all();
+        return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets loaded", tweets);
     }
 
     /**
      * Get a tweet by its id
      * @param id - the id of the tweet
      * @return a tweet
-     * @throws NotFoundException
-     * @throws InvalidContentException
      */
-    public Tweet getById(int id) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<Tweet> getById(int id) {
         if(id <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         Tweet tweet = tr.getById(id);
 
         if(tweet == null) {
-            throw new NotFoundException("Tweet not found");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Tweet not found");
         }
 
-        return tweet;
+        return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message: " + tweet.getMessage() + " found", tweet);
     }
 
     /**
      * Get a list of tweets by its author's name
      * @param username - the name of the author
      * @return a list of tweets
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public List<Tweet> getByAuthorName(String username) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<List<Tweet>> getByAuthorName(String username) {
         if(username.isEmpty()) {
-            throw new InvalidContentException("username can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
         }
 
-        ObjectResponse<User> getUserById = ur.getByUsername(username);
+        ObjectResponse<User> getUserByIdResponse = ur.getByUsername(username);
 
-        if(getUserById.getObject() == null) {
-            throw new NotFoundException("User not found");
+        if(getUserByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
+        ObjectResponse<List<Tweet>> getTweetsByAuthorIdResponse = getByAuthorId(getUserByIdResponse.getObject().getId());
 
-        List<Tweet> tweets = tr.getByAuthorId(getUserById.getObject().getId());
-
-        if(tweets == null || tweets.isEmpty()) {
-            throw new NotFoundException("No tweets not found");
+        if(getTweetsByAuthorIdResponse.getObject() == null || getTweetsByAuthorIdResponse.getObject().isEmpty()) {
+            return getTweetsByAuthorIdResponse;
         }
 
-        return tweets;
+        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByAuthorIdResponse.getObject().size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse.getObject());
     }
 
     /**
      * Get a list of tweets by its author's id
      * @param id - the id of the author
      * @return a list of tweets
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public List<Tweet> getByAuthorId(int id) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<List<Tweet>> getByAuthorId(int id) {
         if(id <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
-        List<Tweet> tweets = tr.getByAuthorId(id);
+        ObjectResponse<User> getUserByIdResponse = ur.getById(id);
 
-        if(tweets == null || tweets.isEmpty()) {
-            throw new NotFoundException("No tweets not found");
+        if(getUserByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
-        return tweets;
+        ObjectResponse<List<Tweet>> getTweetsByAuthorIdResponse = getByAuthorId(id);
+
+        if(getTweetsByAuthorIdResponse.getObject() == null || getTweetsByAuthorIdResponse.getObject().isEmpty()) {
+            return getTweetsByAuthorIdResponse;
+        }
+
+        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByAuthorIdResponse.getObject().size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse.getObject());
     }
 
     /**
      * Get a list of tweets by its creation date
      * @param date - the date of the tweet
      * @return a list of tweets
-     * @throws NotFoundException
-     * @throws InvalidContentException
      */
-    public List<Tweet> getByCreatedDate(Date date) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<List<Tweet>> getByCreatedDate(Date date) {
         if(date == null) {
-            throw new InvalidContentException("Invalid Date");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Date");
         }
 
-        List<Tweet> tweets = tr.getByCreatedDate(date);
+        ObjectResponse<List<Tweet>> getTweetsByDate = getByCreatedDate(date);
 
-        if(tweets == null || tweets.isEmpty()) {
-            throw new NotFoundException("No tweets not found");
+        if(getTweetsByDate.getObject() == null || getTweetsByDate.getObject().isEmpty()) {
+            return getTweetsByDate;
         }
 
-        return tweets;
+        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByDate.getObject().size() + " tweets from " + date + " loaded", getTweetsByDate.getObject());
     }
 
     /**
      * Create a new tweets
      * @param tweet - the tweet information
      * @return the newly created tweet
-     * @throws InvalidContentException
-     * @throws NotFoundException
-     * @throws CreationFailedException
      */
-    public Tweet create(Tweet tweet) throws InvalidContentException, NotFoundException, CreationFailedException {
+    public ObjectResponse<Tweet> create(Tweet tweet) {
         if(tweet.getMessage() == null || tweet.getMessage().isEmpty()) {
-            throw new InvalidContentException("Tweet must have a message");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet must have a message");
         }
 
         if(tweet.getAuthor() == null || ur.getById(tweet.getAuthor().getId()) == null) {
-            throw new NotFoundException("Author not found");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Author not found");
         }
 
         if(tweet.getMessage().length() > 140) {
-            throw new InvalidContentException("Tweet can not be longer then 140 characters");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
         }
 
-        tweet.setMentions(getMentionsByMessage(tweet.getMessage()));
+        ObjectResponse<Set<User>> getMentionsByMessageResponse = getMentionsByMessage(tweet.getMessage());
+
+        if(getMentionsByMessageResponse.getObject() == null) {
+            return new ObjectResponse<>(getMentionsByMessageResponse.getCode(), getMentionsByMessageResponse.getMessage());
+        }
+
+        tweet.setMentions(getMentionsByMessageResponse.getObject());
         tweet.setCreatedAt(new Date());
         Tweet created = tr.create(tweet);
 
         if(created != null) {
-            return created;
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message: " + tweet.getMessage() + " created", tweet);
         } else {
-            throw new CreationFailedException("Could not create a new tweet due to an unknown error");
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new tweet due to an unknown error");
         }
     }
 
@@ -163,47 +165,63 @@ public class TweetService {
      * Update an existing tweet
      * @param tweet - the new tweet information with an existing tweet id
      * @return the updated tweet
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public Tweet update(Tweet tweet) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<Tweet> update(Tweet tweet) {
         if(tweet.getMessage().isEmpty()) {
-            throw new InvalidContentException("Tweet must have a message");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet must have a message");
         }
 
         if(tweet.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         if(tweet.getMessage().length() > 140) {
-            throw new InvalidContentException("Tweet can not be longer then 140 characters");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
         }
 
-        if(tr.getById(tweet.getId()) == null) {
-            throw new NotFoundException("Tweet not found");
+        ObjectResponse<Tweet> getByIdResponse = getById(tweet.getId());
+
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        tweet.setMentions(getMentionsByMessage(tweet.getMessage()));
-        return tr.update(tweet);
+        ObjectResponse<Set<User>> getMentionsByMessageResponse = getMentionsByMessage(tweet.getMessage());
+
+        if(getMentionsByMessageResponse.getObject() == null) {
+            return new ObjectResponse<>(getMentionsByMessageResponse.getCode(), getMentionsByMessageResponse.getMessage());
+        }
+
+        tweet.setMentions(getMentionsByMessageResponse.getObject());
+        Tweet result = tr.update(tweet);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message: " + result.getMessage() + " has been updated", result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not update an existing tweet due to an unknown error");
+        }
     }
 
     /**
      * Delete an existing tweet
      * @param tweet - the tweet to be deleted
      * @return a boolean wether or not the tweet is deleted.
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public boolean delete(Tweet tweet) throws NotFoundException, InvalidContentException {
+    public ObjectResponse<Tweet> delete(Tweet tweet) {
         if(tweet.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
-        if(tr.getById(tweet.getId()) == null) {
-            throw new NotFoundException("Role not found");
+        ObjectResponse<Tweet> getByIdResponse = getById(tweet.getId());
+
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        return tr.delete(tweet);
+        boolean deleted = tr.delete(tweet);
+        if(deleted) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message " + tweet.getMessage() + " has been deleted");
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Tweet with message " + tweet.getMessage() + "could not be deleted due to an unknown error");
+        }
     }
 
     /**
@@ -211,32 +229,38 @@ public class TweetService {
      * @param tweet - the tweet
      * @param user - the user that likes the tweet
      * @return the tweet
-     * @throws InvalidContentException
-     * @throws ActionForbiddenException
-     * @throws NotFoundException
      */
-    public Tweet like(Tweet tweet, User user) throws InvalidContentException, NotFoundException, ActionForbiddenException {
+    public ObjectResponse<Tweet> like(Tweet tweet, User user) {
         if(user.getId() <= 0) {
-            throw new InvalidContentException("Invalid user ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
         }
 
         if(tweet.getId() <= 0) {
-            throw new InvalidContentException("Invalid tweet ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Tweet ID");
         }
 
-        if(ur.getById(user.getId()) == null) {
-            throw new NotFoundException("User not found");
+        ObjectResponse<User> getUserByIdResponse = ur.getById(user.getId());
+
+        if(getUserByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
-        if(tr.getById(tweet.getId()) == null) {
-            throw new NotFoundException("Tweet not found");
+        ObjectResponse<Tweet> getTweetByIdResponse = getById(user.getId());
+
+        if(getTweetByIdResponse.getObject() == null) {
+            return getTweetByIdResponse;
         }
 
-        if (tr.getById(tweet.getId()).getLikes().contains(user)) {
-            throw new ActionForbiddenException("You already like this tweet");
+        if (getTweetByIdResponse.getObject().getLikes().contains(user)) {
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "You already like this tweet");
         }
 
-        return tr.like(tweet, user);
+        Tweet result = tr.like(tweet, user);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet by " + result.getAuthor().getUsername() + " liked", result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not like this tweet due to an unknown error");
+        }
     }
 
     /**
@@ -248,28 +272,37 @@ public class TweetService {
      * @throws ActionForbiddenException
      * @throws NotFoundException
      */
-    public Tweet unlike(Tweet tweet, User user) throws ActionForbiddenException, InvalidContentException, NotFoundException {
+    public ObjectResponse<Tweet> unlike(Tweet tweet, User user) throws ActionForbiddenException, InvalidContentException, NotFoundException {
         if(user.getId() <= 0) {
-            throw new InvalidContentException("Invalid user ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
         }
 
         if(tweet.getId() <= 0) {
-            throw new InvalidContentException("Invalid tweet ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Tweet ID");
         }
 
-        if(ur.getById(user.getId()) == null) {
-            throw new NotFoundException("User not found");
+        ObjectResponse<User> getUserByIdResponse = ur.getById(user.getId());
+
+        if(getUserByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
-        if(tr.getById(tweet.getId()) == null) {
-            throw new NotFoundException("Tweet not found");
+        ObjectResponse<Tweet> getTweetByIdResponse = getById(user.getId());
+
+        if(getTweetByIdResponse.getObject() == null) {
+            return getTweetByIdResponse;
         }
 
-        if (!tr.getById(tweet.getId()).getLikes().contains(user)) {
-            throw new ActionForbiddenException("You do not like this tweet yet");
+        if (!getTweetByIdResponse.getObject().getLikes().contains(user)) {
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "You do not like this tweet yet");
         }
 
-        return tr.unlike(tweet, user);
+        Tweet result =  tr.unlike(tweet, user);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "Like from tweet by " + result.getAuthor().getUsername() + " removed", result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not remove your like from this tweet due to an unknown error");
+        }
     }
 
     /**
@@ -277,12 +310,10 @@ public class TweetService {
      * a mention is marked with an @ symbol before the username.
      * @param message
      * @return
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    private Set<User> getMentionsByMessage(String message) throws InvalidContentException, NotFoundException {
+    private ObjectResponse<Set<User>> getMentionsByMessage(String message) {
         if(!message.contains("@")) {
-            return new HashSet<>();
+            return new ObjectResponse<>(HttpStatusCodes.OK, "0 users mentioned in this tweet", new HashSet<>());
         }
 
         String regex = "(?:\\s|\\A)[@]+([A-Za-z0-9-_]+)";
@@ -297,8 +328,6 @@ public class TweetService {
             }
         }
 
-        return users;
+        return new ObjectResponse<>(HttpStatusCodes.OK, users.size() + " users mentioned in this tweet", users);
     }
-
-
 }

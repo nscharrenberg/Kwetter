@@ -110,11 +110,19 @@ public class UserService {
 
         ObjectResponse<User> getByUsernameResponse = getByUsername(user.getUsername());
         if(getByUsernameResponse.getObject() != null) {
-            return getByUsernameResponse;
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with username " + user.getUsername() + " already exists.");
         }
 
-        if(user.getBiography().length() > 160) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Biography can not be longer then 160 characters.");
+        ObjectResponse<User> getByEmailResponse = getByEmail(user.getEmail());
+
+        if(getByEmailResponse.getObject() != null) {
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with email " + user.getEmail() + " already exists.");
+        }
+
+        if(user.getBiography() != null) {
+            if(user.getBiography().length() > 160) {
+                return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Biography can not be longer then 160 characters.");
+            }
         }
 
         ObjectResponse<Role> getRoleByNameResponse = rr.getByName("member");
@@ -128,7 +136,7 @@ public class UserService {
         User created = ur.create(user);
 
         if(created != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "User with name: " + user.getUsername() + " created", user);
+            return new ObjectResponse<>(HttpStatusCodes.CREATED, "User with name: " + user.getUsername() + " created", user);
         } else {
             return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new user due to an unknown error");
         }
@@ -144,6 +152,10 @@ public class UserService {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
         }
 
+        if(user.getEmail().isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "email can not be empty");
+        }
+
         if(user.getId() <= 0) {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
@@ -154,8 +166,10 @@ public class UserService {
             return getByIdResponse;
         }
 
-        if(user.getBiography().length() > 160) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Biography can not be longer then 160 characters.");
+        if(user.getBiography() != null) {
+            if(user.getBiography().length() > 160) {
+                return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Biography can not be longer then 160 characters.");
+            }
         }
 
         ObjectResponse<User> getByUsernameResponse = getByUsername(user.getUsername());
@@ -217,11 +231,12 @@ public class UserService {
         }
 
         ObjectResponse<User> getUserByIdResponse = getById(user.getId());
-        ObjectResponse<User> getToFollowByIdResponse = getById(toFollow.getId());
 
         if(getUserByIdResponse.getObject() == null) {
             return getUserByIdResponse;
         }
+
+        ObjectResponse<User> getToFollowByIdResponse = getById(toFollow.getId());
 
         if(getToFollowByIdResponse.getObject() == null) {
             return getToFollowByIdResponse;
@@ -284,10 +299,18 @@ public class UserService {
      * @return a User
      */
     public ObjectResponse<User> login(String username, String password) {
+        if(username.isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Username can not be empty");
+        }
+
+        if (password.isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Password can not be empty");
+        }
+
         ObjectResponse<User> getByUsernameResponse = getByUsername(username);
 
         if(getByUsernameResponse.getObject() == null) {
-            return getByUsernameResponse;
+            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "Wrong username or password");
         }
 
         if(PasswordAuthentication.verifyHash(password, getByUsernameResponse.getObject().getPassword())) {

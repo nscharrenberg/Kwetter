@@ -87,7 +87,7 @@ public class PermissionService {
         Permission created = pr.create(permission);
 
         if(created != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " created", permission);
+            return new ObjectResponse<>(HttpStatusCodes.CREATED, "Permission with name: " + permission.getName() + " created", permission);
         } else {
             return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new permission due to an unknown error");
         }
@@ -99,12 +99,12 @@ public class PermissionService {
      * @return the updated permission
      */
     public ObjectResponse<Permission> update(Permission permission) {
-        if(permission.getName().isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
-        }
-
         if(permission.getId() <= 0) {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+        }
+
+        if(permission.getName().isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
         ObjectResponse<Permission> getByIdResponse = getById(permission.getId());
@@ -116,7 +116,7 @@ public class PermissionService {
         ObjectResponse<Permission> getByNameResponse = getByName(permission.getName());
 
         if(getByNameResponse.getObject() != null && permission.getId() != getByNameResponse.getObject().getId()) {
-            return getByNameResponse;
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "Permission with name " + permission.getName() + " already exists.");
         }
 
         Permission result =  pr.update(permission);

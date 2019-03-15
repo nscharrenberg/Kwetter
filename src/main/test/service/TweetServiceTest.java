@@ -384,7 +384,7 @@ public class TweetServiceTest {
         when(ur.getByUsername(username2).getObject()).thenReturn(user2);
         when(tr.create(tweet)).thenReturn(tweet);
 
-        Tweet result = tweetService.create(tweet);
+        Tweet result = tweetService.create(tweet).getObject();
         assertEquals(tweet.getMentions(), result.getMentions());
         verify(tr, atLeastOnce()).create(tweet);
     }

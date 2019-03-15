@@ -89,7 +89,7 @@ public class RoleService {
         Role created = rr.create(role);
 
         if(created != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + role.getName() + " created", role);
+            return new ObjectResponse<>(HttpStatusCodes.CREATED, "Role with name: " + role.getName() + " created", role);
         } else {
             return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new role due to an unknown error");
         }
