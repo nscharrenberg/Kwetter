@@ -1,10 +1,13 @@
 package service;
 
+import authentication.PasswordAuthentication;
 import domain.Role;
 import domain.User;
 import exceptions.*;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
+import responses.HttpStatusCodes;
+import responses.ObjectResponse;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -29,103 +32,113 @@ public class UserService {
      * Get all Users
      * @return a list of users
      */
-    public List<User> all() {
-        return ur.all();
+    public ObjectResponse<List<User>> all() {
+        List<User> users = ur.all();
+        return new ObjectResponse<>(HttpStatusCodes.OK, users.size() + " permissions loaded", users);
     }
 
     /**
      * Get a user by its id
      * @param id - the id of the user
      * @return a user
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public User getById(int id) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<User> getById(int id) {
         if(id <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         User user = ur.getById(id);
 
         if(user == null) {
-            throw new NotFoundException("User not found");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found");
         }
 
-        return user;
+        return new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user);
     }
 
     /**
      * Get a user by its name
      * @param username - the username of the user
      * @return a user
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public User getByUsername(String username) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<User> getByUsername(String username) {
         if(username.isEmpty()) {
-            throw new InvalidContentException("username can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
         }
 
         User user = ur.getByUsername(username);
 
         if(user == null) {
-            throw new NotFoundException("User not found");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found");
         }
 
-        return user;
+        return new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user);
     }
 
     /**
      * Get a user by its email
      * @param email - the email of the user
      * @return a user
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public User getByEmail(String email) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<User> getByEmail(String email) {
         if(email.isEmpty()) {
-            throw new InvalidContentException("username can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "email can not be empty");
         }
 
         User user = ur.getByEmail(email);
 
         if(user == null) {
-            throw new NotFoundException("User not found");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found");
         }
 
-        return user;
+        return new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user);
     }
 
     /**
      * Create a new user
      * @param user - the user information
      * @return the newly created user
-     * @throws NameNotUniqueException
-     * @throws CreationFailedException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidContentException
      */
-    public User create(User user) throws NameNotUniqueException, CreationFailedException, InvalidContentException, NoSuchAlgorithmException, NotFoundException {
+    public ObjectResponse<User> create(User user) {
         if(user.getUsername().isEmpty() || user.getUsername() == null) {
-            throw new InvalidContentException("username can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
         }
 
         if(user.getEmail().isEmpty() || user.getEmail() == null) {
-            throw new InvalidContentException("email can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "email can not be empty");
         }
 
-        if(ur.getByUsername(user.getUsername()) != null) {
-            throw new NameNotUniqueException("Username already taken");
+        ObjectResponse<User> getByUsernameResponse = getByUsername(user.getUsername());
+        if(getByUsernameResponse.getObject() != null) {
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with username " + user.getUsername() + " already exists.");
         }
 
-        user.setRole(rr.getByName("member"));
-        user.setPassword(tempSha256Encryption(user.getPassword()));
+        ObjectResponse<User> getByEmailResponse = getByEmail(user.getEmail());
+
+        if(getByEmailResponse.getObject() != null) {
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with email " + user.getEmail() + " already exists.");
+        }
+
+        if(user.getBiography() != null) {
+            if(user.getBiography().length() > 160) {
+                return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Biography can not be longer then 160 characters.");
+            }
+        }
+
+        ObjectResponse<Role> getRoleByNameResponse = rr.getByName("member");
+
+        if(getRoleByNameResponse.getObject() == null) {
+            return new ObjectResponse<>(getRoleByNameResponse.getCode(), getRoleByNameResponse.getMessage());
+        }
+
+        user.setRole(getRoleByNameResponse.getObject());
+        user.setPassword(PasswordAuthentication.hash(user.getPassword()));
         User created = ur.create(user);
 
         if(created != null) {
-            return created;
+            return new ObjectResponse<>(HttpStatusCodes.CREATED, "User with name: " + user.getUsername() + " created", user);
         } else {
-            throw new CreationFailedException("Could not create a new user due to an unknown error");
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new user due to an unknown error");
         }
     }
 
@@ -133,51 +146,73 @@ public class UserService {
      * Update an existing user
      * @param user - the new user information with an existing user id
      * @return the updated user
-     * @throws NameNotUniqueException
      */
-    public User update(User user) throws NameNotUniqueException, InvalidContentException, NotFoundException {
+    public ObjectResponse<User> update(User user) {
         if(user.getUsername().isEmpty()) {
-            throw new InvalidContentException("username can not be empty");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
+        }
+
+        if(user.getEmail().isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "email can not be empty");
         }
 
         if(user.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
-        if(ur.getById(user.getId()) == null) {
-            throw new NotFoundException("User not found");
+        ObjectResponse<User> getByIdResponse = getById(user.getId());
+
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        User usernameResult = ur.getByUsername(user.getUsername());
-        if(usernameResult != null && usernameResult.getId() != user.getId()) {
-            throw new NameNotUniqueException("User with name " + user.getUsername() + " already exists.");
+        if(user.getBiography() != null) {
+            if(user.getBiography().length() > 160) {
+                return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Biography can not be longer then 160 characters.");
+            }
         }
 
-        User emailResult = ur.getByEmail(user.getEmail());
-        if(emailResult != null && emailResult.getId() != user.getId()) {
-            throw new NameNotUniqueException("User with email " + user.getEmail() + " already exists.");
+        ObjectResponse<User> getByUsernameResponse = getByUsername(user.getUsername());
+        if(getByUsernameResponse.getObject() != null && getByUsernameResponse.getObject().getId() != user.getId()) {
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with username " + user.getUsername() + " already exists.");
         }
 
-        return ur.update(user);
+        ObjectResponse<User> getByEmailResponse = getByEmail(user.getEmail());
+
+        if(getByEmailResponse.getObject() != null && getByEmailResponse.getObject().getId() != user.getId()) {
+            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with email " + user.getEmail() + " already exists.");
+        }
+
+        User result = ur.update(user);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "User with name: " + user.getUsername() + " updated", user);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not update an existing user due to an unknown error");
+        }
     }
 
     /**
      * Delete an existing user
      * @param user - the user to be deleted
      * @return a boolean wether or not the user is deleted.
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public boolean delete(User user) throws InvalidContentException, NotFoundException {
+    public ObjectResponse<User> delete(User user) {
         if(user.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
-        if(ur.getById(user.getId()) == null) {
-            throw new NotFoundException("User not found");
+        ObjectResponse<User> getByIdResponse = getById(user.getId());
+
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        return ur.delete(user);
+        boolean deleted = ur.delete(user);
+        if(deleted) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "User with username " + user.getUsername() + " has been deleted");
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "User with username " + user.getUsername() + "could not be deleted due to an unknown error");
+        }
     }
 
     /**
@@ -185,31 +220,38 @@ public class UserService {
      * @param user - the user that wants to follow another user
      * @param toFollow - the user that is being followed
      * @return the user
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public User follow(User user, User toFollow) throws InvalidContentException, NotFoundException, ActionForbiddenException {
+    public ObjectResponse<User> follow(User user, User toFollow) {
         if(user.getId() <= 0) {
-            throw new InvalidContentException("Invalid user ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         if(toFollow.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID for User you are trying to follow");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID for User you are trying to follow");
         }
 
-        if(ur.getById(user.getId()).getFollowing().contains(toFollow) || ur.getById(toFollow.getId()).getFollowers().contains(user)) {
-            throw new ActionForbiddenException(user.getUsername() + " is already following " + toFollow.getUsername());
+        ObjectResponse<User> getUserByIdResponse = getById(user.getId());
+
+        if(getUserByIdResponse.getObject() == null) {
+            return getUserByIdResponse;
         }
 
-        if(ur.getById(user.getId()) == null) {
-            throw new NotFoundException("User not found");
+        ObjectResponse<User> getToFollowByIdResponse = getById(toFollow.getId());
+
+        if(getToFollowByIdResponse.getObject() == null) {
+            return getToFollowByIdResponse;
         }
 
-        if(ur.getById(toFollow.getId()) == null) {
-            throw new NotFoundException("User you are trying to follow not found");
+        if(getUserByIdResponse.getObject().getFollowing().contains(toFollow) || getToFollowByIdResponse.getObject().getFollowers().contains(user)) {
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, user.getUsername() + " is already following " + toFollow.getUsername());
         }
 
-        return ur.follow(user, toFollow);
+        User result = ur.follow(getUserByIdResponse.getObject(), getToFollowByIdResponse.getObject());
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " is now following User with username: " + toFollow.getUsername(), result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not follow User due to an unknown error");
+        }
     }
 
     /**
@@ -217,42 +259,65 @@ public class UserService {
      * @param user - the user that wants to unfollow another user
      * @param toUnfollow - the user that needs to be unfollowed
      * @return the user
-     * @throws InvalidContentException
-     * @throws NotFoundException
      */
-    public User unfollow(User user, User toUnfollow) throws NotFoundException, InvalidContentException, ActionForbiddenException {
+    public ObjectResponse<User> unfollow(User user, User toUnfollow) {
         if(user.getId() <= 0) {
-            throw new InvalidContentException("Invalid user ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         if(toUnfollow.getId() <= 0) {
-            throw new InvalidContentException("Invalid ID for User you are trying to unfollow");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID for User you are trying to unfollow");
+        }
+
+        ObjectResponse<User> getUserByIdResponse = getById(user.getId());
+        ObjectResponse<User> getToUnFollowByIdResponse = getById(toUnfollow.getId());
+
+        if(getUserByIdResponse.getObject() == null) {
+            return getUserByIdResponse;
+        }
+
+        if(getToUnFollowByIdResponse.getObject() == null) {
+            return getToUnFollowByIdResponse;
         }
 
         if(!ur.getById(user.getId()).getFollowing().contains(toUnfollow) || !ur.getById(toUnfollow.getId()).getFollowers().contains(user)) {
-            throw new ActionForbiddenException(user.getUsername() + " is not following " + toUnfollow.getUsername());
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, user.getUsername() + " is not following " + toUnfollow.getUsername());
         }
 
-        if(ur.getById(user.getId()) == null) {
-            throw new NotFoundException("User not found");
+        User result = ur.unfollow(getUserByIdResponse.getObject(), getToUnFollowByIdResponse.getObject());
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " is not following User with username: " + toUnfollow.getUsername() + " anymore", result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not unfollow User due to an unknown error");
         }
-
-        if(ur.getById(toUnfollow.getId()) == null) {
-            throw new NotFoundException("User you are trying to unfollow not found");
-        }
-
-        return ur.unfollow(user, toUnfollow);
     }
 
     /**
      * Login as a user
      * @param username - the username if the user
      * @param password - the password of the user
-     * @return a boolean
-     * @throws NoSuchAlgorithmException
+     * @return a User
      */
-    public boolean login(String username, String password) throws NoSuchAlgorithmException {
-        return ur.login(username, tempSha256Encryption(password));
+    public ObjectResponse<User> login(String username, String password) {
+        if(username.isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Username can not be empty");
+        }
+
+        if (password.isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Password can not be empty");
+        }
+
+        ObjectResponse<User> getByUsernameResponse = getByUsername(username);
+
+        if(getByUsernameResponse.getObject() == null) {
+            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "Wrong username or password");
+        }
+
+        if(PasswordAuthentication.verifyHash(password, getByUsernameResponse.getObject().getPassword())) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "You are logged in as " + getByUsernameResponse.getObject().getUsername(), getByUsernameResponse.getObject());
+        }
+
+        return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "Wrong username or password");
     }
 
     /**
@@ -260,39 +325,33 @@ public class UserService {
      * @param user - the user
      * @param role - the role you want to add
      * @return the user
-     * @throws InvalidContentException
      * @throws NotFoundException
      */
-    public User changeRole(User user, Role role) throws NotFoundException, InvalidContentException {
+    public ObjectResponse<User> changeRole(User user, Role role) throws NotFoundException {
         if(user.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid user ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
         }
 
         if(role.getId() <= 0) {
-            throw new IllegalArgumentException("Invalid role ID");
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Role ID");
         }
 
-        if(ur.getById(user.getId()) == null) {
-            throw new NotFoundException("User not found");
+        ObjectResponse<User> getByIdResponse = getById(user.getId());
+
+        if(getByIdResponse.getObject() == null) {
+            return getByIdResponse;
         }
 
-        if(rr.getById(role.getId()) == null) {
-            throw new NotFoundException("Role not found");
+        ObjectResponse<Role> getRoleByIdResponse = rr.getById(role.getId());
+        if(getRoleByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getRoleByIdResponse.getCode(), getRoleByIdResponse.getMessage());
         }
 
-        return ur.changeRole(user, role);
-    }
-
-    /**
-     * Hash a text
-     * @param text - the text to hash
-     * @return a hashed String
-     * @throws NoSuchAlgorithmException
-     */
-    private String tempSha256Encryption(String text) throws NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = messageDigest.digest(text.getBytes(StandardCharsets.UTF_8));
-
-        return Base64.getEncoder().encodeToString(hash);
+        User result =  ur.changeRole(user, role);
+        if(result != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " now has the role: " + role.getName(), result);
+        } else {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not add role to a User due to an unknown error");
+        }
     }
 }

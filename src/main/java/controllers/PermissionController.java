@@ -8,6 +8,9 @@ import exceptions.CreationFailedException;
 import exceptions.InvalidContentException;
 import exceptions.NameNotUniqueException;
 import exceptions.NotFoundException;
+import responses.HttpStatusCodes;
+import responses.JaxResponse;
+import responses.ObjectResponse;
 import service.PermissionService;
 
 import javax.ejb.Stateless;
@@ -27,9 +30,9 @@ public class PermissionController extends Application {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response all() {
-        List<Permission> permissions = permissionService.all();
         try {
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(permissions)).build();
+            ObjectResponse<List<Permission>> response = permissionService.all();
+            return JaxResponse.checkObjectResponse(response);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -42,19 +45,14 @@ public class PermissionController extends Application {
     public Response create(PermissionViewModel request) {
         try {
             Permission permission = new Permission(request.getName());
-            permissionService.create(permission);
-            return Response.status(Response.Status.CREATED).entity(permission).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (CreationFailedException e) {
+
+            ObjectResponse<Permission> response = permissionService.create(permission);
+
+            return JaxResponse.checkObjectResponse(response);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (NameNotUniqueException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
-
     }
 
     @GET
@@ -62,17 +60,12 @@ public class PermissionController extends Application {
     @Path("/{id}")
     public Response getById(@PathParam("id") int id) {
         try {
-            Permission permission = permissionService.getById(id);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(permission)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<Permission> response = permissionService.getById(id);
+
+            return JaxResponse.checkObjectResponse(response);
+        }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
@@ -81,17 +74,12 @@ public class PermissionController extends Application {
     @Path("/name/{name}")
     public Response getByName(@PathParam("name") String name) {
         try {
-            Permission permission = permissionService.getByName(name);
-            return Response.status(Response.Status.OK).entity(new ObjectMapper().writeValueAsString(permission)).build();
-        } catch (InvalidContentException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (JsonProcessingException e) {
+            ObjectResponse<Permission> response = permissionService.getByName(name);
+
+            return JaxResponse.checkObjectResponse(response);
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
@@ -103,16 +91,12 @@ public class PermissionController extends Application {
         try {
             Permission permission = new Permission(request.getName());
             permission.setId(id);
-            permissionService.update(permission);
-            return Response.status(Response.Status.OK).entity(permission).build();
-        } catch (InvalidContentException e) {
+            ObjectResponse<Permission> response = permissionService.update(permission);
+
+            return JaxResponse.checkObjectResponse(response);
+        } catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NameNotUniqueException e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -121,15 +105,18 @@ public class PermissionController extends Application {
     @Path("/{id}")
     public Response delete(@PathParam("id") int id) {
         try {
-            Permission permission = permissionService.getById(id);
-            permissionService.delete(permission);
-            return Response.status(Response.Status.OK).entity("Permission " + permission.getName() + " has been deleted").build();
-        } catch (InvalidContentException e) {
+            ObjectResponse<Permission> response = permissionService.getById(id);
+
+            if(response.getObject() == null) {
+                return JaxResponse.checkObjectResponse(response);
+            }
+
+            ObjectResponse<Permission> result = permissionService.delete(response.getObject());
+
+            return JaxResponse.checkObjectResponse(result);
+        }catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 }
