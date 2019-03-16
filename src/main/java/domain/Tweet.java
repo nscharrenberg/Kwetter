@@ -92,6 +92,9 @@ public class Tweet {
 
     public void setAuthor(User author) {
         this.author = author;
+        if(author != null) {
+            author.addTweet(this);
+        }
     }
 
     public Date getCreatedAt() {
