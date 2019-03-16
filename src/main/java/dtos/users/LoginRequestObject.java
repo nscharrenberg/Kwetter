@@ -1,6 +1,6 @@
-package controllers.viewModels;
+package dtos.users;
 
-public class LoginViewModel {
+public class LoginRequestObject {
     private String username;
     private String password;
 
