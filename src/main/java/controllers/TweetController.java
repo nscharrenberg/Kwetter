@@ -1,16 +1,12 @@
 package controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.viewModels.LikeViewModel;
-import controllers.viewModels.TweetViewModel;
-import controllers.viewModels.UserViewModel;
-import domain.Role;
 import domain.Tweet;
 import domain.User;
-import exceptions.*;
-import exceptions.NotFoundException;
-import responses.JaxResponse;
+import dtos.tweets.CreateTweetRequestObject;
+import dtos.tweets.EditTweetRequestObject;
+import dtos.tweets.LikeRequestObject;
+import dtos.tweets.TweetDto;
+import org.modelmapper.ModelMapper;
 import responses.ObjectResponse;
 import service.TweetService;
 import service.UserService;
@@ -20,7 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Stateless
@@ -37,8 +32,16 @@ public class TweetController {
     public Response all() {
         try {
             ObjectResponse<List<Tweet>> response = tweetService.all();
-            return JaxResponse.checkObjectResponse(response);
-        } catch (JsonProcessingException e) {
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto[] tweetDto = mapper.map(response.getObject(), TweetDto[].class);
+
+            return Response.status(response.getCode()).entity(tweetDto).build();
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -47,12 +50,12 @@ public class TweetController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(TweetViewModel request) {
+    public Response create(CreateTweetRequestObject request) {
         try {
             ObjectResponse<User> getUserByIdResponse = userService.getById(request.getAuthor());
 
             if(getUserByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
             }
 
             Tweet tweet = new Tweet();
@@ -61,7 +64,14 @@ public class TweetController {
 
             ObjectResponse<Tweet> response = tweetService.create(tweet);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto tweetDto = mapper.map(response.getObject(), TweetDto.class);
+
+            return Response.status(response.getCode()).entity(tweetDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -75,7 +85,14 @@ public class TweetController {
         try {
             ObjectResponse<Tweet> response = tweetService.getById(id);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto tweetDto = mapper.map(response.getObject(), TweetDto.class);
+
+            return Response.status(response.getCode()).entity(tweetDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -89,7 +106,14 @@ public class TweetController {
         try {
             ObjectResponse<List<Tweet>> response = tweetService.getByAuthorName(username);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto[] tweetDto = mapper.map(response.getObject(), TweetDto[].class);
+
+            return Response.status(response.getCode()).entity(tweetDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -103,7 +127,14 @@ public class TweetController {
         try {
             ObjectResponse<List<Tweet>> response = tweetService.getByAuthorId(id);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto[] tweetDto = mapper.map(response.getObject(), TweetDto[].class);
+
+            return Response.status(response.getCode()).entity(tweetDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -114,12 +145,12 @@ public class TweetController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Response update(@PathParam("id") int id, TweetViewModel request) {
+    public Response update(@PathParam("id") int id, EditTweetRequestObject request) {
         try {
             ObjectResponse<User> getUserByIdResponse = userService.getById(request.getAuthor());
 
             if(getUserByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
             }
 
             Tweet tweet = new Tweet();
@@ -129,7 +160,14 @@ public class TweetController {
 
             ObjectResponse<Tweet> response = tweetService.update(tweet);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto tweetDto = mapper.map(response.getObject(), TweetDto.class);
+
+            return Response.status(response.getCode()).entity(tweetDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -144,12 +182,19 @@ public class TweetController {
             ObjectResponse<Tweet> response = tweetService.getById(id);
 
             if(response.getObject() == null) {
-                return JaxResponse.checkObjectResponse(response);
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
             }
 
             ObjectResponse<Tweet> result = tweetService.delete(response.getObject());
 
-            return JaxResponse.checkObjectResponse(result);
+            if(result.getObject() == null) {
+                return Response.status(result.getCode()).entity(result.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto tweetDto = mapper.map(result.getObject(), TweetDto.class);
+
+            return Response.status(result.getCode()).entity(tweetDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -160,21 +205,30 @@ public class TweetController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/like")
-    public Response like(@PathParam("id") int id, LikeViewModel request) {
+    public Response like(@PathParam("id") int id, LikeRequestObject request) {
         try {
             ObjectResponse<Tweet> getTweetByIdResponse = tweetService.getById(request.getTweetId());
-            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
 
             if(getTweetByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getTweetByIdResponse);
+                return Response.status(getTweetByIdResponse.getCode()).entity(getTweetByIdResponse.getMessage()).build();
             }
 
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
+
             if(getUserByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
             }
 
             ObjectResponse<Tweet> result = tweetService.like(getTweetByIdResponse.getObject(), getUserByIdResponse.getObject());
-            return JaxResponse.checkObjectResponse(result);
+
+            if(result.getObject() == null) {
+                return Response.status(result.getCode()).entity(result.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto tweetDto = mapper.map(result.getObject(), TweetDto.class);
+
+            return Response.status(result.getCode()).entity(tweetDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -185,21 +239,30 @@ public class TweetController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/unlike")
-    public Response unlike(@PathParam("id") int id, LikeViewModel request) {
+    public Response unlike(@PathParam("id") int id, LikeRequestObject request) {
         try {
             ObjectResponse<Tweet> getTweetByIdResponse = tweetService.getById(request.getTweetId());
-            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
 
             if(getTweetByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getTweetByIdResponse);
+                return Response.status(getTweetByIdResponse.getCode()).entity(getTweetByIdResponse.getMessage()).build();
             }
 
+            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
+
             if(getUserByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
             }
 
             ObjectResponse<Tweet> result = tweetService.unlike(getTweetByIdResponse.getObject(), getUserByIdResponse.getObject());
-            return JaxResponse.checkObjectResponse(result);
+
+            if(result.getObject() == null) {
+                return Response.status(result.getCode()).entity(result.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            TweetDto tweetDto = mapper.map(result.getObject(), TweetDto.class);
+
+            return Response.status(result.getCode()).entity(tweetDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

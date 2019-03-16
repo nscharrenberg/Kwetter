@@ -1,15 +1,12 @@
 package controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.viewModels.FollowViewModel;
-import controllers.viewModels.UserRoleViewModel;
-import controllers.viewModels.UserViewModel;
 import domain.Role;
 import domain.User;
-import exceptions.*;
-import exceptions.NotFoundException;
-import responses.JaxResponse;
+import dtos.users.EditUserRequestObject;
+import dtos.users.FollowRequestObject;
+import dtos.users.RoleRequestObject;
+import dtos.users.UserDto;
+import org.modelmapper.ModelMapper;
 import responses.ObjectResponse;
 import service.RoleService;
 import service.UserService;
@@ -19,7 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Stateless
@@ -36,8 +32,16 @@ public class UserController {
     public Response all() {
         try {
             ObjectResponse<List<User>> response = userService.all();
-            return JaxResponse.checkObjectResponse(response);
-        } catch (JsonProcessingException e) {
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto[] userDto = mapper.map(response.getObject(), UserDto[].class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -50,7 +54,14 @@ public class UserController {
         try {
             ObjectResponse<User> response = userService.getById(id);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -64,7 +75,14 @@ public class UserController {
         try {
             ObjectResponse<User> response = userService.getByUsername(username);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -78,7 +96,14 @@ public class UserController {
         try {
             ObjectResponse<User> response = userService.getByEmail(email);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -89,12 +114,12 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Response update(@PathParam("id") int id, UserViewModel request) {
+    public Response update(@PathParam("id") int id, EditUserRequestObject request) {
         try {
             ObjectResponse<User> response = userService.getById(id);
 
             if(response.getObject() == null) {
-                return JaxResponse.checkObjectResponse(response);
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
             }
 
             response.getObject().setUsername(request.getUsername() != null ? request.getUsername() : response.getObject().getUsername());
@@ -105,7 +130,15 @@ public class UserController {
             response.getObject().setLatitude(request.getLatitude() != null ? request.getLatitude() : response.getObject().getLatitude());
 
             ObjectResponse<User> result = userService.update(response.getObject());
-            return JaxResponse.checkObjectResponse(result);
+
+            if(result.getObject() == null) {
+                return Response.status(result.getCode()).entity(result.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(result.getObject(), UserDto.class);
+
+            return Response.status(result.getCode()).entity(userDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -120,11 +153,19 @@ public class UserController {
             ObjectResponse<User> response = userService.getById(id);
 
             if(response.getObject() == null) {
-                return JaxResponse.checkObjectResponse(response);
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
             }
 
             ObjectResponse<User> result = userService.delete(response.getObject());
-            return JaxResponse.checkObjectResponse(result);
+
+            if(result.getObject() == null) {
+                return Response.status(result.getCode()).entity(result.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(result.getObject(), UserDto.class);
+
+            return Response.status(result.getCode()).entity(userDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -135,25 +176,34 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/role")
-    public Response changeRole(@PathParam("id") int id, UserRoleViewModel request) {
+    public Response changeRole(@PathParam("id") int id, RoleRequestObject request) {
         try {
             if(id != request.getUserId()) {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
             ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
-            ObjectResponse<Role> getRoleByIdResponse = roleService.getById(request.getRoleId());
 
             if(getUserByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getUserByIdResponse);
+                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
             }
+
+            ObjectResponse<Role> getRoleByIdResponse = roleService.getById(request.getRoleId());
 
             if(getRoleByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getRoleByIdResponse);
+                return Response.status(getRoleByIdResponse.getCode()).entity(getRoleByIdResponse.getMessage()).build();
             }
 
-            ObjectResponse<User> result = userService.changeRole(getUserByIdResponse.getObject(), getRoleByIdResponse.getObject());
-            return JaxResponse.checkObjectResponse(result);
+            ObjectResponse<User> response = userService.changeRole(getUserByIdResponse.getObject(), getRoleByIdResponse.getObject());
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -164,25 +214,34 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/follow")
-    public Response follow(@PathParam("id") int id, FollowViewModel request) {
+    public Response follow(@PathParam("id") int id, FollowRequestObject request) {
         try {
-            if(id != request.getUserToFollowId()) {
+            if(id != request.getToFollowId()) {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
-            ObjectResponse<User> getUserToFollowByIdResponse = userService.getById(request.getUserToFollowId());
-            ObjectResponse<User> getFollowerByIdResponse = userService.getById(request.getUserId());
+            ObjectResponse<User> getUserToFollowByIdResponse = userService.getById(request.getToFollowId());
 
             if(getUserToFollowByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getUserToFollowByIdResponse);
+                return Response.status(getUserToFollowByIdResponse.getCode()).entity(getUserToFollowByIdResponse.getMessage()).build();
             }
+
+            ObjectResponse<User> getFollowerByIdResponse = userService.getById(request.getUserId());
 
             if(getFollowerByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getFollowerByIdResponse);
+                return Response.status(getFollowerByIdResponse.getCode()).entity(getFollowerByIdResponse.getMessage()).build();
             }
 
-            ObjectResponse<User> result = userService.follow(getFollowerByIdResponse.getObject(), getUserToFollowByIdResponse.getObject());
-            return JaxResponse.checkObjectResponse(result);
+            ObjectResponse<User> response = userService.follow(getFollowerByIdResponse.getObject(), getUserToFollowByIdResponse.getObject());
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -193,25 +252,34 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/unfollow")
-    public Response unfollow(@PathParam("id") int id, FollowViewModel request) {
+    public Response unfollow(@PathParam("id") int id, FollowRequestObject request) {
         try {
-            if(id != request.getUserToFollowId()) {
+            if(id != request.getToFollowId()) {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
 
-            ObjectResponse<User> getUserToFollowByIdResponse = userService.getById(request.getUserToFollowId());
-            ObjectResponse<User> getFollowerByIdResponse = userService.getById(request.getUserId());
+            ObjectResponse<User> getUserToFollowByIdResponse = userService.getById(request.getToFollowId());
 
             if(getUserToFollowByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getUserToFollowByIdResponse);
+                return Response.status(getUserToFollowByIdResponse.getCode()).entity(getUserToFollowByIdResponse.getMessage()).build();
             }
+
+            ObjectResponse<User> getFollowerByIdResponse = userService.getById(request.getUserId());
 
             if(getFollowerByIdResponse.getObject() == null) {
-                return JaxResponse.checkObjectResponse(getFollowerByIdResponse);
+                return Response.status(getFollowerByIdResponse.getCode()).entity(getFollowerByIdResponse.getMessage()).build();
             }
 
-            ObjectResponse<User> result = userService.unfollow(getFollowerByIdResponse.getObject(), getUserToFollowByIdResponse.getObject());
-            return JaxResponse.checkObjectResponse(result);
+            ObjectResponse<User> response = userService.unfollow(getFollowerByIdResponse.getObject(), getUserToFollowByIdResponse.getObject());
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

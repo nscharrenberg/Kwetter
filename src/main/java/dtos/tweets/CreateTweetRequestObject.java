@@ -1,10 +1,8 @@
-package controllers.viewModels;
+package dtos.tweets;
 
-import java.io.Serializable;
-
-public class TweetViewModel implements Serializable {
+public class CreateTweetRequestObject {
     private String message;
-    private int author;
+    private Integer author;
 
     public String getMessage() {
         return message;
@@ -14,11 +12,11 @@ public class TweetViewModel implements Serializable {
         this.message = message;
     }
 
-    public int getAuthor() {
+    public Integer getAuthor() {
         return author;
     }
 
-    public void setAuthor(int author) {
+    public void setAuthor(Integer author) {
         this.author = author;
     }
 }

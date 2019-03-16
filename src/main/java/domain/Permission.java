@@ -1,8 +1,5 @@
 package domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.util.*;
@@ -24,7 +21,6 @@ public class Permission {
     private String name;
 
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"permissions", "users"})
     private Set<Role> roles;
 
     public Permission() {

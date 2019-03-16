@@ -1,13 +1,6 @@
 package domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,8 +25,6 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @XmlTransient
-    @JsonIgnore
     private String password;
 
     @Column(length = 160)
@@ -45,7 +36,6 @@ public class User {
     private double latitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"users"})
     private Role role;
 
     @ManyToMany(
@@ -59,18 +49,15 @@ public class User {
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
-    @JsonIgnoreProperties({"followers", "following", "role"})
     private Set<User> followers;
 
     @ManyToMany(
             mappedBy = "followers",
             fetch = FetchType.LAZY
     )
-    @JsonIgnoreProperties({"followers", "following", "role"})
     private Set<User> following;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"mentions", "likes"})
     private Set<Tweet> tweets;
 
     public User() {

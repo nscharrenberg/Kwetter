@@ -1,8 +1,7 @@
-package controllers.viewModels;
+package dtos.users;
 
-import java.io.Serializable;
-
-public class UserViewModel implements Serializable {
+public class EditUserRequestObject {
+    private Integer id;
     private String username;
     private String email;
     private String password;
@@ -10,6 +9,14 @@ public class UserViewModel implements Serializable {
     private String website;
     private Double longitude;
     private Double latitude;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -55,7 +62,7 @@ public class UserViewModel implements Serializable {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -63,7 +70,7 @@ public class UserViewModel implements Serializable {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 }
