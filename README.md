@@ -2,6 +2,9 @@
 ## Description
 Kwetter is a twitter clone aimed to have similar functionality as twitter.
 
+## Swagger
+Swagger documentation for the API can be found at https://app.swaggerhub.com/apis/nscharrenberg/Kwetter/1
+
 ## Functionalities
 - Users
 - Followers
