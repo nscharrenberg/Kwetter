@@ -98,13 +98,13 @@ public class TweetService {
             return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
-        ObjectResponse<List<Tweet>> getTweetsByAuthorIdResponse = getByAuthorId(id);
+        List<Tweet> getTweetsByAuthorIdResponse = tr.getByAuthorId(id);
 
-        if(getTweetsByAuthorIdResponse.getObject() == null || getTweetsByAuthorIdResponse.getObject().isEmpty()) {
-            return getTweetsByAuthorIdResponse;
+        if(getTweetsByAuthorIdResponse == null) {
+            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "List of tweet from author " + getUserByIdResponse.getObject().getUsername() + " is never instantiated.");
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByAuthorIdResponse.getObject().size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse.getObject());
+        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByAuthorIdResponse.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse);
     }
 
     /**
@@ -136,8 +136,14 @@ public class TweetService {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet must have a message");
         }
 
-        if(tweet.getAuthor() == null || ur.getById(tweet.getAuthor().getId()) == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Author not found");
+        if(tweet.getAuthor() == null) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet must have an author");
+        }
+
+        ObjectResponse<User> getUserById = ur.getById(tweet.getAuthor().getId());
+
+        if(getUserById.getObject() == null) {
+            return new ObjectResponse<>(getUserById.getCode(), getUserById.getMessage());
         }
 
         if(tweet.getMessage().length() > 140) {
@@ -155,7 +161,7 @@ public class TweetService {
         Tweet created = tr.create(tweet);
 
         if(created != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message: " + tweet.getMessage() + " created", tweet);
+            return new ObjectResponse<>(HttpStatusCodes.CREATED, "Tweet with message: " + tweet.getMessage() + " created", tweet);
         } else {
             return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new tweet due to an unknown error");
         }
@@ -183,6 +189,14 @@ public class TweetService {
 
         if(getByIdResponse.getObject() == null) {
             return getByIdResponse;
+        }
+
+        if(tweet.getAuthor() == null) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Author can not be null, must meet original author with id " + getByIdResponse.getObject().getAuthor().getId());
+        }
+
+        if(tweet.getAuthor().getId() != getByIdResponse.getObject().getAuthor().getId()) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Author can not be changed!");
         }
 
         ObjectResponse<Set<User>> getMentionsByMessageResponse = getMentionsByMessage(tweet.getMessage());
@@ -245,7 +259,7 @@ public class TweetService {
             return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
-        ObjectResponse<Tweet> getTweetByIdResponse = getById(user.getId());
+        ObjectResponse<Tweet> getTweetByIdResponse = getById(tweet.getId());
 
         if(getTweetByIdResponse.getObject() == null) {
             return getTweetByIdResponse;
@@ -268,11 +282,8 @@ public class TweetService {
      * @param tweet - the tweet
      * @param user - the user that unlikes the tweet
      * @return the tweet
-     * @throws InvalidContentException
-     * @throws ActionForbiddenException
-     * @throws NotFoundException
      */
-    public ObjectResponse<Tweet> unlike(Tweet tweet, User user) throws ActionForbiddenException, InvalidContentException, NotFoundException {
+    public ObjectResponse<Tweet> unlike(Tweet tweet, User user) {
         if(user.getId() <= 0) {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
         }
@@ -287,7 +298,7 @@ public class TweetService {
             return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
-        ObjectResponse<Tweet> getTweetByIdResponse = getById(user.getId());
+        ObjectResponse<Tweet> getTweetByIdResponse = getById(tweet.getId());
 
         if(getTweetByIdResponse.getObject() == null) {
             return getTweetByIdResponse;

@@ -11,18 +11,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import repository.interfaces.TweetRepository;
 import repository.interfaces.UserRepository;
+import responses.HttpStatusCodes;
+import responses.ObjectResponse;
 
 import javax.swing.*;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -47,345 +47,1029 @@ public class TweetServiceTest {
         assertNotNull(tweetService);
     }
 
+    private User user;
+    private User user2;
+    private User user3;
 
+    @Before
+    public void init() {
+        user = new User();
+        user.setId(1);
+        user.setUsername("testUser1");
+        user.setEmail("testUser1@mail.com");
+        user.setPassword("Password123");
+
+        user2 = new User();
+        user2.setId(2);
+        user2.setUsername("testUser2");
+        user2.setEmail("testUser2@mail.com");
+        user2.setPassword("Password123");
+
+        user3 = new User();
+        user3.setId(3);
+        user3.setUsername("testUser3");
+        user3.setEmail("testUser3@mail.com");
+        user3.setPassword("Password123");
+    }
+
+    private List<Tweet> tweetList() {
+        // Arrange
+        List<Tweet> list = new ArrayList<>();
+
+        for(int i = 0; i < 5; i++) {
+            Tweet t = new Tweet();
+            t.setId(list.size() + 1);
+            t.setMessage("This is a message by testUser1 - " + i);
+            t.setAuthor(user);
+            t.setCreatedAt(new Date());
+            list.add(t);
+        }
+
+        for(int i = 0; i < 2; i++) {
+            Tweet t = new Tweet();
+            t.setId(list.size() + 1);
+            t.setMessage("This is a message by testUser2 - " + i);
+            t.setAuthor(user2);
+            t.setCreatedAt(new Date());
+            list.add(t);
+        }
+
+        Tweet t = new Tweet();
+        t.setId(list.size() + 1);
+        t.setMessage("@testUser2 I'm mentioning you");
+        t.setAuthor(user);
+        t.setCreatedAt(new Date());
+        t.addMention(user2);
+        list.add(t);
+
+        return list;
+    }
+
+    /*
+     * Get All Users Test
+     */
     @Test
-    public void getById() throws InvalidContentException, NotFoundException {
-        int id = 324;
-        Tweet tweet = new Tweet();
-        tweet.setId(id);
+    public void all_StatusCodeOk() {
+        // Arrange
+        List<Tweet> list = tweetList();
+        when(tr.all()).thenReturn(list);
 
-        when(tr.getById(id)).thenReturn(tweet);
+        // Act
+        ObjectResponse<List<Tweet>> response = tweetService.all();
 
-        tweetService.getById(id);
-        verify(tr, atLeastOnce()).getById(id);
+        // Assert
+        verify(tr, atLeastOnce()).all();
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(list, response.getObject());
+        assertEquals(list.size(), response.getObject().size());
+        assertEquals(8, response.getObject().size());
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getByIdNotFound() throws InvalidContentException, NotFoundException {
-        int id = 324;
-
-        when(tr.getById(id)).thenReturn(null);
-
-        tweetService.getById(id);
-        verify(tr, never()).getById(id);
-    }
-
+    /*
+     * Get Tweet By Id Tests
+     */
     @Test
-    public void getByAuthorName() throws InvalidContentException, NotFoundException {
-        // Tweet 1
-        int tweetId = 324;
-        Tweet tweet = new Tweet();
-        tweet.setId(tweetId);
+    public void getById_ExistingId_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "This is a message";
+        User author = user;
 
-        // Tweet 2
-        int tweetId2 = 324;
-        Tweet tweet2 = new Tweet();
-        tweet2.setId(tweetId2);
-
-        // User
-        int userId = 4563;
-        String username = "thisTestUser";
-        User user = new User();
-        user.setId(userId);
-        user.setUsername(username);
-
-        user.addTweet(tweet);
-        user.addTweet(tweet2);
-
-        when(ur.getByUsername(username).getObject()).thenReturn(user);
-        when(tr.getByAuthorId(userId)).thenReturn(new ArrayList<>(user.getTweets()));
-
-        tweetService.getByAuthorName(username);
-        verify(tr, atLeastOnce()).getByAuthorId(userId);
-    }
-
-    @Test
-    public void getByAuthorId() throws InvalidContentException, NotFoundException {
-        // Tweet 1
-        int tweetId = 324;
-        Tweet tweet = new Tweet();
-        tweet.setId(tweetId);
-
-        // Tweet 2
-        int tweetId2 = 324;
-        Tweet tweet2 = new Tweet();
-        tweet2.setId(tweetId2);
-
-        // Tweet 3
-        int tweetId3 = 324;
-        Tweet tweet3 = new Tweet();
-        tweet3.setId(tweetId3);
-
-        // User
-        int userId = 4563;
-        String username = "thisTestUser";
-        User user = new User();
-        user.setId(userId);
-        user.setUsername(username);
-
-        user.addTweet(tweet);
-        user.addTweet(tweet3);
-
-        when(tr.getByAuthorId(userId)).thenReturn(new ArrayList<>(user.getTweets()));
-
-        tweetService.getByAuthorId(userId);
-        verify(tr, atLeastOnce()).getByAuthorId(userId);
-    }
-
-    @Test
-    public void getByCreatedDate() throws InvalidContentException, NotFoundException, ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date wantedDate = dateFormat.parse("2019-03-09");
-
-        // Tweet 1
-        int tweetId = 324;
-        Date date = format.parse("2019-03-09 12:56:12");
-        Tweet tweet = new Tweet();
-        tweet.setId(tweetId);
-        tweet.setCreatedAt(date);
-
-        // Tweet 2
-        int tweetId2 = 324;
-        Date date2 = format.parse("2019-03-09 12:52:12");
-        Tweet tweet2 = new Tweet();
-        tweet2.setId(tweetId2);
-        tweet2.setCreatedAt(date2);
-
-        // Tweet 3
-        int tweetId3 = 324;
-        Date date3 = format.parse("2019-02-26 15:56:12");
-        Tweet tweet3 = new Tweet();
-        tweet3.setId(tweetId3);
-        tweet3.setCreatedAt(date3);
-
-        // Tweet 4
-        int tweetId4 = 324;
-        Date date4 = format.parse("2019-03-09 15:56:12");
-        Tweet tweet4 = new Tweet();
-        tweet4.setId(tweetId4);
-        tweet4.setCreatedAt(date4);
-
-        List<Tweet> expected = new ArrayList<>();
-        expected.add(tweet);
-        expected.add(tweet2);
-        expected.add(tweet4);
-
-        when(tr.getByCreatedDate(wantedDate)).thenReturn(expected);
-
-        tweetService.getByCreatedDate(wantedDate);
-        verify(tr, atLeastOnce()).getByCreatedDate(wantedDate);
-    }
-
-    @Test
-    public void createTweet() throws CreationFailedException, NotFoundException, InvalidContentException {
-        // User
-        int id = 32454;
-        User user = new User();
-        user.setId(id);
-
-        String text = "This is my tweet";
-        Tweet tweet = new Tweet();
-        tweet.setMessage(text);
-        tweet.setAuthor(user);
-        when(ur.getById(id).getObject()).thenReturn(user);
-        when(tr.create(tweet)).thenReturn(tweet);
-
-        tweetService.create(tweet);
-        verify(tr, atLeastOnce()).create(tweet);
-    }
-
-    @Test(expected = InvalidContentException.class)
-    public void createTweetWithoutMessage() throws CreationFailedException, NotFoundException, InvalidContentException {
-        // User
-        int id = 32454;
-        User user = new User();
-        user.setId(id);
-
-        Tweet tweet = new Tweet();
-        tweet.setAuthor(user);
-
-        tweetService.create(tweet);
-        verify(tr, never()).create(tweet);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void createTweetWithoutAuthor() throws CreationFailedException, NotFoundException, InvalidContentException {
-        String text = "This is my tweet";
-        Tweet tweet = new Tweet();
-        tweet.setMessage(text);
-
-        tweetService.create(tweet);
-        verify(tr, never()).create(tweet);
-    }
-
-    @Test
-    public void updateTweet() throws NotFoundException, InvalidContentException {
-        // User
-        int userId = 32454;
-        User user = new User();
-        user.setId(userId);
-
-        int tweetId = 123123;
-        String text = "This is my tweet";
-        String newText = "This is my updated Tweet";
-        Tweet tweet = new Tweet();
-        tweet.setId(123123);
-        tweet.setMessage(text);
-        tweet.setAuthor(user);
-        when(tr.getById(tweetId)).thenReturn(tweet);
-
-        tweet.setMessage(newText);
-
-        when(tr.update(tweet)).thenReturn(tweet);
-
-        tweetService.update(tweet);
-        verify(tr, atLeastOnce()).update(tweet);
-    }
-
-    @Test
-    public void deleteTweet() throws NotFoundException, InvalidContentException {
-        int id = 234;
-        String msg = "this is my tweet";
-        Tweet tweet = new Tweet();
-        tweet.setId(id);
-        tweet.setMessage(msg);
-
-        when(tr.getById(id)).thenReturn(tweet);
-        when(tr.delete(tweet)).thenReturn(true);
-
-        tweetService.delete(tweet);
-        verify(tr, atLeastOnce()).delete(tweet);
-    }
-
-    @Test
-    public void likeTweet() throws InvalidContentException, NotFoundException, ActionForbiddenException {
-        int id = 234;
-        String msg = "this is my tweet";
-        Tweet tweet = new Tweet();
-        tweet.setId(id);
-        tweet.setMessage(msg);
-
-        int userId = 5456;
-        User user = new User();
-        user.setId(userId);
-
-        when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId).getObject()).thenReturn(user);
-        when(tr.like(tweet, user)).thenReturn(tweet);
-
-        tweetService.like(tweet, user);
-        verify(tr, atLeastOnce()).like(tweet, user);
-    }
-
-    @Test(expected = ActionForbiddenException.class)
-    public void likeTweetYouAlreadyLike() throws InvalidContentException, NotFoundException, ActionForbiddenException {
-        int id = 234;
-        String msg = "this is my tweet";
-        Tweet tweet = new Tweet();
-        tweet.setId(id);
-        tweet.setMessage(msg);
-
-        int userId = 5456;
-        User user = new User();
-        user.setId(userId);
-
-        tweet.addLike(user);
-
-        when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId).getObject()).thenReturn(user);
-
-        tweetService.like(tweet, user);
-        verify(tr, never()).like(tweet, user);
-    }
-
-    @Test
-    public void unlikeTweet() throws InvalidContentException, NotFoundException, ActionForbiddenException {
-        int id = 234;
-        String msg = "this is my tweet";
-        Tweet tweet = new Tweet();
-        tweet.setId(id);
-        tweet.setMessage(msg);
-
-        int userId = 5456;
-        User user = new User();
-        user.setId(userId);
-
-        tweet.addLike(user);
-
-        when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId).getObject()).thenReturn(user);
-        when(tr.unlike(tweet, user)).thenReturn(tweet);
-
-        tweetService.unlike(tweet, user);
-        verify(tr, atLeastOnce()).unlike(tweet, user);
-    }
-
-    @Test(expected = ActionForbiddenException.class)
-    public void unlikeTweetYouDoNotLike() throws InvalidContentException, NotFoundException, ActionForbiddenException {
-        int id = 234;
-        String msg = "this is my tweet";
-        Tweet tweet = new Tweet();
-        tweet.setId(id);
-        tweet.setMessage(msg);
-
-        int userId = 5456;
-        User user = new User();
-        user.setId(userId);
-
-
-        when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getById(userId).getObject()).thenReturn(user);
-
-        tweetService.unlike(tweet, user);
-        verify(tr, never()).unlike(tweet, user);
-    }
-
-    @Test
-    public void getMentions() throws InvalidContentException, NotFoundException, CreationFailedException {
-        // User 1
-        int userId1 = 456456;
-        String username1 = "user1";
-        User user1 = new User();
-        user1.setId(userId1);
-        user1.setUsername(username1);
-
-        // User 2
-        int userId2 = 1231685;
-        String username2 = "user2";
-        User user2 = new User();
-        user2.setId(userId2);
-        user2.setUsername(username2);
-
-        // User 3
-        int userId3 = 7865245;
-        String username3 = "user3";
-        User user3 = new User();
-        user3.setId(userId3);
-        user3.setUsername(username3);
-
-        // User 4
-        int userId4 = 83435;
-        String username4 = "user4";
-        User user4 = new User();
-        user4.setId(userId4);
-        user4.setUsername(username4);
-
-        // Tweet
-        int id = 443;
-        String message = "@user3 @user2 check this awesomething out";
         Tweet tweet = new Tweet();
         tweet.setId(id);
         tweet.setMessage(message);
-        tweet.setAuthor(user4);
+        tweet.setAuthor(author);
 
-        when(ur.getById(userId4).getObject()).thenReturn(user4);
-        when(ur.getByUsername(username3).getObject()).thenReturn(user3);
-        when(ur.getByUsername(username2).getObject()).thenReturn(user2);
+        when(tr.getById(id)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.getById(id);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(tweet, response.getObject());
+    }
+
+    @Test
+    public void getById_IdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 0;
+        String message = "This is a message";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.getById(id);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void getById_TweetDoesNotExist_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "This is a message";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        when(tr.getById(id)).thenReturn(null);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.getById(id);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Get Tweet By Username Tests
+     */
+    @Test
+    public void getByAuthorName_ExistingUserName_StatusCodeOk() {
+        // Arange
+
+        when(ur.getByUsername(user.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(tr.getByAuthorId(user.getId())).thenReturn(new ArrayList<>(user.getTweets()));
+
+        // Act
+        ObjectResponse<List<Tweet>> response = tweetService.getByAuthorName(user.getUsername());
+
+        // Assert
+        verify(ur, atLeastOnce()).getByUsername(user.getUsername());
+        verify(ur, atLeastOnce()).getById(user.getId());
+        verify(tr, atLeastOnce()).getByAuthorId(user.getId());
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(new ArrayList<>(user.getTweets()), response.getObject());
+    }
+
+    @Test
+    public void getByAuthorName_UsernameEmpty_StatusCodeNotAcceptable() {
+        // Arange
+        String username = "";
+
+        // Act
+        ObjectResponse<List<Tweet>> response = tweetService.getByAuthorName(username);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void getByAuthorName_UsernameDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        String username = "iDoNotExist";
+
+        when(ur.getByUsername(username)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+
+        // Act
+        ObjectResponse<List<Tweet>> response = tweetService.getByAuthorName(username);
+
+        // Assert
+        verify(ur, atLeastOnce()).getByUsername(username);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Get Tweet By User Id Tests
+     */
+    @Test
+    public void getByAuthorId_ExistingId_StatusCodeOk() {
+        // Arange
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(tr.getByAuthorId(user.getId())).thenReturn(new ArrayList<>(user.getTweets()));
+
+        // Act
+        ObjectResponse<List<Tweet>> response = tweetService.getByAuthorId(user.getId());
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(user.getId());
+        verify(tr, atLeastOnce()).getByAuthorId(user.getId());
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(new ArrayList<>(user.getTweets()), response.getObject());
+    }
+
+    @Test
+    public void getByAuthorId_IdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 0;
+
+        // Act
+        ObjectResponse<List<Tweet>> response = tweetService.getByAuthorId(id);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void getByAuthorId_IdDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int id = 156;
+
+        when(ur.getById(id)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+
+        // Act
+        ObjectResponse<List<Tweet>> response = tweetService.getByAuthorId(id);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Create Tweet Tests
+     */
+    @Test
+    public void create_newWithProperItems_StatusCodeOk() {
+        // Arange
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
         when(tr.create(tweet)).thenReturn(tweet);
 
-        Tweet result = tweetService.create(tweet).getObject();
-        assertEquals(tweet.getMentions(), result.getMentions());
+        // Act
+        ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(user.getId());
         verify(tr, atLeastOnce()).create(tweet);
+        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(tweet, response.getObject());
+    }
+
+    @Test
+    public void create_EmptyMessage_StatusCodeNotAcceptable() {
+        // Arange
+        String message = "";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void create_EmptyAuthor_StatusCodeNotAcceptable() {
+        // Arange
+        String message = "This is a message";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void create_AuthorDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(user.getId());
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void create_newWithProperItemsAndOneMentions_StatusCodeOk() {
+        // Arange
+        String message = "@testUser2 This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Set<User> expectedMentions = new HashSet<>();
+        expectedMentions.add(user2);
+
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(tr.create(tweet)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(user.getId());
+        verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
+        verify(tr, atLeastOnce()).create(tweet);
+        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(tweet, response.getObject());
+        assertEquals(expectedMentions, response.getObject().getMentions());
+    }
+
+    @Test
+    public void create_newWithProperItemsAndMultipleMentions_StatusCodeOk() {
+        // Arange
+        String message = "@testUser3 @testUser2 This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Set<User> expectedMentions = new HashSet<>();
+        expectedMentions.add(user2);
+        expectedMentions.add(user3);
+
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(tr.create(tweet)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(user.getId());
+        verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
+        verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
+        verify(tr, atLeastOnce()).create(tweet);
+        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(tweet, response.getObject());
+        assertEquals(expectedMentions, response.getObject().getMentions());
+    }
+
+    @Test
+    public void create_newWithProperItemsAndMultipleMentionsNotAllExisting_StatusCodeOk() {
+        // Arange
+        String message = "@testUser3 @testUser2 @iDoNotExist This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Set<User> expectedMentions = new HashSet<>();
+        expectedMentions.add(user2);
+        expectedMentions.add(user3);
+
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(ur.getByUsername("iDoNotExist")).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(tr.create(tweet)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.create(tweet);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(user.getId());
+        verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
+        verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
+        verify(ur, atLeastOnce()).getByUsername("iDoNotExist");
+        verify(tr, atLeastOnce()).create(tweet);
+        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(tweet, response.getObject());
+        assertEquals(expectedMentions, response.getObject().getMentions());
+    }
+
+    /*
+     * update Tweets Tests
+     */
+    @Test
+    public void update_newWithProperItems_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        when(tr.getById(id)).thenReturn(tweet);
+        when(tr.update(tweet)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.update(tweet);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        verify(tr, atLeastOnce()).update(tweet);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(tweet, response.getObject());
+    }
+
+    @Test
+    public void update_EmptyMessage_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 6;
+        String message = "";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.update(tweet);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void update_EmptyAuthor_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Tweet updated = new Tweet();
+        updated.setId(id);
+        updated.setMessage(message);
+
+        when(tr.getById(id)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.update(updated);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void update_changeAuthor_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+        User updatedAuthor = user2;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Tweet updated=  new Tweet();
+        updated.setId(id);
+        updated.setMessage(message);
+        updated.setAuthor(updatedAuthor);
+
+        when(tr.getById(id)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.update(updated);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void update_newWithProperItemsAndOneMentions_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "@testUser2 This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Set<User> expectedMentions = new HashSet<>();
+        expectedMentions.add(user2);
+
+        when(tr.getById(id)).thenReturn(tweet);
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(tr.update(tweet)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.update(tweet);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
+        verify(tr, atLeastOnce()).update(tweet);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(tweet, response.getObject());
+        assertEquals(expectedMentions, response.getObject().getMentions());
+    }
+
+    @Test
+    public void update_newWithProperItemsAndMultipleMentions_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "@testUser3 @testUser2 This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Set<User> expectedMentions = new HashSet<>();
+        expectedMentions.add(user2);
+        expectedMentions.add(user3);
+
+        when(tr.getById(id)).thenReturn(tweet);
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(tr.update(tweet)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.update(tweet);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
+        verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
+        verify(tr, atLeastOnce()).update(tweet);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(tweet, response.getObject());
+        assertEquals(expectedMentions, response.getObject().getMentions());
+    }
+
+    @Test
+    public void update_newWithProperItemsAndMultipleMentionsNotAllExisting_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "@testUser3 @testUser2 @iDoNotExist This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        Set<User> expectedMentions = new HashSet<>();
+        expectedMentions.add(user2);
+        expectedMentions.add(user3);
+
+        when(tr.getById(id)).thenReturn(tweet);
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(ur.getByUsername("iDoNotExist")).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(tr.update(tweet)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.update(tweet);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
+        verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
+        verify(ur, atLeastOnce()).getByUsername("iDoNotExist");
+        verify(tr, atLeastOnce()).update(tweet);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(tweet, response.getObject());
+        assertEquals(expectedMentions, response.getObject().getMentions());
+    }
+
+
+    /*
+     * Delete Tweet Tests
+     */
+    @Test
+    public void delete_ExistingId_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+        when(tr.getById(id)).thenReturn(tweet);
+        when(tr.delete(tweet)).thenReturn(true);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.delete(tweet);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        verify(tr, atLeastOnce()).delete(tweet);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void delete_IdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 0;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.delete(tweet);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void delete_TweetDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+        when(tr.getById(id)).thenReturn(null);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.delete(tweet);
+
+        // Assert
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Like Tweet Tests
+     */
+    @Test
+    public void like_withExistingUserAndtweet_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        User liker = user2;
+
+        Tweet expected = new Tweet();
+        expected.setId(id);
+        expected.setMessage(message);
+        expected.setAuthor(author);
+        expected.addLike(liker);
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(tr.getById(id)).thenReturn(tweet);
+        when(tr.like(tweet, liker)).thenReturn(expected);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        verify(tr, atLeastOnce()).getById(id);
+        verify(tr, atLeastOnce()).like(tweet, liker);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(tweet.getId(), response.getObject().getId());
+        assertTrue(response.getObject().getLikes().contains(liker));
+    }
+
+    @Test
+    public void like_UserIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        User liker = user2;
+
+        liker.setId(0);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void like_TweetIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 0;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        User liker = user2;
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+}
+
+    @Test
+    public void like_UserDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        User liker = user2;
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void like_TweetDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        User liker = user2;
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(tr.getById(id)).thenReturn(null);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void like_UserAlreadyLikesTweet_StatusCodeForbidden() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        User liker = user2;
+
+        tweet.addLike(liker);
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(tr.getById(id)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    /*
+     * Unlike Tweet Tests
+     */
+    @Test
+    public void unlike_withExistingUserAndtweet_StatusCodeOk() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+        User liker = user2;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+        tweet.addLike(liker);
+
+        Tweet expected = new Tweet();
+        expected.setId(id);
+        expected.setMessage(message);
+        expected.setAuthor(author);
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(tr.getById(id)).thenReturn(tweet);
+        when(tr.unlike(tweet, liker)).thenReturn(expected);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        verify(tr, atLeastOnce()).getById(id);
+        verify(tr, atLeastOnce()).unlike(tweet, liker);
+        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(tweet.getId(), response.getObject().getId());
+        assertFalse(response.getObject().getLikes().contains(liker));
+    }
+
+    @Test
+    public void unlike_UserIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+        User liker = user2;
+        liker.setId(0);
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+        tweet.addLike(liker);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void unlike_TweetIdNull_StatusCodeNotAcceptable() {
+        // Arange
+        int id = 0;
+        String message = "This is a message of a tweet";
+        User author = user;
+        User liker = user2;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+        tweet.addLike(liker);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
+
+        // Assert
+        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void unlike_UserDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+        User liker = user2;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+        tweet.addLike(liker);
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void unlike_TweetDoesNotExist_StatusCodeNotFound() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+        User liker = user2;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+        tweet.addLike(liker);
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(tr.getById(id)).thenReturn(null);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertNull(response.getObject());
+    }
+
+    @Test
+    public void unlike_UserDoesNotLikeTweet_StatusCodeForbidden() {
+        // Arange
+        int id = 6;
+        String message = "This is a message of a tweet";
+        User author = user;
+
+        Tweet tweet = new Tweet();
+        tweet.setId(id);
+        tweet.setMessage(message);
+        tweet.setAuthor(author);
+
+        User liker = user2;
+
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(tr.getById(id)).thenReturn(tweet);
+
+        // Act
+        ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
+
+        // Assert
+        verify(ur, atLeastOnce()).getById(liker.getId());
+        verify(tr, atLeastOnce()).getById(id);
+        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertNull(response.getObject());
     }
 }
