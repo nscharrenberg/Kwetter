@@ -182,7 +182,6 @@ public class User {
 
     public void addTweet(Tweet tweet) {
         this.tweets.add(tweet);
-        tweet.setAuthor(this);
     }
 
     public void removeTweet(Tweet tweet) {
@@ -195,7 +194,6 @@ public class User {
 
     public void removeFollowing(User user) {
         this.following.remove(user);
-        user.removeFollower(this);
     }
 
     private void removeFollower(User user) {
