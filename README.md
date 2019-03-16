@@ -39,3 +39,7 @@ As this is a school assignment, certain learning objectives have to be met.
 - MVC Pattern
 - SOLID principle
 - Facade
+
+## Code Coverage
+### Service Layer
+![Service Layer Code Coverage](https://raw.githubusercontent.com/nscharrenberg/Kwetter/master/docs/images/testcoverage.PNG)
