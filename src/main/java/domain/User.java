@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -33,7 +34,6 @@ public class User {
 
     @Column(nullable = false)
     @XmlTransient
-    @JsonIgnore
     private String password;
 
     @Column(length = 160)
@@ -44,33 +44,28 @@ public class User {
     private double longitude;
     private double latitude;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"users"})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Role role;
 
     @ManyToMany(
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            }, fetch = FetchType.LAZY
+            cascade = CascadeType.ALL, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "followers",
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "following")
     )
-    @JsonIgnoreProperties({"followers", "following", "role"})
+    @CascadeOnDelete
     private Set<User> followers;
 
     @ManyToMany(
             mappedBy = "followers",
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
     )
-    @JsonIgnoreProperties({"followers", "following", "role"})
     private Set<User> following;
 
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"mentions", "likes"})
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Tweet> tweets;
 
     public User() {

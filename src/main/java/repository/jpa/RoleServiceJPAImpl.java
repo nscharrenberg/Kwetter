@@ -75,6 +75,9 @@ public class RoleServiceJPAImpl implements RoleRepository {
     @Override
     public boolean delete(Role role) {
         try {
+            if(!em.contains(role)) {
+               role = em.merge(role);
+            }
             em.remove(role);
             return true;
         } catch (Exception e) {

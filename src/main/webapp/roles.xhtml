@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:adm="http://github.com/adminfaces"
+                template="#{layoutMB.template}">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="bordeless" value="0" converter="javax.faces.Boolean"/>
+        </f:metadata>
+        <ui:param name="enableSlideMenu" value="false"/> <!-- disables slide menu (only on this page) on small screens -->
+        <ui:param name="autoShowNavbar" value="false"/> <!-- disables auto show navbar (only on this page) on small devices -->
+        <style type="text/css">
+            .header-right.ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+            .ui-button-text-only .ui-button-text {
+                padding: 0.3em 0.4em;
+            }
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                display: none;
+            }
+        </style>
+    </ui:define>
+    <ui:define name="title">
+        Roles
+    </ui:define>
+    <ui:define name="description">
+        Find Roles by name
+    </ui:define>
+    <ui:define name="body">
+        <adm:breadcrumb title="Roles"/>
+        <p:panel styleClass="card box-primary" header="Create Role">
+            <h:form>
+                <div class="ui-fluid">
+                    <p:panelGrid columns="12" columnClasses="ui-grid-col-2,ui-grid-col-10"
+                                 layout="grid">
+
+                        <p:outputLabel for="name" value="Name"/>
+                        <p:inputText id="name" binding="#{name}"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="12" columnClasses="ui-grid-col-12"
+                                 layout="grid">
+                        <p:commandButton value="Create" icon="fa fa-plus" id="ajax"  action="#{roleBean.create(name.value)}" styleClass="btn-primary" />
+                    </p:panelGrid>
+
+                </div>
+            </h:form>
+        </p:panel>
+
+        <p:spacer />
+        <p:panel styleClass="card box-primary" header="Roles">
+            <h:form prependId="false">
+                <div id="datatable">
+                    <p:dataTable var="role" value="#{roleBean.roles}" widgetVar="permissionTable" paginator="true" styleClass="header-right"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" rows="10" rowKey="#{role.id}"
+                                 emptyMessage="No permissions found with given criteria" stickyHeader="true"
+                                 filteredValue="#{roleBean.filteredRoles}">
+
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <h:outputText value="Search all fields:"/>
+                                <p:spacer height="10"/>
+                                <p:inputText id="globalFilter" onkeyup="PF('permissionTable').filter()" style="width:150px"
+                                             placeholder="Enter keyword"/>
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column width="5%" selectionMode="multiple"
+                                  styleClass="align-center"
+                                  priority="1"/>
+
+                        <p:column filterBy="#{role.id}" sortBy="#{role.id}" headerText="Id" footerText="contains"
+                                  filterMatchMode="contains" priority="1">
+                            <p:link value="#{role.id}" outcome="/index.xhtml">
+                                <f:param name="id" value="#{role.id}"/>
+                            </p:link>
+                        </p:column>
+
+                        <p:column filterBy="#{role.name}" sortBy="#{role.name}" headerText="Name" footerText="contains"
+                                  filterMatchMode="contains" priority="1">
+                            <p:link value="#{role.name}" outcome="/index.xhtml">
+                                <f:param name="name" value="#{role.name}"/>
+                            </p:link>
+                        </p:column>
+                        <p:column filterBy="#{role.permissions.size()}" sortBy="#{role.permissions.size()}" headerText="Permissions" footerText="contains"
+                                  filterMatchMode="contains" priority="1">
+                            <p:link value="#{role.permissions.size()}" outcome="/index.xhtml">
+                                <f:param name="permissions" value="#{role.permissions.size()}"/>
+                            </p:link>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </h:form>
+        </p:panel>
+    </ui:define>
+
+</ui:composition>

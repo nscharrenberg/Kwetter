@@ -77,6 +77,10 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public boolean delete(User user) {
         try {
+            if(!em.contains(user)) {
+                user = em.merge(user);
+            }
+
             em.remove(user);
             return true;
         } catch (Exception e) {

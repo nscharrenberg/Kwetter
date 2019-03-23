@@ -85,6 +85,10 @@ public class TweetServiceJPAImpl implements TweetRepository {
     @Override
     public boolean delete(Tweet tweet) {
         try {
+            if(!em.contains(tweet)) {
+                tweet = em.merge(tweet);
+            }
+
             em.remove(tweet);
             return true;
         } catch(Exception e) {

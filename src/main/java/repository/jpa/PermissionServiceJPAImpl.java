@@ -71,6 +71,9 @@ public class PermissionServiceJPAImpl implements PermissionRepository {
     @Override
     public boolean delete(Permission permission) {
         try {
+            if(!em.contains(permission)) {
+                permission = em.merge(permission);
+            }
             em.remove(permission);
             return true;
         } catch (Exception e) {

@@ -3,9 +3,11 @@ package domain;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,42 +29,31 @@ public class Tweet {
     @Column(nullable = false, length = 140)
     private String message;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "author", nullable = false)
-    @JsonIgnoreProperties({"tweets", "folowers", "following", "role"})
     private User author;
 
     @Column
     private Date createdAt;
 
     @ManyToMany(
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE,
-                    CascadeType.DETACH
-            }, fetch = FetchType.LAZY
+            cascade = CascadeType.ALL, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "mentions",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "tweet_id")
     )
-    @JsonIgnoreProperties({"tweets", "folowers", "following", "role"})
     private Set<User> mentions;
 
     @ManyToMany(
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE,
-                    CascadeType.DETACH
-            }, fetch = FetchType.LAZY
+            cascade = CascadeType.ALL, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "likes",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "tweet_id")
     )
-    @JsonIgnoreProperties({"tweets", "folowers", "following", "role"})
     private Set<User> likes;
 
     public Tweet() {
@@ -135,6 +126,11 @@ public class Tweet {
 
     public void removeLike(User user) {
         this.likes.remove(user);
+    }
+
+    public String getReadableCreatedAt() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        return sdf.format(this.createdAt);
     }
 
 }

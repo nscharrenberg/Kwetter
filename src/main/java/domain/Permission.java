@@ -3,6 +3,7 @@ package domain;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import java.util.*;
@@ -10,9 +11,9 @@ import java.util.*;
 @Entity
 @Table(name = "permissions")
 @NamedQueries({
-        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p"),
-        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p WHERE p.id = :id"),
-        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p WHERE p.name = :name")
+        @NamedQuery(name = "permission.getAllPermissions", query = "SELECT p FROM Permission p ORDER BY p.id DESC, p.name DESC"),
+        @NamedQuery(name = "permission.getPermissionById", query = "SELECT p FROM Permission p WHERE p.id = :id ORDER BY p.id DESC, p.name DESC"),
+        @NamedQuery(name = "permission.getPermissionByName", query = "SELECT p FROM Permission p WHERE p.name = :name ORDER BY p.id DESC, p.name DESC")
 })
 public class Permission {
 
@@ -23,8 +24,7 @@ public class Permission {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"permissions", "users"})
+    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Role> roles;
 
     public Permission() {
