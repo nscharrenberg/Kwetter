@@ -32,10 +32,11 @@
     </ui:define>
     <ui:define name="body">
         <adm:breadcrumb title="Roles"/>
+        <div class="ui-g-12" style="padding-right: 0">
         <p:panel styleClass="card box-primary" header="Create Role">
             <h:form>
                 <div class="ui-fluid">
-                    <p:panelGrid columns="12" columnClasses="ui-grid-col-2,ui-grid-col-10"
+                    <p:panelGrid columns="12" columnClasses="ui-grid-col-2, ui-grid-col-10"
                                  layout="grid">
 
                         <p:outputLabel for="name" value="Name"/>
@@ -43,14 +44,68 @@
                     </p:panelGrid>
                     <p:panelGrid columns="12" columnClasses="ui-grid-col-12"
                                  layout="grid">
-                        <p:commandButton value="Create" icon="fa fa-plus" id="ajax"  action="#{roleBean.create(name.value)}" styleClass="btn-primary" />
+                        <p:commandButton value="Create" icon="fa fa-plus" id="ajax" action="#{roleBean.create(name.value)}" styleClass="btn-primary" />
                     </p:panelGrid>
 
                 </div>
             </h:form>
         </p:panel>
+        </div>
 
-        <p:spacer />
+        <div class="ui-g-6 ui-sm-12" style="padding-right: 0">
+            <p:panel styleClass="card box-primary" header="Attach Role">
+                <h:form>
+                    <div class="ui-fluid">
+                        <p:panelGrid columns="6" columnClasses="ui-grid-col-2, ui-grid-col-4, ui-grid-col-2, ui-grid-col-4"
+                                     layout="grid">
+                            <p:outputLabel for="attachRoleList" value="Roles"/>
+                            <p:selectOneMenu id="attachRoleList" value="#{permissionAttachBean.roleId}">
+                                <f:selectItems value="#{roleBean.roles}" var="r" itemValue="#{r.id}" itemLabel="#{r.name}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="attachPermissionList" value="Permissions"/>
+                            <p:selectOneMenu id="attachPermissionList" value="#{permissionAttachBean.permissionId}">
+                                <f:selectItems value="#{permissionBean.permissions}" var="p" itemValue="#{p.id}" itemLabel="#{p.name}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:panelGrid columns="12" columnClasses="ui-grid-col-12"
+                                     layout="grid" styleClass="ui-fluid card">
+                            <p:commandButton icon="fa fa-save" styleClass="btn-warning" value="Attach"
+                                             action="#{permissionAttachBean.attach()}"/>
+                        </p:panelGrid>
+
+                    </div>
+                </h:form>
+            </p:panel>
+        </div>
+
+        <div class="ui-g-6 ui-sm-12" style="padding-right: 0">
+            <p:panel styleClass="card box-primary" header="Detach Role">
+                <h:form>
+                    <div class="ui-fluid">
+                        <p:panelGrid columns="6" columnClasses="ui-grid-col-2, ui-grid-col-4, ui-grid-col-2, ui-grid-col-4"
+                                     layout="grid">
+                            <p:outputLabel for="detachRole" value="Roles"/>
+                            <p:selectOneMenu id="detachRole" value="#{permissionDetachBean.roleId}">
+                                <f:selectItems value="#{roleBean.roles}" var="r" itemValue="#{r.id}" itemLabel="#{r.name}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="detachPermission" value="Permissions"/>
+                            <p:selectOneMenu id="detachPermission" value="#{permissionDetachBean.permissionId}">
+                                <f:selectItems value="#{permissionBean.permissions}" var="p" itemValue="#{p.id}" itemLabel="#{p.name}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:panelGrid columns="12" columnClasses="ui-grid-col-12"
+                                     layout="grid" styleClass="ui-fluid card">
+                            <p:commandButton icon="fa fa-save" styleClass="btn-warning" value="Detach"
+                                             action="#{permissionDetachBean.detach()}"/>
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+            </p:panel>
+        </div>
+
+        <div class="ui-g-12" style="padding-right: 0">
         <p:panel styleClass="card box-primary" header="Roles">
             <h:form prependId="false">
                 <div id="datatable">
@@ -73,20 +128,20 @@
                                   styleClass="align-center"
                                   priority="1"/>
 
-                        <p:column filterBy="#{role.id}" sortBy="#{role.id}" headerText="Id" footerText="contains"
+                        <p:column  headerText="Id" footerText="contains"
                                   filterMatchMode="contains" priority="1">
                             <p:link value="#{role.id}" outcome="/index.xhtml">
                                 <f:param name="id" value="#{role.id}"/>
                             </p:link>
                         </p:column>
 
-                        <p:column filterBy="#{role.name}" sortBy="#{role.name}" headerText="Name" footerText="contains"
+                        <p:column  headerText="Name" footerText="contains"
                                   filterMatchMode="contains" priority="1">
                             <p:link value="#{role.name}" outcome="/index.xhtml">
                                 <f:param name="name" value="#{role.name}"/>
                             </p:link>
                         </p:column>
-                        <p:column filterBy="#{role.permissions.size()}" sortBy="#{role.permissions.size()}" headerText="Permissions" footerText="contains"
+                        <p:column  headerText="Permissions" footerText="contains"
                                   filterMatchMode="contains" priority="1">
                             <p:link value="#{role.permissions.size()}" outcome="/index.xhtml">
                                 <f:param name="permissions" value="#{role.permissions.size()}"/>
@@ -96,6 +151,18 @@
                 </div>
             </h:form>
         </p:panel>
+        </div>
+
+        <script type="text/javascript">
+            function handleAttachRequest(xhr, status, args) {
+                if (args.validationFailed) {
+                    PF('dlgAttach').jq.effect("shake", {times: 5}, 100);
+                } else {
+                    PF('dlgAttach').hide();
+                    $('#attachLink').fadeOut();
+                }
+            }
+        </script>
     </ui:define>
 
 </ui:composition>

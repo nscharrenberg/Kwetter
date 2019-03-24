@@ -1,12 +1,18 @@
 package beans;
 
+import domain.Permission;
 import domain.Role;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 import responses.ObjectResponse;
+import service.PermissionService;
 import service.RoleService;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.ConverterException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -15,14 +21,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Named
 @ViewScoped
 public class RoleBean implements Serializable {
     @Inject
     private RoleService roleService;
 
+    @Inject
+    private PermissionService permissionService;
+
     private List<Role> roles;
     private Role selectedRole;
+    private Permission selectedPermission;
     private List<Role> filteredRoles;
 
     private String formName;
@@ -52,7 +63,7 @@ public class RoleBean implements Serializable {
                 Messages.create("Role Created").detail(String.format("Role with name %s has been created", role.getName())).add();
             }
         } else {
-            Messages.create(String.format("Error %s", response.getCode())).detail(response.getMessage()).add();
+            Messages.create(String.format("Error %s", response.getCode())).error().detail(response.getMessage()).add();
         }
     }
 
@@ -86,5 +97,13 @@ public class RoleBean implements Serializable {
 
     public void setFormName(String formName) {
         this.formName = formName;
+    }
+
+    public Permission getSelectedPermission() {
+        return selectedPermission;
+    }
+
+    public void setSelectedPermission(Permission selectedPermission) {
+        this.selectedPermission = selectedPermission;
     }
 }

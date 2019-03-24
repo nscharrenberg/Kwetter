@@ -3,5 +3,9 @@ package utils;
 import com.google.common.flogger.FluentLogger;
 
 public class Logger {
-    public static final FluentLogger log = FluentLogger.forEnclosingClass();
+    private static final FluentLogger log = FluentLogger.forEnclosingClass();
+
+    public static FluentLogger getLog() {
+        return log;
+    }
 }

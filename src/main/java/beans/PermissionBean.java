@@ -1,25 +1,16 @@
 package beans;
 
 import domain.Permission;
-import domain.Role;
-import org.omnifaces.util.Faces;
-import responses.HttpStatusCodes;
 import responses.ObjectResponse;
 import service.PermissionService;
-import utils.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Local;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 @Named
 @ViewScoped

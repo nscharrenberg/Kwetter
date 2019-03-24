@@ -29,7 +29,7 @@ public class Tweet {
     @Column(nullable = false, length = 140)
     private String message;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "author", nullable = false)
     private User author;
 
@@ -37,7 +37,7 @@ public class Tweet {
     private Date createdAt;
 
     @ManyToMany(
-            cascade = CascadeType.ALL, fetch = FetchType.LAZY
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "mentions",
@@ -47,7 +47,7 @@ public class Tweet {
     private Set<User> mentions;
 
     @ManyToMany(
-            cascade = CascadeType.ALL, fetch = FetchType.LAZY
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "likes",

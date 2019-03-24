@@ -44,11 +44,11 @@ public class User {
     private double longitude;
     private double latitude;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     private Role role;
 
     @ManyToMany(
-            cascade = CascadeType.ALL, fetch = FetchType.LAZY
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "followers",
@@ -61,11 +61,11 @@ public class User {
     @ManyToMany(
             mappedBy = "followers",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}
     )
     private Set<User> following;
 
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, orphanRemoval = true)
     private Set<Tweet> tweets;
 
     public User() {
