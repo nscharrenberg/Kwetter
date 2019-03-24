@@ -1,6 +1,8 @@
 package beans;
 
 import domain.User;
+import org.omnifaces.util.Faces;
+import org.omnifaces.util.Messages;
 import responses.ObjectResponse;
 import service.UserService;
 
@@ -8,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,23 @@ public class UserBean implements Serializable {
             this.users = response.getObject();
         } else {
             this.users = new ArrayList<>();
+        }
+    }
+
+    public void create(String username, String email, String password, String biography, String website) {
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setBiography(biography);
+        user.setWebsite(website);
+
+        ObjectResponse<User> response = userService.create(user);
+
+        if(response.getObject() != null) {
+            Messages.create("User Created").detail(String.format("User with username %s has been created", user.getUsername())).add();
+        } else {
+            Messages.create(String.format("Error %s", response.getCode())).error().detail(response.getMessage()).add();
         }
     }
 

@@ -327,7 +327,7 @@ public class UserService {
      * @return the user
      * @throws NotFoundException
      */
-    public ObjectResponse<User> changeRole(User user, Role role) throws NotFoundException {
+    public ObjectResponse<User> changeRole(User user, Role role) {
         if(user.getId() <= 0) {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
         }

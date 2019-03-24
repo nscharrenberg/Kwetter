@@ -45,7 +45,7 @@ public class PermissionAttachBean implements Serializable {
 
         ObjectResponse<Permission> permissionResponse = permissionService.getById(permissionId);
 
-        if(roleResponse.getObject() != null) {
+        if(permissionResponse.getObject() != null) {
             this.permission = permissionResponse.getObject();
         } else {
             Messages.create(String.format("Error %s", permissionResponse.getCode())).error().detail(permissionResponse.getMessage()).add();

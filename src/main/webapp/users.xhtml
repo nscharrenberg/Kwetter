@@ -12,6 +12,7 @@
         </f:metadata>
         <ui:param name="enableSlideMenu" value="false"/> <!-- disables slide menu (only on this page) on small screens -->
         <ui:param name="autoShowNavbar" value="false"/> <!-- disables auto show navbar (only on this page) on small devices -->
+        <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&amp;key=AIzaSyCxTAeTahMYWk1U-r4DTUlTNnojLL0g4MU"></script>
         <style type="text/css">
             .header-right.ui-datatable .ui-datatable-header {
                 text-align: right !important;
@@ -32,6 +33,63 @@
     </ui:define>
     <ui:define name="body">
         <adm:breadcrumb title="Users"/>
+        <div class="ui-g-12" style="padding-right: 0">
+            <p:panel styleClass="card box-primary" header="Create User">
+                <h:form prependId="false">
+                    <div class="ui-fluid">
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-10"
+                                     layout="grid">
+
+                            <p:outputLabel for="username" value="username"/>
+                            <p:inputText id="username" binding="#{username}"/>
+
+                            <p:outputLabel for="email" value="email"/>
+                            <p:inputText id="email" binding="#{email}"/>
+
+                            <p:outputLabel for="password" value="password"/>
+                            <p:password id="password" binding="#{password}"/>
+
+                            <p:outputLabel for="website" value="website"/>
+                            <p:inputText id="website" binding="#{website}"/>
+
+                            <p:outputLabel for="biography" value="biography"/>
+                            <p:textEditor id="biography" widgetVar="biography" binding="#{biography}" height="100" style="margin-bottom:10px"/>
+                        </p:panelGrid>
+                        <p:panelGrid columns="12" columnClasses="ui-grid-col-12"
+                                     layout="grid">
+                            <p:commandButton value="Create" icon="fa fa-plus" id="ajax" action="#{userBean.create(username.value, email.value, password.value, biography.value, website.value)}" styleClass="btn-primary" />
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+            </p:panel>
+        </div>
+        <div class="ui-g-12" style="padding-right: 0">
+            <p:panel styleClass="card box-primary" header="Change Role">
+                <h:form prependId="false">
+                    <div class="ui-fluid">
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-10"
+                                     layout="grid">
+
+                            <p:outputLabel for="userList" value="Users"/>
+                            <p:selectOneMenu id="userList" value="#{changeRoleBean.userId}">
+                                <f:selectItems value="#{userBean.users}" var="u" itemValue="#{u.id}" itemLabel="#{u.username}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="roleList" value="Roles"/>
+                            <p:selectOneMenu id="roleList" value="#{changeRoleBean.roleId}">
+                                <f:selectItems value="#{roleBean.roles}" var="r" itemValue="#{r.id}" itemLabel="#{r.name}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:panelGrid columns="12" columnClasses="ui-grid-col-12"
+                                     layout="grid">
+                            <p:commandButton icon="fa fa-save" styleClass="btn-warning" value="Change Role"
+                                             action="#{changeRoleBean.change()}"/>
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+            </p:panel>
+        </div>
+        <div class="ui-g-12" style="padding-right: 0">
         <p:panel styleClass="card box-primary" header="Datatable">
             <h:form prependId="false">
                 <div id="datatable">
@@ -83,6 +141,20 @@
                 </div>
             </h:form>
         </p:panel>
+        </div>
+        <script type="text/javascript">
+            function geocode() {
+                window.alert(document.getElementById('address').value);
+                PF('geoMap').geocode(document.getElementById('address').value);
+            }
+
+            function reverseGeocode() {
+                var lat = document.getElementById('lat').value,
+                    lng = document.getElementById('lng').value;
+
+                PF('revGeoMap').reverseGeocode(lat, lng);
+            }
+        </script>
     </ui:define>
 
 </ui:composition>

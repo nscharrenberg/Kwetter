@@ -55,13 +55,7 @@ public class RoleBean implements Serializable {
         ObjectResponse<Role> response = roleService.create(role);
 
         if(response.getObject() != null) {
-            try {
-                Faces.redirect(Faces.getRequestURI());
-                Messages.create("Role Created").detail(String.format("Role with name %s has been created", role.getName())).add();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Messages.create("Role Created").detail(String.format("Role with name %s has been created", role.getName())).add();
-            }
+            Messages.create("Role Created").detail(String.format("Role with name %s has been created", role.getName())).add();
         } else {
             Messages.create(String.format("Error %s", response.getCode())).error().detail(response.getMessage()).add();
         }
