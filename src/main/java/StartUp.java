@@ -96,7 +96,15 @@ public class StartUp {
             user.setWebsite("www.admin.nl");
             user.setLatitude(000.000);
             user.setLongitude(000.000);
-            userService.create(user);
+            ObjectResponse<User> created = userService.create(user);
+
+            if(created.getObject() != null) {
+                ObjectResponse<Role> role = roleService.getByName("admin");
+
+                if(role.getObject() != null) {
+                    userService.changeRole(created.getObject(), role.getObject());
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

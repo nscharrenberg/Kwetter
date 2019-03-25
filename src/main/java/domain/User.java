@@ -18,7 +18,8 @@ import java.util.Set;
         @NamedQuery(name = "user.getAllUsers", query = "SELECT u FROM User u"),
         @NamedQuery(name = "user.getUserById", query = "SELECT u FROM User u WHERE u.id = :id"),
         @NamedQuery(name = "user.getUserByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
-        @NamedQuery(name = "user.getUserByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
+        @NamedQuery(name = "user.getUserByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
+        @NamedQuery(name = "user.login", query = "SELECT u FROM User u WHERE u.username = :username AND u.password = :password")
 })
 public class User {
 

@@ -136,19 +136,26 @@
       <!-- only for gravatar, adminfaces doesn't depend on extensions-->
     </dependency>
     <dependency>
-      <groupId>org.omnifaces</groupId>
-      <artifactId>omnifaces</artifactId>
-      <version>3.2</version>
-    </dependency>
-    <dependency>
       <groupId>com.github.adminfaces</groupId>
       <artifactId>admin-template</artifactId>
       <version>1.0.0-RC21</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.primefaces</groupId>
+          <artifactId>primefaces</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
   <build>
     <finalName>kwetter</finalName>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>

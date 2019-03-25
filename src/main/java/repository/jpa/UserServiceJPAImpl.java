@@ -121,4 +121,16 @@ public class UserServiceJPAImpl implements UserRepository {
             return null;
         }
     }
+
+    @Override
+    public User login(String username, String encryptedPassword) {
+        List<User> users = em.createNamedQuery("user.login", User.class).setParameter("username", username).setParameter("password", encryptedPassword).getResultList();
+        User found = null;
+
+        if(!users.isEmpty()) {
+            found = users.get(0);
+        }
+
+        return found;
+    }
 }

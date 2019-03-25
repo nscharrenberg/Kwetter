@@ -1,9 +1,13 @@
 package service;
 
 import authentication.PasswordAuthentication;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import domain.Permission;
 import domain.Role;
 import domain.User;
 import exceptions.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import repository.interfaces.JPA;
 import repository.interfaces.UserRepository;
 import responses.HttpStatusCodes;
@@ -307,14 +311,10 @@ public class UserService {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Password can not be empty");
         }
 
-        ObjectResponse<User> getByUsernameResponse = getByUsername(username);
+        User user = ur.login(username, PasswordAuthentication.hash(password));
 
-        if(getByUsernameResponse.getObject() == null) {
-            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "Wrong username or password");
-        }
-
-        if(PasswordAuthentication.verifyHash(password, getByUsernameResponse.getObject().getPassword())) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "You are logged in as " + getByUsernameResponse.getObject().getUsername(), getByUsernameResponse.getObject());
+        if(user != null) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "You are logged in as " + user.getUsername(), user);
         }
 
         return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "Wrong username or password");
@@ -353,5 +353,42 @@ public class UserService {
         } else {
             return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not add role to a User due to an unknown error");
         }
+    }
+
+    public ObjectResponse<Boolean> hasPermission(User user, String permission) {
+        if(user.getId() <= 0) {
+            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, String.format("User does not have permission to %s", permission), false);
+        }
+
+        if(permission.isEmpty()) {
+            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, String.format("User does not have permission to %s", permission), false);
+        }
+
+        Permission p = Iterables.tryFind(user.getRole().getPermissions(), new Predicate<Permission>() {
+            @Override
+            public boolean apply(@Nullable Permission input) {
+                return input.getName().contains(permission);
+            }
+        }).orNull();
+
+        if(p == null) {
+            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, String.format("User does not have permission to %s", permission), false);
+        }
+
+        return new ObjectResponse<>(HttpStatusCodes.OK, String.format("User has permission to %s", permission), true);
+    }
+
+    public ObjectResponse<Boolean> isAdmin(User user) {
+        if(user.getId() <= 0) {
+            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "User is not Admin");
+        }
+
+        Role r = user.getRole();
+
+        if(r.getName().contains("admin")) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, String.format("User %s is admin", user.getUsername()), true);
+        }
+
+        return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, String.format("User %s does not have admin privileges", user.getUsername()), false);
     }
 }

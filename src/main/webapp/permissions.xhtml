@@ -50,14 +50,14 @@
                             </p:outputPanel>
                         </f:facet>
 
-                        <p:column headerText="Id" footerText="contains"
+                        <p:column filterBy="#{permission.id}" sortBy="#{permission.id}" headerText="Id" footerText="contains"
                                    priority="1">
                             <p:link value="#{permission.id}" outcome="/index.xhtml">
                                 <f:param name="id" value="#{permission.id}"/>
                             </p:link>
                         </p:column>
 
-                        <p:column headerText="Name" footerText="contains"
+                        <p:column filterBy="#{permission.name}" sortBy="#{permission.name}" headerText="Name" footerText="contains"
                                    priority="1">
                             <p:link value="#{permission.name}" outcome="/index.xhtml">
                                 <f:param name="name" value="#{permission.name}"/>

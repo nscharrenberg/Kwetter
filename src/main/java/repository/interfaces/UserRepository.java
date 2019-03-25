@@ -16,4 +16,5 @@ public interface UserRepository {
     User follow(User user, User toFollow);
     User unfollow(User user, User toUnfollow);
     User changeRole(User user, Role role);
+    User login(String username, String encryptedPassword);
 }

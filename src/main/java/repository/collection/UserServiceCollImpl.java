@@ -83,4 +83,9 @@ public class UserServiceCollImpl implements UserRepository {
         user.setRole(role);
         return update(user);
     }
+
+    @Override
+    public User login(String username, String encryptedPassword) {
+        return null;
+    }
 }

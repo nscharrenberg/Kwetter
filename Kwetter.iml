@@ -20,7 +20,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="kwetterDB" />
+        </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
       </configuration>
     </facet>
@@ -124,8 +126,8 @@
     <orderEntry type="library" name="Maven: org.primefaces:primefaces:6.2" level="project" />
     <orderEntry type="library" name="Maven: org.primefaces.extensions:primefaces-extensions:6.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.2" level="project" />
-    <orderEntry type="library" name="Maven: org.omnifaces:omnifaces:3.2" level="project" />
     <orderEntry type="library" name="Maven: com.github.adminfaces:admin-template:1.0.0-RC21" level="project" />
+    <orderEntry type="library" name="Maven: org.omnifaces:omnifaces:2.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.adminfaces:admin-theme:1.0.0-RC21" level="project" />
   </component>
 </module>

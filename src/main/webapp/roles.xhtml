@@ -128,14 +128,14 @@
                                   styleClass="align-center"
                                   priority="1"/>
 
-                        <p:column  headerText="Id" footerText="contains"
+                        <p:column filterBy="#{role.id}" sortBy="#{role.id}"  headerText="Id" footerText="contains"
                                   filterMatchMode="contains" priority="1">
                             <p:link value="#{role.id}" outcome="/index.xhtml">
                                 <f:param name="id" value="#{role.id}"/>
                             </p:link>
                         </p:column>
 
-                        <p:column  headerText="Name" footerText="contains"
+                        <p:column filterBy="#{role.name}" sortBy="#{role.name}"  headerText="Name" footerText="contains"
                                   filterMatchMode="contains" priority="1">
                             <p:link value="#{role.name}" outcome="/index.xhtml">
                                 <f:param name="name" value="#{role.name}"/>
@@ -164,5 +164,4 @@
             }
         </script>
     </ui:define>
-
 </ui:composition>
