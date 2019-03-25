@@ -1,15 +1,10 @@
 package controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.viewModels.LoginViewModel;
-import controllers.viewModels.UserViewModel;
 import domain.User;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
-import exceptions.NotFoundException;
-import responses.JaxResponse;
+import dtos.users.CreateUserRequestObject;
+import dtos.users.LoginRequestObject;
+import dtos.users.UserDto;
+import org.modelmapper.ModelMapper;
 import responses.ObjectResponse;
 import service.UserService;
 
@@ -21,7 +16,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.security.NoSuchAlgorithmException;
 
 @Stateless
 @Path("/auth")
@@ -33,10 +27,18 @@ public class AuthenticationController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/login")
-    public Response login(LoginViewModel loginViewModel) {
+    public Response login(LoginRequestObject loginViewModel) {
         try {
-            ObjectResponse<User> result = userService.login(loginViewModel.getUsername(), loginViewModel.getPassword());
-            return JaxResponse.checkObjectResponse(result);
+            ObjectResponse<User> response = userService.login(loginViewModel.getUsername(), loginViewModel.getPassword());
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -47,7 +49,7 @@ public class AuthenticationController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/register")
-    public Response create(UserViewModel request) {
+    public Response create(CreateUserRequestObject request) {
         try {
             User user = new User();
             user.setUsername(request.getUsername());
@@ -57,8 +59,17 @@ public class AuthenticationController {
             user.setWebsite(request.getWebsite());
             user.setLongitude(request.getLongitude());
             user.setLatitude(request.getLatitude());
-            ObjectResponse<User> result = userService.create(user);
-            return JaxResponse.checkObjectResponse(result);
+
+            ObjectResponse<User> response = userService.create(user);
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+
+            return Response.status(response.getCode()).entity(userDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

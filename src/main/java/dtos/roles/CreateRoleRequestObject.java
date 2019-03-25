@@ -1,8 +1,6 @@
-package controllers.viewModels;
+package dtos.roles;
 
-import java.io.Serializable;
-
-public class RoleViewModel implements Serializable {
+public class CreateRoleRequestObject {
     private String name;
 
     public String getName() {

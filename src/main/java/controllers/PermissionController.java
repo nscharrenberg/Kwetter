@@ -1,15 +1,10 @@
 package controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.viewModels.PermissionViewModel;
 import domain.Permission;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
-import exceptions.NotFoundException;
-import responses.HttpStatusCodes;
-import responses.JaxResponse;
+import dtos.permissions.CreatePermissionRequestObject;
+import dtos.permissions.EditPermissionRequestObject;
+import dtos.permissions.PermissionDto;
+import org.modelmapper.ModelMapper;
 import responses.ObjectResponse;
 import service.PermissionService;
 
@@ -32,8 +27,16 @@ public class PermissionController extends Application {
     public Response all() {
         try {
             ObjectResponse<List<Permission>> response = permissionService.all();
-            return JaxResponse.checkObjectResponse(response);
-        } catch (JsonProcessingException e) {
+
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            PermissionDto[] permissionDto = mapper.map(response.getObject(), PermissionDto[].class);
+
+            return Response.status(response.getCode()).entity(permissionDto).build();
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -42,13 +45,20 @@ public class PermissionController extends Application {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(PermissionViewModel request) {
+    public Response create(CreatePermissionRequestObject request) {
         try {
             Permission permission = new Permission(request.getName());
 
             ObjectResponse<Permission> response = permissionService.create(permission);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            PermissionDto permissionDto = mapper.map(response.getObject(), PermissionDto.class);
+
+            return Response.status(response.getCode()).entity(permissionDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -62,7 +72,14 @@ public class PermissionController extends Application {
         try {
             ObjectResponse<Permission> response = permissionService.getById(id);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            PermissionDto permissionDto = mapper.map(response.getObject(), PermissionDto.class);
+
+            return Response.status(response.getCode()).entity(permissionDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -76,7 +93,14 @@ public class PermissionController extends Application {
         try {
             ObjectResponse<Permission> response = permissionService.getByName(name);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            PermissionDto permissionDto = mapper.map(response.getObject(), PermissionDto.class);
+
+            return Response.status(response.getCode()).entity(permissionDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -87,13 +111,20 @@ public class PermissionController extends Application {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Response update(@PathParam("id") int id, PermissionViewModel request) {
+    public Response update(@PathParam("id") int id, EditPermissionRequestObject request) {
         try {
             Permission permission = new Permission(request.getName());
             permission.setId(id);
             ObjectResponse<Permission> response = permissionService.update(permission);
 
-            return JaxResponse.checkObjectResponse(response);
+            if(response.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            PermissionDto permissionDto = mapper.map(response.getObject(), PermissionDto.class);
+
+            return Response.status(response.getCode()).entity(permissionDto).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -108,12 +139,19 @@ public class PermissionController extends Application {
             ObjectResponse<Permission> response = permissionService.getById(id);
 
             if(response.getObject() == null) {
-                return JaxResponse.checkObjectResponse(response);
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
             }
 
             ObjectResponse<Permission> result = permissionService.delete(response.getObject());
 
-            return JaxResponse.checkObjectResponse(result);
+            if(result.getObject() == null) {
+                return Response.status(response.getCode()).entity(response.getMessage()).build();
+            }
+
+            ModelMapper mapper = new ModelMapper();
+            PermissionDto permissionDto = mapper.map(response.getObject(), PermissionDto.class);
+
+            return Response.status(result.getCode()).entity(permissionDto).build();
         }catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

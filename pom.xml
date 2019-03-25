@@ -120,6 +120,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.modelmapper</groupId>
+      <artifactId>modelmapper</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
       <version>6.2</version>
@@ -129,6 +134,11 @@
       <artifactId>primefaces-extensions</artifactId>
       <version>6.2</version>
       <!-- only for gravatar, adminfaces doesn't depend on extensions-->
+    </dependency>
+    <dependency>
+      <groupId>org.omnifaces</groupId>
+      <artifactId>omnifaces</artifactId>
+      <version>3.2</version>
     </dependency>
     <dependency>
       <groupId>com.github.adminfaces</groupId>

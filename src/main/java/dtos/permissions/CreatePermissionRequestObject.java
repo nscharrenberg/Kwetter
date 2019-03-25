@@ -1,14 +1,10 @@
-package controllers.viewModels;
+package dtos.permissions;
 
-import java.io.Serializable;
-
-public class PermissionViewModel implements Serializable {
+public class CreatePermissionRequestObject {
     private String name;
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
