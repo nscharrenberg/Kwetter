@@ -1,19 +1,12 @@
 package service;
 
 import domain.Permission;
-import domain.Tweet;
-import domain.User;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
-import exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import repository.collection.PermissionServiceCollImpl;
 import repository.interfaces.PermissionRepository;
 import responses.HttpStatusCodes;
 import responses.ObjectResponse;
