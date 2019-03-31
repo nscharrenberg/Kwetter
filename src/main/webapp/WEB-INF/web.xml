@@ -53,12 +53,8 @@
   </security-role>
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>All Resources</web-resource-name>
-      <url-pattern>/index.xhtml</url-pattern>
-      <url-pattern>/permissions.xhtml</url-pattern>
-      <url-pattern>/roles.xhtml</url-pattern>
-      <url-pattern>/users.xhtml</url-pattern>
-      <url-pattern>/tweets.xhtml</url-pattern>
+      <web-resource-name>Admin Pages</web-resource-name>
+      <url-pattern>/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>
