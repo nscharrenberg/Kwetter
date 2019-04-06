@@ -49,7 +49,7 @@ public class LoginBean implements Serializable {
             }
 
             Faces.getSessionMap().put("user", response.getObject());
-            Faces.redirect("index.xhtml");
+            Faces.redirect("admin/index.xhtml");
         } catch(Exception e) {
             e.printStackTrace();
             Messages.create(String.format("Error - %s", e.getMessage())).error().detail(e.getMessage()).add();
@@ -59,7 +59,7 @@ public class LoginBean implements Serializable {
     public void logout() {
         try {
            Faces.logout();
-           Faces.redirect("/signin.xhtml");
+           Faces.redirect("/login.xhtml");
         } catch(Exception e) {
             e.printStackTrace();
             Messages.create("Error").error().detail(e.getMessage()).add();

@@ -114,26 +114,26 @@
 
                         <p:column filterBy="#{user.id}" sortBy="#{user.id}" headerText="Id" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.id}" outcome="/index.xhtml">
+                            <p:link value="#{user.id}" outcome="/admin/index.xhtml">
                                 <f:param name="id" value="#{user.id}"/>
                             </p:link>
                         </p:column>
 
                         <p:column filterBy="#{user.username}" sortBy="#{user.username}" headerText="Name" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.username}" outcome="/index.xhtml">
+                            <p:link value="#{user.username}" outcome="/admin/index.xhtml">
                                 <f:param name="name" value="#{user.username}"/>
                             </p:link>
                         </p:column>
                         <p:column filterBy="#{user.email}" sortBy="#{user.email}" headerText="Email" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.email}" outcome="/index.xhtml">
+                            <p:link value="#{user.email}" outcome="/admin/index.xhtml">
                                 <f:param name="email" value="#{user.email}"/>
                             </p:link>
                         </p:column>
                         <p:column filterBy="#{user.role.name}" sortBy="#{user.role.name}" headerText="Permissions" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.role.name}" outcome="/index.xhtml">
+                            <p:link value="#{user.role.name}" outcome="/admin/index.xhtml">
                                 <f:param name="role" value="#{user.role.id}"/>
                             </p:link>
                         </p:column>

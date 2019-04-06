@@ -25,21 +25,21 @@
         </style>
     </ui:define>
     <ui:define name="title">
-        Tweets
+        Permissions
     </ui:define>
     <ui:define name="description">
-        Find Tweets
+        Find Permissions by name
     </ui:define>
     <ui:define name="body">
-        <adm:breadcrumb title="Tweets"/>
+        <adm:breadcrumb title="Permissions"/>
         <p:panel styleClass="card box-primary" header="Datatable">
             <h:form prependId="false">
                 <div id="datatable">
-                    <p:dataTable var="tweet" value="#{tweetBean.tweets}" widgetVar="permissionTable" paginator="true" styleClass="header-right"
+                    <p:dataTable var="permission" value="#{permissionBean.permissions}" widgetVar="permissionTable" paginator="true" styleClass="header-right"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="5,10,15" rows="10" rowKey="#{tweet.id}"
+                                 rowsPerPageTemplate="5,10,15" rows="10" rowKey="#{permission.id}"
                                  emptyMessage="No permissions found with given criteria" stickyHeader="true"
-                                 filteredValue="#{tweetBean.filteredTweets}">
+                                 filteredValue="#{permissionBean.filteredPermissions}">
 
                         <f:facet name="header">
                             <p:outputPanel>
@@ -50,37 +50,18 @@
                             </p:outputPanel>
                         </f:facet>
 
-                        <p:column width="5%" selectionMode="multiple"
-                                  styleClass="align-center"
-                                  priority="1"/>
-
-                        <p:column filterBy="#{tweet.id}" sortBy="#{tweet.id}" headerText="Id" footerText="contains"
-                                  filterMatchMode="contains" priority="1">
-                            <p:link value="#{tweet.id}" outcome="/index.xhtml">
-                                <f:param name="id" value="#{tweet.id}"/>
+                        <p:column filterBy="#{permission.id}" sortBy="#{permission.id}" headerText="Id" footerText="contains"
+                                   priority="1">
+                            <p:link value="#{permission.id}" outcome="/admin/index.xhtml">
+                                <f:param name="id" value="#{permission.id}"/>
                             </p:link>
                         </p:column>
 
-                        <p:column filterBy="#{tweet.message}" sortBy="#{tweet.message}" headerText="Name" footerText="contains"
-                                  filterMatchMode="contains" priority="1">
-                            <p:link value="#{tweet.message}" outcome="/index.xhtml">
-                                <f:param name="name" value="#{tweet.id}"/>
+                        <p:column filterBy="#{permission.name}" sortBy="#{permission.name}" headerText="Name" footerText="contains"
+                                   priority="1">
+                            <p:link value="#{permission.name}" outcome="/admin/index.xhtml">
+                                <f:param name="name" value="#{permission.name}"/>
                             </p:link>
-                        </p:column>
-                        <p:column filterBy="#{tweet.author.username}" sortBy="#{tweet.author.username}" headerText="Author" footerText="contains"
-                                  filterMatchMode="contains" priority="1">
-                            <p:link value="#{tweet.author.username}" outcome="/index.xhtml">
-                                <f:param name="author" value="#{tweet.author.id}"/>
-                            </p:link>
-                        </p:column>
-                        <p:column filterBy="#{tweet.createdAt}" sortBy="#{tweet.createdAt}" headerText="Created At" footerText="contains"
-                                  filterMatchMode="contains" priority="1">
-                            <p:link value="#{tweet.getReadableCreatedAt()}" outcome="/index.xhtml">
-                                <f:param name="createdAt" value="#{tweet.id}"/>
-                            </p:link>
-                        </p:column>
-                        <p:column headerText="Actions" priority="4">
-                            <p:commandButton value="Delete" icon="fa fa-trash" disabled="false" styleClass="btn-fatal btn-block" action="#{tweetBean.delete(tweet)}"/>
                         </p:column>
                     </p:dataTable>
                 </div>

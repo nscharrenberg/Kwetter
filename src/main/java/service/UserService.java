@@ -314,7 +314,7 @@ public class UserService {
         User user = ur.login(username, PasswordAuthentication.hash(password));
 
         if(user != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "You are logged in as " + user.getUsername(), user);
+            return new ObjectResponse<>(HttpStatusCodes.OK, String.format("You are logged in as %s", user.getUsername()), user);
         }
 
         return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "Wrong username or password");
@@ -348,6 +348,7 @@ public class UserService {
         }
 
         User result =  ur.changeRole(user, role);
+
         if(result != null) {
             return new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " now has the role: " + role.getName(), result);
         } else {
