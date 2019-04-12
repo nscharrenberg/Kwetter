@@ -1,27 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, NgZone, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import {AlertService, UserService} from "../../../_services";
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-@Component({templateUrl: 'register.component.html'})
+@Component({
+    styleUrls: ['./register.component.scss'],
+    templateUrl: 'register.component.html'
+})
 export class RegisterComponent implements OnInit {
+    @Input() adressType: string;
+    @Output() setAddress: EventEmitter<any> = new EventEmitter();
+    @ViewChild('googleAddress') addresstext: any;
+
     registerForm: FormGroup;
     loading = false;
     submitted = false;
 
+    // Google Maps Specifics
+    autocompleteInput: string;
+    public latitude: number;
+    public longitude: number;
+
+    //CKEditor
+    public Editor = ClassicEditor;
+
+
     constructor(
         private formBuilder: FormBuilder,
         private router: Router,
+        private zone: NgZone,
         private userService: UserService,
         private alertService: AlertService) { }
 
     ngOnInit() {
+
         this.registerForm = this.formBuilder.group({
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
+            email: ['', Validators.required],
             username: ['', Validators.required],
-            password: ['', [Validators.required, Validators.minLength(6)]]
+            password: ['', [Validators.required, Validators.minLength(6)]],
+            biography: ['', Validators.required],
+            website: ['', Validators.required],
+            longitude: [this.longitude, [Validators.required]],
+            latitude: [this.latitude, [Validators.required]]
         });
     }
 
@@ -42,11 +64,35 @@ export class RegisterComponent implements OnInit {
             .subscribe(
                 data => {
                     this.alertService.success('Registration successful', true);
-                    this.router.navigate(['/login']);
+                    this.router.navigate(['/auth/login']);
                 },
                 error => {
                     this.alertService.error(error);
                     this.loading = false;
                 });
+    }
+
+    private getPlaceAutocomplete() {
+        const autocomplete = new google.maps.places.Autocomplete(this.addresstext.nativeElement,
+            {
+                types: ["address"]  // 'establishment' / 'address' / 'geocode'
+            });
+        google.maps.event.addListener(autocomplete, 'place_changed', () => {
+            this.zone.run(() => {
+                //get the place result
+                let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+
+                //verify result
+                if (place.geometry === undefined || place.geometry === null) {
+                    return;
+                }
+
+                //set latitude, longitude and zoom
+                this.latitude = place.geometry.location.lat();
+                this.longitude = place.geometry.location.lng();
+
+                console.log("j: " + JSON.stringify([this.longitude, this.latitude]));
+            });
+        });
     }
 }

@@ -6,7 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {RegisterComponent} from "./register.component";
-import {AlertModule} from "../../../_directives/alert.module";
+import {AlertModule} from "../../../_directives/alert/alert.module";
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 @NgModule({
     imports: [
@@ -15,10 +16,11 @@ import {AlertModule} from "../../../_directives/alert.module";
         ReactiveFormsModule,
         HttpClientModule,
         RouterModule,
-        AlertModule
+        AlertModule,
+        CKEditorModule
     ],
     declarations: [
-        RegisterComponent,
+        RegisterComponent
     ],
 })
 export class RegisterModule { }

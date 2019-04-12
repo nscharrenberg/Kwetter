@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login.component';
 import {RouterModule} from '@angular/router';
-import {AlertModule} from "../../../_directives/alert.module";
+import {AlertModule} from "../../../_directives/alert/alert.module";
 
 @NgModule({
     imports: [
