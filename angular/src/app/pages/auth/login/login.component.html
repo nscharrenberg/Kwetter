@@ -1,0 +1,32 @@
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-body">
+                    <alert></alert>
+                    <h5 class="card-title text-center">Sign In</h5>
+                      <form class="form-signin" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                        <div class="form-label-group">
+                            <input type="text" id="username" class="form-control" formControlName="username" placeholder="Username" required autofocus [ngClass]="{ 'is-invalid': submitted && f.username.errors }">
+                            <label for="username">Username</label>
+                            <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                                <div *ngIf="f.username.errors.required">Username is required</div>
+                            </div>
+                        </div>
+
+                        <div class="form-label-group">
+                            <input type="password" id="password" class="form-control" formControlName="password" placeholder="Password" required [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
+                            <label for="password">Password</label>
+                            <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                                <div *ngIf="f.password.errors.required">Password is required</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-lg btn-primary btn-block text-uppercase">Sign in</button>
+                        <hr class="my-4">
+                        <a [routerLink]="['/auth/register']" class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i class="fab fa-google mr-2"></i> Register a new account</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

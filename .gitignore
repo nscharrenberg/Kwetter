@@ -116,3 +116,5 @@ modules.xml
 **/out/*/
 
 *.iml
+
+/angular/src/app/_helpers/api-constants.ts
