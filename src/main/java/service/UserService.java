@@ -188,6 +188,10 @@ public class UserService implements Serializable {
             return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with email " + user.getEmail() + " already exists.");
         }
 
+        if(!PasswordAuthentication.verify(user.getPassword(), getByIdResponse.getObject().getPassword()) || !getByIdResponse.getObject().getPassword().equals(user.getPassword())) {
+            user.setPassword(PasswordAuthentication.hash(user.getPassword()));
+        }
+
         User result = ur.update(user);
         if(result != null) {
             return new ObjectResponse<>(HttpStatusCodes.OK, "User with name: " + user.getUsername() + " updated", user);
@@ -312,10 +316,13 @@ public class UserService implements Serializable {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Password can not be empty");
         }
 
-        User user = ur.login(username, PasswordAuthentication.hash(password));
+        ObjectResponse<User> findByUsernameResponse = getByUsername(username);
 
-        if(user != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, String.format("You are logged in as %s", user.getUsername()), user);
+        if(findByUsernameResponse.getObject() != null) {
+
+            if(PasswordAuthentication.verify(password, findByUsernameResponse.getObject().getPassword())) {
+                return new ObjectResponse<>(HttpStatusCodes.OK, String.format("You are logged in as %s", findByUsernameResponse.getObject().getEmail()), findByUsernameResponse.getObject());
+            }
         }
 
         return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "Wrong username or password");

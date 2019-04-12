@@ -1,15 +1,10 @@
 package service;
 
 import domain.Permission;
-import exceptions.CreationFailedException;
-import exceptions.InvalidContentException;
-import exceptions.NameNotUniqueException;
-import exceptions.NotFoundException;
 import repository.interfaces.JPA;
 import repository.interfaces.PermissionRepository;
 import responses.HttpStatusCodes;
 import responses.ObjectResponse;
-import utils.Logger;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;

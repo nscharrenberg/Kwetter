@@ -1,13 +1,16 @@
 package controllers;
 
+import authentication.TokenProvider;
 import domain.User;
 import dtos.users.CreateUserRequestObject;
 import dtos.users.LoginRequestObject;
+import dtos.users.TokenDto;
 import dtos.users.UserDto;
 import org.modelmapper.ModelMapper;
+import responses.HttpStatusCodes;
+import responses.JaxResponse;
 import responses.ObjectResponse;
 import service.UserService;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -35,12 +38,17 @@ public class AuthenticationController {
                 return Response.status(response.getCode()).entity(response.getMessage()).build();
             }
 
-            ModelMapper mapper = new ModelMapper();
-            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
+            ObjectResponse<String> tokenGeneration = TokenProvider.generate(Integer.toString(response.getObject().getId()), TokenProvider.ISSUER, response.getObject().getEmail(), TokenProvider.TIME_TO_LIVE);
 
-            return Response.status(response.getCode()).entity(userDto).build();
+            if(tokenGeneration.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(tokenGeneration);
+            }
+
+            TokenDto token = new TokenDto();
+            token.setToken(tokenGeneration.getObject());
+
+            return Response.status(response.getCode()).entity(token).build();
         } catch (Exception e) {
-            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

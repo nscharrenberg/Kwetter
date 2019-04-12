@@ -106,7 +106,7 @@
     <dependency>
       <groupId>com.google.flogger</groupId>
       <artifactId>flogger</artifactId>
-      <version>0.3.1</version>
+      <version>0.4</version>
     </dependency>
     <dependency>
       <groupId>org.mindrot</groupId>
@@ -145,6 +145,16 @@
           <artifactId>primefaces</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.5</version>
     </dependency>
   </dependencies>
 
