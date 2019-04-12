@@ -16,11 +16,13 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.annotation.FacesConfig;
 import javax.inject.Inject;
 import java.security.NoSuchAlgorithmException;
 
 @Singleton
 @Startup
+@FacesConfig
 @ApplicationScoped
 public class StartUp {
     @Inject

@@ -17,6 +17,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +25,7 @@ import java.util.Base64;
 import java.util.List;
 
 @Stateless
-public class UserService {
+public class UserService implements Serializable {
 
     @Inject @JPA
     private UserRepository ur;

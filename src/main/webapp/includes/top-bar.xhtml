@@ -18,7 +18,7 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <pe:gravatar id="userImage"
                              value="nscharrenberg@hotmail.com"/>
-                <span class="hidden-xs">Noah Scharrenberg</span>
+                <span class="hidden-xs">#{logonBean.currentUser}</span>
             </a>
             <ul class="dropdown-menu">
                 <li class="user-header">
@@ -27,8 +27,7 @@
                                      value="nscharrenberg@hotmail.com"/>
                     </div>
                     <p>
-                        Noah Scharrenberg
-                        <small>Subtitle</small>
+                        #{logonBean.currentUser}
                     </p>
                 </li>
                 <li class="user-footer">
