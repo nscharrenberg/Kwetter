@@ -18,14 +18,14 @@ public class ServletIdentityStore implements IdentityStore {
 
     @Override
     public CredentialValidationResult validate(Credential credential) {
+
         UsernamePasswordCredential login = (UsernamePasswordCredential) credential;
 
-        ObjectResponse<User> loginReponse = userService.login(login.getCaller(), login.getPasswordAsString());
+        ObjectResponse<User> loginResponse = userService.login(login.getCaller(), login.getPasswordAsString());
 
-        if(loginReponse.getObject() == null) {
+        if(loginResponse.getObject() == null) {
             return CredentialValidationResult.INVALID_RESULT;
         }
-
-        return new CredentialValidationResult(loginReponse.getObject().getUsername(), new HashSet<>(Arrays.asList(loginReponse.getObject().getRole().getName())));
+        return new CredentialValidationResult(loginResponse.getObject().getUsername(), new HashSet<>(Arrays.asList(loginResponse.getObject().getRole().getName())));
     }
 }

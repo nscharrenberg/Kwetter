@@ -51,6 +51,8 @@
     <div class="container main-content">
         <div class="row">
             <alert></alert>
+        </div>
+        <div class="row">
             <div class="col profile-col">
                 <!-- Left column -->
                 <div class="profile-header">
@@ -70,7 +72,6 @@
             <!-- End; Left column -->
             <!-- Center content column -->
             <div class="col-6">
-                <app-create-tweet [author]="loggedIn"></app-create-tweet>
                 <ol class="tweet-list">
                     <app-tweet *ngFor="let t of tweets | async" [tweet]="t"></app-tweet>
                 </ol>

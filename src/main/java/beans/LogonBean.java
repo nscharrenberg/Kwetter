@@ -115,7 +115,6 @@ public class LogonBean extends AdminSession implements Serializable {
             e.printStackTrace();
             return null;
         }
-
     }
 
     @Override

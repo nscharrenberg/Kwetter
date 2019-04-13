@@ -18,7 +18,6 @@ import {CreateTweetModule} from "../../_components";
         RouterModule,
         TweetModule,
         AlertModule,
-        CreateTweetModule
     ],
     declarations: [
         UserComponent

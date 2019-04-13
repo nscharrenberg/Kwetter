@@ -35,7 +35,7 @@ export class CreateTweetComponent  implements OnInit {
         let tweet : Tweet = new Tweet();
        this.tweetService.create(this.message, this.user.id).forEach(data => {
            console.log(JSON.stringify(data));
-           this.alertService.success(data.toString());
+           this.alertService.success("Tweet posted");
        }).catch(error => {
            this.alertService.error(error.error.toString());
        });

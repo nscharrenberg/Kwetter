@@ -17,6 +17,9 @@
     <nav class="navbar profile-stats">
         <div class="container">
             <div class="row">
+                <alert></alert>
+            </div>
+            <div class="row">
                 <div class="col">
 
                 </div>
@@ -65,10 +68,19 @@
             <!-- End; Left column -->
             <!-- Center content column -->
             <div class="col-6">
-                <ol class="tweet-list">
-                    <app-tweet *ngFor="let t of tweets | async" [tweet]="t"></app-tweet>
-                </ol>
-                <!-- End: tweet list -->
+                <div class="row">
+                    <div class="col-12">
+                        <app-create-tweet [author]="loggedIn"></app-create-tweet>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <ol class="tweet-list">
+                            <app-tweet *ngFor="let t of tweets | async" [tweet]="t"></app-tweet>
+                        </ol>
+                    </div>
+                    <!-- End: tweet list -->
+                </div>
             </div>
             <!-- End: Center content column -->
             <div class="col right-col">

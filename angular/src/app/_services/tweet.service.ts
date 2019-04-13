@@ -70,6 +70,12 @@ export class TweetService {
     }
 
 
+    /**
+     * Create a Tweet
+     * @param {string} message
+     * @param {number} author
+     * @returns {Observable<Object>}
+     */
     create(message: string, author: number) {
         return this.http.post(KWETTER_V1_API("tweets"), {
             message: message,

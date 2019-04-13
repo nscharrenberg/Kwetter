@@ -9,6 +9,8 @@ import {TweetModule} from "../../_components/tweet/tweet.module";
 import {TweetService} from "../../_services";
 import {TruncatePipe} from "../../_pipes";
 import {UserModule} from "../user/user.module";
+import {CreateTweetModule} from "../../_components";
+import {AlertModule} from "../../_directives/alert/alert.module";
 
 @NgModule({
     imports: [
@@ -18,6 +20,8 @@ import {UserModule} from "../user/user.module";
         RouterModule,
         TweetModule,
         UserModule,
+        AlertModule,
+        CreateTweetModule
     ],
     declarations: [
         HomeComponent

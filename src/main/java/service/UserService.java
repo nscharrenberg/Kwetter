@@ -239,6 +239,10 @@ public class UserService implements Serializable {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID for User you are trying to follow");
         }
 
+        if(user.getId() == toFollow.getId()) {
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "You can't follow yourself!");
+        }
+
         ObjectResponse<User> getUserByIdResponse = getById(user.getId());
 
         if(getUserByIdResponse.getObject() == null) {
