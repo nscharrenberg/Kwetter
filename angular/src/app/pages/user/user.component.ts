@@ -1,12 +1,13 @@
 import {Component, NgZone, OnInit} from '@angular/core';
 import {Tweet} from "../../_models/tweet";
-import {AuthenticationService, TweetService, UserService} from "../../_services";
+import {AlertService, AuthenticationService, TweetService, UserService} from "../../_services";
 import {User} from "../../_models";
 import {Observable} from "rxjs/internal/Observable";
 import LatLng = google.maps.LatLng;
 import {Observer} from "rxjs/internal/types";
 import {ActivatedRoute, Router} from "@angular/router";
-import {takeUntil} from "rxjs/operators";
+import {catchError, takeUntil} from "rxjs/operators";
+import {of} from "rxjs/internal/observable/of";
 
 
 @Component({
@@ -26,6 +27,7 @@ export class UserComponent implements OnInit {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private zone: NgZone,
+        private alertService: AlertService,
         private tweetService: TweetService,
         private authenticationService: AuthenticationService,
         private userService: UserService) {
@@ -84,23 +86,21 @@ export class UserComponent implements OnInit {
 
     follow() {
         this.user.forEach(u => {
-            this.userService.follow(this.loggedIn.id, u.id);
+            this.userService.follow(this.loggedIn.id, u.id).forEach(data => {
+                this.alertService.success("You are now following " + data.username);
+            }).catch(error => {
+                this.alertService.error(error.error.toString());
+            });
         });
     }
 
-    alreadyFollowing() : boolean {
-        let bool;
-
+    unfollow() {
         this.user.forEach(u => {
-            if(u.id != this.loggedIn.id) {
-                bool = u.followers.filter(me => me.id === this.loggedIn.id);
-            }
+            this.userService.unfollow(this.loggedIn.id, u.id).forEach(data => {
+                this.alertService.success("You are not following " + data.username + " anymore");
+            }).catch(error => {
+                this.alertService.error(error.error.toString());
+            });
         });
-
-        if(bool == null || bool == undefined) {
-            return false;
-        }
-
-        return true;
     }
 }

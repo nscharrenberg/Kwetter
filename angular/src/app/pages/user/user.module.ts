@@ -7,7 +7,8 @@ import {RouterModule} from "@angular/router";
 import {NavbarModule} from "../../_components/navbar/navbar.module";
 import {TweetModule} from "../../_components/tweet/tweet.module";
 import {TweetService} from "../../_services";
-import {TruncatePipe} from "../../_pipes";
+import {AlertModule} from "../../_directives/alert/alert.module";
+import {CreateTweetModule} from "../../_components";
 
 @NgModule({
     imports: [
@@ -16,6 +17,8 @@ import {TruncatePipe} from "../../_pipes";
         NavbarModule,
         RouterModule,
         TweetModule,
+        AlertModule,
+        CreateTweetModule
     ],
     declarations: [
         UserComponent

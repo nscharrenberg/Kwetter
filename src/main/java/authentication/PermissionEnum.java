@@ -1,21 +1,17 @@
 package authentication;
 
 public enum PermissionEnum {
-    CREATE_PERMISSIONS("create_permissions"),
-    READ_PERMISSIONS("read_permissions"),
-    UPDATE_PERMISSIONS("update_permissions"),
-    DELETE_PERMISSIONS("delete_permissions"),
-    CREATE_ROLES("create_roles"),
     READ_ROLES("read_roles"),
-    UPDATE_ROLES("update_roles"),
-    DELETE_ROLES("delete_roles"),
-    ATTACH_PERMISSION_TO_ROLE("attach_permission"),
-    DETACH_PERMISSION_FROM_ROLE("detach_permission"),
-    CREATE_USERS("create_users"),
     READ_USERS("read_users"),
     UPDATE_USERS("update_users"),
-    DELETE_USERS("delete_users"),
-    CHANGE_ROLE_OF_USER("changerole_user");
+    CREATE_TWEET("create_tweet"),
+    UPDATE_TWEET("update_tweet"),
+    DELETE_TWEET("delete_tweet"),
+    LIKE_TWEET("like_tweet"),
+    UNLIKE_TWEET("unlike_tweet"),
+    FOLLOW_USER("follow_user"),
+    UNFOLLOW_USER("unfollow_user")
+    ;
 
     private String value;
 

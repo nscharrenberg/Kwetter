@@ -1,5 +1,7 @@
 package controllers;
 
+import authentication.AuthenticationProvider;
+import authentication.PermissionEnum;
 import domain.Tweet;
 import domain.User;
 import dtos.tweets.CreateTweetRequestObject;
@@ -7,6 +9,8 @@ import dtos.tweets.EditTweetRequestObject;
 import dtos.tweets.LikeRequestObject;
 import dtos.tweets.TweetDto;
 import org.modelmapper.ModelMapper;
+import responses.HttpStatusCodes;
+import responses.JaxResponse;
 import responses.ObjectResponse;
 import service.TweetService;
 import service.UserService;
@@ -33,8 +37,8 @@ public class TweetController {
     @Inject
     private TweetService tweetService;
 
-    @Context
-    UriInfo uriInfo;
+    @Inject
+    private AuthenticationProvider authenticationProvider;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -66,8 +70,14 @@ public class TweetController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(CreateTweetRequestObject request) {
+    public Response create(@HeaderParam("Authorization") String authentication, CreateTweetRequestObject request) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.CREATE_TWEET.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
             ObjectResponse<User> getUserByIdResponse = userService.getById(request.getAuthor());
 
             if(getUserByIdResponse.getObject() == null) {
@@ -203,8 +213,14 @@ public class TweetController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Response update(@PathParam("id") int id, EditTweetRequestObject request) {
+    public Response update(@HeaderParam("Authorization") String authentication, @PathParam("id") int id, EditTweetRequestObject request) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UPDATE_TWEET.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
             ObjectResponse<User> getUserByIdResponse = userService.getById(request.getAuthor());
 
             if(getUserByIdResponse.getObject() == null) {
@@ -235,8 +251,14 @@ public class TweetController {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Response delete(@PathParam("id") int id) {
+    public Response delete(@HeaderParam("Authorization") String authentication, @PathParam("id") int id) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.DELETE_TWEET.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
             ObjectResponse<Tweet> response = tweetService.getById(id);
 
             if(response.getObject() == null) {
@@ -263,8 +285,14 @@ public class TweetController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/like")
-    public Response like(@PathParam("id") int id, LikeRequestObject request) {
+    public Response like(@HeaderParam("Authorization") String authentication, @PathParam("id") int id, LikeRequestObject request) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.LIKE_TWEET.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
             ObjectResponse<Tweet> getTweetByIdResponse = tweetService.getById(request.getTweetId());
 
             if(getTweetByIdResponse.getObject() == null) {
@@ -297,8 +325,14 @@ public class TweetController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/unlike")
-    public Response unlike(@PathParam("id") int id, LikeRequestObject request) {
+    public Response unlike(@HeaderParam("Authorization") String authentication, @PathParam("id") int id, LikeRequestObject request) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UNLIKE_TWEET.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
             ObjectResponse<Tweet> getTweetByIdResponse = tweetService.getById(request.getTweetId());
 
             if(getTweetByIdResponse.getObject() == null) {

@@ -265,6 +265,27 @@ a {
 .btn-follow:hover {
   background-color: #E8F5FD;
 }
+
+.btn-unfollow {
+  border-color: #f11d1d;
+  color: #f11d1d;
+  background-color: #fff;
+  border: 1px solid #f11d1d;
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  box-shadow: none;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  min-width: 89px;
+}
+
+.btn-unfollow:hover {
+  background-color: #fde8e8;
+}
 /* END: Right column*/
 
 /* END: Main content elements' styles */

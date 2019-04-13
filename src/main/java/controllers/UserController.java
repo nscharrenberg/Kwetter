@@ -1,5 +1,7 @@
 package controllers;
 
+import authentication.AuthenticationProvider;
+import authentication.PermissionEnum;
 import domain.Role;
 import domain.User;
 import dtos.users.EditUserRequestObject;
@@ -7,6 +9,8 @@ import dtos.users.FollowRequestObject;
 import dtos.users.RoleRequestObject;
 import dtos.users.UserDto;
 import org.modelmapper.ModelMapper;
+import responses.HttpStatusCodes;
+import responses.JaxResponse;
 import responses.ObjectResponse;
 import service.RoleService;
 import service.UserService;
@@ -25,7 +29,7 @@ public class UserController {
     private UserService userService;
 
     @Inject
-    private RoleService roleService;
+    private AuthenticationProvider authenticationProvider;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -114,8 +118,15 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Response update(@PathParam("id") int id, EditUserRequestObject request) {
+    public Response update(@HeaderParam("Authorization") String authentication, @PathParam("id") int id, EditUserRequestObject request) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UPDATE_USERS.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
+
             ObjectResponse<User> response = userService.getById(id);
 
             if(response.getObject() == null) {
@@ -145,77 +156,19 @@ public class UserController {
         }
     }
 
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{id}")
-    public Response delete(@PathParam("id") int id) {
-        try {
-            ObjectResponse<User> response = userService.getById(id);
-
-            if(response.getObject() == null) {
-                return Response.status(response.getCode()).entity(response.getMessage()).build();
-            }
-
-            ObjectResponse<User> result = userService.delete(response.getObject());
-
-            if(result.getObject() == null) {
-                return Response.status(result.getCode()).entity(result.getMessage()).build();
-            }
-
-            ModelMapper mapper = new ModelMapper();
-            UserDto userDto = mapper.map(result.getObject(), UserDto.class);
-
-            return Response.status(result.getCode()).entity(userDto).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-
-    @PATCH
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/{id}/role")
-    public Response changeRole(@PathParam("id") int id, RoleRequestObject request) {
-        try {
-            if(id != request.getUserId()) {
-                return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
-            }
-
-            ObjectResponse<User> getUserByIdResponse = userService.getById(request.getUserId());
-
-            if(getUserByIdResponse.getObject() == null) {
-                return Response.status(getUserByIdResponse.getCode()).entity(getUserByIdResponse.getMessage()).build();
-            }
-
-            ObjectResponse<Role> getRoleByIdResponse = roleService.getById(request.getRoleId());
-
-            if(getRoleByIdResponse.getObject() == null) {
-                return Response.status(getRoleByIdResponse.getCode()).entity(getRoleByIdResponse.getMessage()).build();
-            }
-
-            ObjectResponse<User> response = userService.changeRole(getUserByIdResponse.getObject(), getRoleByIdResponse.getObject());
-
-            if(response.getObject() == null) {
-                return Response.status(response.getCode()).entity(response.getMessage()).build();
-            }
-
-            ModelMapper mapper = new ModelMapper();
-            UserDto userDto = mapper.map(response.getObject(), UserDto.class);
-
-            return Response.status(response.getCode()).entity(userDto).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/follow")
-    public Response follow(@PathParam("id") int id, FollowRequestObject request) {
+    public Response follow(@HeaderParam("Authorization") String authentication, @PathParam("id") int id, FollowRequestObject request) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.FOLLOW_USER.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
+
             if(id != request.getToFollowId()) {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }
@@ -252,8 +205,14 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/unfollow")
-    public Response unfollow(@PathParam("id") int id, FollowRequestObject request) {
+    public Response unfollow(@HeaderParam("Authorization") String authentication, @PathParam("id") int id, FollowRequestObject request) {
         try {
+            ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UNFOLLOW_USER.getValue());
+
+            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+                return JaxResponse.checkObjectResponse(loggedIn);
+            }
+
             if(id != request.getToFollowId()) {
                 return Response.status(Response.Status.FORBIDDEN).entity("URL id is not the same as the body").build();
             }

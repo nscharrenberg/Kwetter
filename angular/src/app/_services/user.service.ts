@@ -61,6 +61,12 @@ export class UserService {
         return this.http.patch(KWETTER_V1_API("users/" + user.id), user);
     }
 
+    /**
+     *
+     * @param {number} me
+     * @param {number} toFollow
+     * @returns {Observable<Object>}
+     */
     follow(me: number, toFollow: number) {
         return this.http.post(KWETTER_V1_API("users/" + toFollow + "/follow"), {
             "userId": me,

@@ -19,6 +19,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
 import javax.inject.Inject;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Singleton
 @Startup
@@ -49,20 +51,32 @@ public class StartUp {
      * Pre-populate permissions.
      */
     private void setPermissions() {
-        try {
-            permissionService.create(new Permission("create_user"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
+        Set<String> permissions = new HashSet<>();
+        permissions.add("permissions");
+        permissions.add("roles");
+        permissions.add("users");
+        permissions.add("tweets");
 
+        /**
+         * Default CRUD Functionality
+         */
+        permissions.forEach(p -> {
+            permissionService.create(new Permission(String.format("create_%s", p)));
+            permissionService.create(new Permission(String.format("read_%s", p)));
+            permissionService.create(new Permission(String.format("update_%s", p)));
+            permissionService.create(new Permission(String.format("delete_%s", p)));
+        });
 
-        try {
-            permissionService.create(new Permission("create_tweet"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
+        // Be able to change the role of a user
+        permissionService.create(new Permission("changerole_user"));
+        permissionService.create(new Permission("attach_permission"));
+        permissionService.create(new Permission("detach_permission"));
+
+        //Tweet Permissions
+        permissionService.create(new Permission("like_tweet"));
+        permissionService.create(new Permission("unlike_tweet"));
+        permissionService.create(new Permission("follow_user"));
+        permissionService.create(new Permission("unfollow_user"));
     }
 
     /**

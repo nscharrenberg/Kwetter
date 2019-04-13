@@ -190,6 +190,7 @@ public class User {
 
     public void removeFollowing(User user) {
         this.following.remove(user);
+        user.removeFollower(this);
     }
 
     private void removeFollower(User user) {

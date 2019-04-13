@@ -51,7 +51,7 @@ public class LogonBean extends AdminSession implements Serializable {
     private String password;
     private boolean remember;
 
-    public void login_old() throws IOException {
+    public void login() throws IOException {
         switch (continueAuthentication()) {
             case SEND_CONTINUE:
                 facesContext.responseComplete();
@@ -70,35 +70,35 @@ public class LogonBean extends AdminSession implements Serializable {
         }
     }
 
-    public void login() throws IOException {
-        if(Faces.getRequest().getUserPrincipal() != null) {
-            facesContext.responseComplete();
-            return;
-        }
-
-        try {
-            Faces.login(username, password);
-        } catch (ServletException e) {
-            e.printStackTrace();
-            Messages.addError(null, e.getMessage());
-            externalContext.getFlash().setKeepMessages(true);
-            Faces.redirect("login.xhtml");
-            return;
-        }
-
-        Principal principal = Faces.getRequest().getUserPrincipal();
-        ObjectResponse<User> userByUsernameResponse = userService.getByUsername(principal.getName());
-
-        if(userByUsernameResponse.getCode() != 200) {
-            Messages.addError(null, "USER NOT FOUND IN LOGIN");
-            externalContext.getFlash().setKeepMessages(true);
-            return;
-        }
-
-        externalContext.getFlash().setKeepMessages(true);
-        addDetailMessage(String.format("Logged in successfully as <b> %s </b>", username));
-        Faces.redirect("admin/index.xhtml");
-    }
+//    public void login() throws IOException {
+//        if(Faces.getRequest().getUserPrincipal() != null) {
+//            facesContext.responseComplete();
+//            return;
+//        }
+//
+//        try {
+//            Faces.login(username, password);
+//        } catch (ServletException e) {
+//            e.printStackTrace();
+//            Messages.addError(null, e.getMessage());
+//            externalContext.getFlash().setKeepMessages(true);
+//            Faces.redirect("login.xhtml");
+//            return;
+//        }
+//
+//        Principal principal = Faces.getRequest().getUserPrincipal();
+//        ObjectResponse<User> userByUsernameResponse = userService.getByUsername(principal.getName());
+//
+//        if(userByUsernameResponse.getCode() != 200) {
+//            Messages.addError(null, "USER NOT FOUND IN LOGIN");
+//            externalContext.getFlash().setKeepMessages(true);
+//            return;
+//        }
+//
+//        externalContext.getFlash().setKeepMessages(true);
+//        addDetailMessage(String.format("Logged in successfully as <b> %s </b>", username));
+//        Faces.redirect("admin/index.xhtml");
+//    }
 
     public void logout() throws ServletException, IOException {
         Faces.logout();

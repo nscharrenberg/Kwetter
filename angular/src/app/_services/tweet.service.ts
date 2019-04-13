@@ -69,6 +69,14 @@ export class TweetService {
         return this.http.get<Tweet[]>(KWETTER_V1_API("tweets/author/" + id));
     }
 
+
+    create(message: string, author: number) {
+        return this.http.post(KWETTER_V1_API("tweets"), {
+            message: message,
+            author: author
+        });
+    }
+
     /**
      * Update a Tweet
      * @param {Tweet} tweet

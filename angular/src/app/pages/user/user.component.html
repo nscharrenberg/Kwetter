@@ -50,13 +50,12 @@
     </nav>
     <div class="container main-content">
         <div class="row">
+            <alert></alert>
             <div class="col profile-col">
                 <!-- Left column -->
                 <div class="profile-header">
-
-                    <form (ngSubmit)="follow()" *ngIf="alreadyFollowing()">
-                        <button class="btn btn-block btn-follow btn-lg"> <i class="fa fa-user-plus"></i> Follow</button>
-                    </form>
+                     <button (click)="follow()" class="btn btn-block btn-follow btn-lg"> <i class="fa fa-user-plus"></i> Follow</button>
+                    <button (click)="unfollow()" class="btn btn-block btn-unfollow btn-lg"> <i class="fa fa-frown"></i> Unfollow</button>
                     <hr>
                     <!-- Header information -->
                     <h3 class="profile-fullname">{{(user | async)?.username}}</h3>
@@ -71,6 +70,7 @@
             <!-- End; Left column -->
             <!-- Center content column -->
             <div class="col-6">
+                <app-create-tweet [author]="loggedIn"></app-create-tweet>
                 <ol class="tweet-list">
                     <app-tweet *ngFor="let t of tweets | async" [tweet]="t"></app-tweet>
                 </ol>
