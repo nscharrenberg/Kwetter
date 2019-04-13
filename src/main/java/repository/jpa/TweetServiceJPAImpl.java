@@ -28,7 +28,22 @@ public class TweetServiceJPAImpl implements TweetRepository {
 
     @Override
     public List<Tweet> all() {
-        return em.createNamedQuery("tweet.getAllTweets", Tweet.class).getResultList();
+        try {
+            return em.createNamedQuery("tweet.getAllTweets", Tweet.class).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Tweet> paginated(int page, int pageSize) {
+        try {
+            return em.createNamedQuery("tweet.getAllTweets", Tweet.class).setFirstResult((page - 1) * pageSize).setMaxResults(pageSize).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -55,6 +70,42 @@ public class TweetServiceJPAImpl implements TweetRepository {
     public List<Tweet> getByCreatedDate(Date date) {
         try {
             return em.createNamedQuery("tweet.getTweetByDate", Tweet.class).setParameter("createdAt", date).getResultList();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Tweet> getTweetsByUser(User user) {
+        try {
+            TypedQuery<Tweet> query = em.createQuery("SELECT t FROM Tweet t WHERE t.author = :author", Tweet.class);
+            query.setParameter("author", user);
+
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Tweet> getTweetsByUserPaginated(User user, int page, int pageSize) {
+        try {
+            TypedQuery<Tweet> query = em.createQuery("SELECT t FROM Tweet t WHERE t.author = :author", Tweet.class);
+            query.setParameter("author", user);
+
+            return query.setFirstResult((page - 1) * pageSize).setMaxResults(pageSize).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Tweet> getByAuthorIdPaginated(int id, int page, int pageSize) {
+        try {
+            return em.createNamedQuery("tweet.getTweetByUser", Tweet.class).setParameter("author", id).setFirstResult((page - 1) * pageSize).setMaxResults(pageSize).getResultList();
         } catch(Exception e) {
             e.printStackTrace();
             return null;
@@ -119,24 +170,34 @@ public class TweetServiceJPAImpl implements TweetRepository {
         }
     }
 
-    private List<Tweet> getTweetsByUser(User user) {
-        TypedQuery<Tweet> query = em.createQuery("SELECT t FROM Tweet t WHERE t.author = :author", Tweet.class);
-        query.setParameter("author", user);
-
-        return query.getResultList();
-    }
-
     @Override
-    public List<Tweet> getTimeLine(User user) {
+    public List<Tweet> getTimeLine(User user, Object... options) {
         List<Tweet> tweets = getTweetsByUser(user);
 
-        for(User u : user.getFollowers()) {
+        for(User u : user.getFollowing()) {
             tweets.addAll(getTweetsByUser(u));
         }
 
-        tweets.sort(Comparator.comparing(Tweet::getCreatedAt));
+        tweets.sort(Comparator.comparing(Tweet::getCreatedAt).reversed());
 
-        return tweets;
+        if(options != null && options.length > 0 && options.length < 3) {
+            if(options[0] != null && options[1] != null) {
+                if(options[0] instanceof Integer && options[1] instanceof Integer) {
+                    Integer page = (Integer) options[0];
+                    Integer pageSize = (Integer) options[1];
+
+                    int fromIndex = (page -1) * pageSize;
+                    return tweets.subList(fromIndex, Math.min(fromIndex + pageSize, tweets.size()));
+                }
+            }
+        }
+
+        try {
+            return tweets;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

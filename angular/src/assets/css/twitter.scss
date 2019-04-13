@@ -66,15 +66,11 @@ a {
 .navbar-form {
   margin-right: 15px;
 }
-
-.navbar-user-dropdown {
-  margin-right: 15px;
-}
 /* END: Top Navbar elements' styles */
 
 .profile-background {
   height: 320px;
-  background-image: url('https://pbs.twimg.com/profile_banners/439335622/1496682615/1500x500');
+  background: #1DA1F2;
 }
 
 /* Main avatar */
@@ -88,7 +84,6 @@ a {
 
 .avatar {
   background: #fff;
-  background-image: url(https://pbs.twimg.com/profile_images/679974972278849537/bzzb-6H4_400x400.jpg);
   border: 5px solid #fff;
   border-radius: 50%;
   height: 200px;

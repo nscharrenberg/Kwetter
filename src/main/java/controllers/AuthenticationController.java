@@ -2,10 +2,7 @@ package controllers;
 
 import authentication.TokenProvider;
 import domain.User;
-import dtos.users.CreateUserRequestObject;
-import dtos.users.LoginRequestObject;
-import dtos.users.TokenDto;
-import dtos.users.UserDto;
+import dtos.users.*;
 import org.modelmapper.ModelMapper;
 import responses.HttpStatusCodes;
 import responses.JaxResponse;
@@ -13,6 +10,7 @@ import responses.ObjectResponse;
 import service.UserService;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.security.enterprise.SecurityContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -46,6 +44,11 @@ public class AuthenticationController {
 
             TokenDto token = new TokenDto();
             token.setToken(tokenGeneration.getObject());
+
+            ModelMapper mapper = new ModelMapper();
+            UserCleanDto userDto = mapper.map(response.getObject(), UserCleanDto.class);
+
+            token.setUser(userDto);
 
             return Response.status(response.getCode()).entity(token).build();
         } catch (Exception e) {

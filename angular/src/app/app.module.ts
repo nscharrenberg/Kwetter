@@ -4,14 +4,14 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent }  from './app.component';
-import { AlertComponent } from './_directives';
 import { AuthGuard } from './_guards';
 import { JwtInterceptor, ErrorInterceptor } from './_helpers';
 import { AlertService, AuthenticationService, UserService } from './_services';
 import {AlertModule} from "./_directives/alert/alert.module";
 import {HomeModule} from "./pages/home/home.module";
 import {AppRoutingModule} from "./app.routing";
-import {AutocompleteComponent} from "./_components/autocomplete/autocomplete.component";
+import {NavbarModule} from "./_components/navbar/navbar.module";
+import {UserModule} from "./pages/user/user.module";
 
 @NgModule({
     imports: [
@@ -22,9 +22,10 @@ import {AutocompleteComponent} from "./_components/autocomplete/autocomplete.com
         AppRoutingModule,
         HomeModule,
         AlertModule,
+        UserModule
     ],
     declarations: [
-        AppComponent,
+        AppComponent
     ],
     providers: [
         AuthGuard,

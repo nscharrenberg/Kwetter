@@ -29,6 +29,11 @@ public class TweetServiceCollImpl implements TweetRepository {
     }
 
     @Override
+    public List<Tweet> paginated(int page, int pageSize) {
+        return tweets;
+    }
+
+    @Override
     public Tweet getById(int id) {
         return Iterables.tryFind(tweets, tweet -> id == tweet.getId()).orNull();
     }
@@ -78,12 +83,27 @@ public class TweetServiceCollImpl implements TweetRepository {
     }
 
     @Override
-    public List<Tweet> getTimeLine(User user) {
+    public List<Tweet> getTimeLine(User user, Object... options) {
         return null;
     }
 
     @Override
     public List<Tweet> search(String input) {
+        return null;
+    }
+
+    @Override
+    public List<Tweet> getTweetsByUser(User user) {
+        return null;
+    }
+
+    @Override
+    public List<Tweet> getTweetsByUserPaginated(User user, int page, int pageSize) {
+        return null;
+    }
+
+    @Override
+    public List<Tweet> getByAuthorIdPaginated(int id, int page, int pageSize) {
         return null;
     }
 }

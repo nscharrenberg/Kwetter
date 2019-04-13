@@ -8,6 +8,7 @@ import repository.interfaces.TweetRepository;
 import responses.HttpStatusCodes;
 import responses.ObjectResponse;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -30,11 +31,27 @@ public class TweetService {
     private UserService ur;
 
     /**
-     * Get all tweets
-     * @return a list of tweets
+     * Get All Tweets or get Paginated tweets
+     * @param options - Make sure the 1st value is pageNumber and the 2nd value is pageSize
+     * @return
      */
-    public ObjectResponse<List<Tweet>> all() {
-        List<Tweet> tweets = tr.all();
+    public ObjectResponse<List<Tweet>> all(Object... options) {
+        List<Tweet> tweets = null;
+
+        if(options != null && options.length > 0 && options.length < 3) {
+            if(options[0] != null && options[1] != null) {
+                if(options[0] instanceof Integer && options[1] instanceof  Integer) {
+                    Integer pageNumber = (Integer) options[0];
+                    Integer pageSize = (Integer) options[1];
+                    tweets = tr.paginated(pageNumber, pageSize);
+                } else {
+                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                }
+            }
+        } else {
+            tweets = tr.all();
+        }
+
         return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets loaded", tweets);
     }
 
@@ -62,7 +79,7 @@ public class TweetService {
      * @param username - the name of the author
      * @return a list of tweets
      */
-    public ObjectResponse<List<Tweet>> getByAuthorName(String username) {
+    public ObjectResponse<List<Tweet>> getByAuthorName(String username, Object... options) {
         if(username.isEmpty()) {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
         }
@@ -71,6 +88,23 @@ public class TweetService {
 
         if(getUserByIdResponse.getObject() == null) {
             return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
+        }
+
+        /**
+         * Pagination
+         */
+        if(options != null && options.length > 0 && options.length < 3) {
+            if(options[0] != null && options[1] != null) {
+                if(options[0] instanceof Integer && options[1] instanceof  Integer) {
+                    Integer pageNumber = (Integer) options[0];
+                    Integer pageSize = (Integer) options[1];
+                    List<Tweet> tweets = tr.getByAuthorIdPaginated(getUserByIdResponse.getObject().getId(), pageNumber, pageSize);
+
+                    return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
+                } else {
+                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                }
+            }
         }
 
         ObjectResponse<List<Tweet>> getTweetsByAuthorIdResponse = getByAuthorId(getUserByIdResponse.getObject().getId());
@@ -87,7 +121,7 @@ public class TweetService {
      * @param id - the id of the author
      * @return a list of tweets
      */
-    public ObjectResponse<List<Tweet>> getByAuthorId(int id) {
+    public ObjectResponse<List<Tweet>> getByAuthorId(int id, Object... options) {
         if(id <= 0) {
             return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
@@ -96,6 +130,23 @@ public class TweetService {
 
         if(getUserByIdResponse.getObject() == null) {
             return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
+        }
+
+        /**
+         * Pagination
+         */
+        if(options != null && options.length > 0 && options.length < 3) {
+            if(options[0] != null && options[1] != null) {
+                if(options[0] instanceof Integer && options[1] instanceof  Integer) {
+                    Integer pageNumber = (Integer) options[0];
+                    Integer pageSize = (Integer) options[1];
+                    List<Tweet> tweets = tr.getByAuthorIdPaginated(id, pageNumber, pageSize);
+
+                    return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
+                } else {
+                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                }
+            }
         }
 
         List<Tweet> getTweetsByAuthorIdResponse = tr.getByAuthorId(id);
@@ -108,22 +159,42 @@ public class TweetService {
     }
 
     /**
-     * Get a list of tweets by its creation date
-     * @param date - the date of the tweet
-     * @return a list of tweets
+     * Timeline
+     * @param id
+     * @param options
+     * @return
      */
-    public ObjectResponse<List<Tweet>> getByCreatedDate(Date date) {
-        if(date == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Date");
+    public ObjectResponse<List<Tweet>> getTimeLine(int id, Object... options) {
+        if(id <= 0) {
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
-        ObjectResponse<List<Tweet>> getTweetsByDate = getByCreatedDate(date);
+        ObjectResponse<User> getUserByIdResponse = ur.getById(id);
 
-        if(getTweetsByDate.getObject() == null || getTweetsByDate.getObject().isEmpty()) {
-            return getTweetsByDate;
+        if(getUserByIdResponse.getObject() == null) {
+            return new ObjectResponse<>(getUserByIdResponse.getCode(), getUserByIdResponse.getMessage());
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByDate.getObject().size() + " tweets from " + date + " loaded", getTweetsByDate.getObject());
+        List<Tweet> tweets = null;
+
+        /**
+         * Pagination
+         */
+        if(options != null && options.length > 0 && options.length < 3) {
+            if(options[0] != null && options[1] != null) {
+                if(options[0] instanceof Integer && options[1] instanceof  Integer) {
+                    Integer pageNumber = (Integer) options[0];
+                    Integer pageSize = (Integer) options[1];
+                    tweets = tr.getTimeLine(getUserByIdResponse.getObject(), pageNumber, pageSize);
+                } else {
+                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                }
+            }
+        } else {
+            tweets = tr.getTimeLine(getUserByIdResponse.getObject());
+        }
+
+        return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
     }
 
     /**

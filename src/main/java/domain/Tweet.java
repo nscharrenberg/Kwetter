@@ -15,10 +15,10 @@ import java.util.Set;
 @Entity
 @Table(name = "tweets")
 @NamedQueries({
-        @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t"),
+        @NamedQuery(name = "tweet.getAllTweets", query = "SELECT t FROM Tweet t ORDER BY t.createdAt DESC"),
         @NamedQuery(name = "tweet.getTweetById", query = "SELECT t FROM Tweet t WHERE t.id = :id"),
-        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author.id = :author"),
-        @NamedQuery(name = "tweet.getTweetByDate", query = "SELECT t FROM Tweet t WHERE t.createdAt = :createdAt")
+        @NamedQuery(name = "tweet.getTweetByUser", query = "SELECT t FROM Tweet t WHERE t.author.id = :author ORDER BY t.createdAt DESC"),
+        @NamedQuery(name = "tweet.getTweetByDate", query = "SELECT t FROM Tweet t WHERE t.createdAt = :createdAt ORDER BY t.createdAt DESC")
 })
 public class Tweet {
 

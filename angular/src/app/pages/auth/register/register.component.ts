@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import {AlertService, UserService} from "../../../_services";
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     styleUrls: ['./register.component.scss'],
@@ -19,12 +18,8 @@ export class RegisterComponent implements OnInit {
     submitted = false;
 
     // Google Maps Specifics
-    autocompleteInput: string;
     public latitude: number;
     public longitude: number;
-
-    //CKEditor
-    public Editor = ClassicEditor;
 
 
     constructor(
@@ -35,7 +30,7 @@ export class RegisterComponent implements OnInit {
         private alertService: AlertService) { }
 
     ngOnInit() {
-
+        this.getPlaceAutocomplete();
         this.registerForm = this.formBuilder.group({
             email: ['', Validators.required],
             username: ['', Validators.required],
@@ -90,8 +85,6 @@ export class RegisterComponent implements OnInit {
                 //set latitude, longitude and zoom
                 this.latitude = place.geometry.location.lat();
                 this.longitude = place.geometry.location.lng();
-
-                console.log("j: " + JSON.stringify([this.longitude, this.latitude]));
             });
         });
     }

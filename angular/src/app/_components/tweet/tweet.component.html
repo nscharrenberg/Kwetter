@@ -1,0 +1,28 @@
+<li class="tweet-card">
+    <div class="tweet-content">
+        <div class="tweet-header">
+                            <span class="fullname">
+                              <strong><a [href]="'/user/' + tweet.author.id">{{tweet?.author?.username}}</a></strong>
+                            </span>
+            <span class="username">@{{tweet?.author?.username}}</span>
+            <span class="tweet-time">- {{tweet?.createdAt }}</span>
+        </div>
+        <a>
+            <!-- TODO: Change avatar for user's avatar -->
+            <img class="tweet-card-avatar" [src]="'https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'" alt="">
+        </a>
+        <div class="tweet-text">
+            <p class="" lang="es" data-aria-label-part="0"> {{tweet?.message}}
+                <a href="" class="twitter-hashtag" dir="ltr"></a>
+            </p>
+        </div>
+        <div class="tweet-footer">
+            <a class="tweet-footer-btn">
+                <i class="octicon octicon-comment" aria-hidden="true"></i><span> {{tweet.mentions?.length}}</span>
+            </a>
+            <a class="tweet-footer-btn">
+                <i class="octicon octicon-heart" aria-hidden="true"></i><span> {{tweet.likes?.length}}</span>
+            </a>
+        </div>
+    </div>
+</li>

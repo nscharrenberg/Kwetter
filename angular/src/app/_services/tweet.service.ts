@@ -1,8 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { User } from '../_models';
+import {Injectable, Optional} from '@angular/core';
 import {KWETTER_V1_API} from "../_helpers/api-constants";
-import {Role} from "../_models/role";
 import {Tweet} from "../_models/tweet";
 
 @Injectable()
@@ -30,10 +28,18 @@ export class TweetService {
     /**
      * Get My Timeline
      * @param {number} id
+     * @param options - Optional parameter, make sure the 1st parameter is pageNumber and the 2nd is ResultPerPage
      * @returns {Observable<Tweet[]>}
      */
-    getMyTimeLine(id: number) {
-        return this.http.get<Tweet[]>(KWETTER_V1_API("timeline" + id));
+    getMyTimeLine(id: number, ...options ) {
+
+        if(options.length > 0 && options.length < 3) {
+            if(typeof options[0] == "number" && typeof options[1] == "number") {
+                return this.http.get<Tweet[]>(KWETTER_V1_API("tweets/timeline/" + id + "?resultPerPage=" + options[1] + "&pageNumber=" + options[0]));
+            }
+        }
+
+        return this.http.get<Tweet[]>(KWETTER_V1_API("tweets/timeline/" + id));
     }
 
     /**
@@ -51,7 +57,7 @@ export class TweetService {
      * @returns {Observable<Tweet>}
      */
     getByAuthorUsername(username: string) {
-        return this.http.get<Tweet>(KWETTER_V1_API("tweets/author/name/" + username));
+        return this.http.get<Tweet[]>(KWETTER_V1_API("tweets/author/name/" + username));
     }
 
     /**
@@ -60,7 +66,7 @@ export class TweetService {
      * @returns {Observable<Tweet>}
      */
     getByAuthorId(id: number) {
-        return this.http.get<Tweet>(KWETTER_V1_API("tweets/author/" + id));
+        return this.http.get<Tweet[]>(KWETTER_V1_API("tweets/author/" + id));
     }
 
     /**

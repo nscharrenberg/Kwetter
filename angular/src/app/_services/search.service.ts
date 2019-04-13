@@ -1,12 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { User } from '../_models';
 import {KWETTER_V1_API} from "../_helpers/api-constants";
-import {Role} from "../_models/role";
-import {Tweet} from "../_models/tweet";
 
 @Injectable()
-export class TweetService {
+export class SearchService {
     constructor(private http: HttpClient) { }
 
     search() {

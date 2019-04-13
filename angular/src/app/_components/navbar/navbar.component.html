@@ -1,0 +1,41 @@
+<nav class="navbar navbar-toggleable-md fixed-top">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse container">
+        <!-- Navbar navigation links -->
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#"><i class="octicon octicon-home" aria-hidden="true"></i> Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="octicon octicon-zap"></i> Timeline</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="octicon octicon-bell"></i> Mentions</a>
+            </li>
+        </ul>
+        <!-- END: Navbar navigation links -->
+        <!-- Navbar Search form -->
+        <form class="navbar-form" role="search">
+            <div class="input-group">
+                <input type="text" class="form-control input-search" placeholder="Search Twitter" name="srch-term" id="srch-term">
+                <div class="input-group-btn">
+                    <button class="btn btn-default btn-search" type="submit"><i class="octicon octicon-search navbar-search-icon"></i></button>
+                </div>
+            </div>
+        </form>
+        <!-- END: Navbar Search form -->
+        <!-- Navbar User menu -->
+        <div class="dropdown navbar-user-dropdown">
+            <a class="btn dropdown-toggle" data-toggle="dropdown">{{user.username}} <b class="caret"></b></a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Profile</a>
+                <a class="dropdown-item" [routerLink]="['/auth/login']">Logout</a>
+            </div>
+        </div>
+        <!-- END: Navbar User menu -->
+        <!-- Navbar Tweet button -->
+    </div>
+</nav>

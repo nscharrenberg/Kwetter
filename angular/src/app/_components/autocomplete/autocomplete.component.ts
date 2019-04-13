@@ -22,7 +22,6 @@ import {
     `,
 })
 export class AutocompleteComponent  implements OnInit, AfterViewInit {
-    @Input() adressType: string;
     @Output() setAddress: EventEmitter<any> = new EventEmitter();
     @ViewChild('googleAddress') addresstext: any;
 

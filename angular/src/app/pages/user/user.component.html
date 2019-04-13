@@ -53,12 +53,18 @@
             <div class="col profile-col">
                 <!-- Left column -->
                 <div class="profile-header">
+
+                    <form (ngSubmit)="follow()" *ngIf="alreadyFollowing()">
+                        <button class="btn btn-block btn-follow btn-lg"> <i class="fa fa-user-plus"></i> Follow</button>
+                    </form>
+                    <hr>
                     <!-- Header information -->
-                    <h3 class="profile-fullname">{{loggedIn.username}}</h3>
-                    <h2 class="profile-element"><a>@{{loggedIn.username}}</a></h2>
-                    <a class="profile-element profile-website" hrerf=""><i class="octicon octicon-link"></i>&nbsp;{{loggedIn.website}}</a>
+                    <h3 class="profile-fullname">{{(user | async)?.username}}</h3>
+                    <h2 class="profile-element"><a>@{{(user | async)?.username}}</a></h2>
+                    <a class="profile-element profile-website" hrerf=""><i class="octicon octicon-link"></i>&nbsp;{{(user | async)?.website}}</a>
                     <a class="profile-element profile-website" hrerf=""><i class="octicon octicon-location"></i>{{ address }}</a>
-                    <h2 class="profile-element"><i class="octicon octicon-mail"></i>{{loggedIn.email}}</h2>
+                    <h2 class="profile-element"><i class="octicon octicon-mail"></i>{{(user | async)?.email}}</h2>
+
                     <!-- End: image grid -->
                 </div>
             </div>

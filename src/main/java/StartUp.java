@@ -42,7 +42,7 @@ public class StartUp {
         setPermissions();
         setRoles();
         setUsers();
-        setTweets();
+//        setTweets();
     }
 
     /**
