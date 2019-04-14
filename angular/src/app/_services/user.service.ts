@@ -49,7 +49,7 @@ export class UserService {
      * @returns {Observable<Object>}
      */
     register(user: User) {
-        return this.http.post(KWETTER_V1_API("auth/register"), user);
+        return this.http.post<User>(KWETTER_V1_API("auth/register"), user);
     }
 
     /**
@@ -58,7 +58,7 @@ export class UserService {
      * @returns {Observable<Object>}
      */
     update(user: User) {
-        return this.http.patch(KWETTER_V1_API("users/" + user.id), user);
+        return this.http.patch<User>(KWETTER_V1_API("users/" + user.id), user);
     }
 
     /**
@@ -68,14 +68,14 @@ export class UserService {
      * @returns {Observable<Object>}
      */
     follow(me: number, toFollow: number) {
-        return this.http.post(KWETTER_V1_API("users/" + toFollow + "/follow"), {
+        return this.http.post<User>(KWETTER_V1_API("users/" + toFollow + "/follow"), {
             "userId": me,
             "toFollowId": toFollow
         });
     }
 
     unfollow(me: number, toUnfollow: number) {
-        return this.http.post(KWETTER_V1_API("users/" + toUnfollow + "/unfollow"), {
+        return this.http.post<User>(KWETTER_V1_API("users/" + toUnfollow + "/unfollow"), {
             "userId": me,
             "toFollowId": toUnfollow
         });

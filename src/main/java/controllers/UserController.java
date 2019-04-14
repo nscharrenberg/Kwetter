@@ -139,6 +139,9 @@ public class UserController {
             response.getObject().setWebsite(request.getWebsite() != null ? request.getWebsite() : response.getObject().getWebsite());
             response.getObject().setLongitude(request.getLongitude() != null ? request.getLongitude() : response.getObject().getLatitude());
             response.getObject().setLatitude(request.getLatitude() != null ? request.getLatitude() : response.getObject().getLatitude());
+            response.getObject().setFirstname(request.getFirstname() != null ? request.getFirstname() : response.getObject().getFirstname());
+            response.getObject().setLastname(request.getLastname() != null ? request.getLastname() : response.getObject().getLastname());
+            response.getObject().setAvatar(request.getAvatar() != null ? request.getAvatar() : response.getObject().getAvatar());
 
             ObjectResponse<User> result = userService.update(response.getObject());
 

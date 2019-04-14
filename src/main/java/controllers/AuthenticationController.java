@@ -70,6 +70,9 @@ public class AuthenticationController {
             user.setWebsite(request.getWebsite());
             user.setLongitude(request.getLongitude());
             user.setLatitude(request.getLatitude());
+            user.setFirstname(request.getFirstname());
+            user.setLastname(request.getLastname());
+            user.setAvatar(request.getAvatar());
 
             ObjectResponse<User> response = userService.create(user);
 

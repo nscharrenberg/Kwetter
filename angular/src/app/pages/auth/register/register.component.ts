@@ -38,7 +38,10 @@ export class RegisterComponent implements OnInit {
             biography: ['', Validators.required],
             website: ['', Validators.required],
             longitude: [this.longitude, [Validators.required]],
-            latitude: [this.latitude, [Validators.required]]
+            latitude: [this.latitude, [Validators.required]],
+            firstname: ['', Validators.required],
+            lastname: ['', Validators.required],
+            avatar: ['', Validators.required],
         });
     }
 
@@ -62,7 +65,7 @@ export class RegisterComponent implements OnInit {
                     this.router.navigate(['/auth/login']);
                 },
                 error => {
-                    this.alertService.error(error);
+                    this.alertService.error(error.error);
                     this.loading = false;
                 });
     }

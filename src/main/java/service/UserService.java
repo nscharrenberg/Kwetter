@@ -3,6 +3,7 @@ package service;
 import authentication.PasswordAuthentication;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
 import domain.Permission;
 import domain.Role;
 import domain.User;
@@ -21,6 +22,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -105,12 +107,21 @@ public class UserService implements Serializable {
      * @return the newly created user
      */
     public ObjectResponse<User> create(User user) {
-        if(user.getUsername().isEmpty() || user.getUsername() == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
-        }
+        List<String> errorsMessages = new ArrayList<>();
 
-        if(user.getEmail().isEmpty() || user.getEmail() == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "email can not be empty");
+        if(user.getUsername().isEmpty() || user.getUsername() == null) errorsMessages.add("username can not be empty");
+        if(user.getEmail().isEmpty() || user.getEmail() == null) errorsMessages.add("email can not be empty");
+        if(user.getFirstname().isEmpty() || user.getFirstname() == null) errorsMessages.add("firstname can not be empty");
+        if(user.getLastname().isEmpty() || user.getLastname() == null) errorsMessages.add("lastname can not be empty");
+        if(user.getBiography().isEmpty() || user.getBiography() == null) errorsMessages.add("biography can not be empty");
+        if(user.getPassword().isEmpty() || user.getPassword() == null) errorsMessages.add("password can not be empty");
+        if(user.getWebsite().isEmpty() || user.getWebsite() == null) errorsMessages.add("website can not be empty");
+        if(user.getLatitude() == 0) errorsMessages.add("latitude can not be empty");
+        if(user.getLongitude() == 0) errorsMessages.add("longtitude can not be empty");
+
+        if(errorsMessages.size() > 0) {
+            Gson gson = new Gson();
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, gson.toJson(errorsMessages));
         }
 
         ObjectResponse<User> getByUsernameResponse = getByUsername(user.getUsername());
@@ -153,16 +164,21 @@ public class UserService implements Serializable {
      * @return the updated user
      */
     public ObjectResponse<User> update(User user) {
-        if(user.getUsername().isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
-        }
+        List<String> errorsMessages = new ArrayList<>();
+        if(user.getLongitude() <= 0) errorsMessages.add("Invalid ID");
+        if(user.getUsername().isEmpty() || user.getUsername() == null) errorsMessages.add("username can not be empty");
+        if(user.getEmail().isEmpty() || user.getEmail() == null) errorsMessages.add("email can not be empty");
+        if(user.getFirstname().isEmpty() || user.getFirstname() == null) errorsMessages.add("firstname can not be empty");
+        if(user.getLastname().isEmpty() || user.getLastname() == null) errorsMessages.add("lastname can not be empty");
+        if(user.getBiography().isEmpty() || user.getBiography() == null) errorsMessages.add("biography can not be empty");
+        if(user.getPassword().isEmpty() || user.getPassword() == null) errorsMessages.add("password can not be empty");
+        if(user.getWebsite().isEmpty() || user.getWebsite() == null) errorsMessages.add("website can not be empty");
+        if(user.getLatitude() <= 0) errorsMessages.add("latitude can not be empty");
+        if(user.getLongitude() <= 0) errorsMessages.add("longtitude can not be empty");
 
-        if(user.getEmail().isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "email can not be empty");
-        }
-
-        if(user.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+        if(errorsMessages.size() > 0) {
+            Gson gson = new Gson();
+            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, gson.toJson(errorsMessages));
         }
 
         ObjectResponse<User> getByIdResponse = getById(user.getId());

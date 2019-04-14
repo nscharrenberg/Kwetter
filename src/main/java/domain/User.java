@@ -41,9 +41,12 @@ public class User {
     private String biography;
 
     @Column
+    private String firstname;
+    private String lastname;
     private String website;
     private double longitude;
     private double latitude;
+    private String avatar;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     private Role role;
@@ -195,5 +198,29 @@ public class User {
 
     private void removeFollower(User user) {
         this.followers.remove(user);
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

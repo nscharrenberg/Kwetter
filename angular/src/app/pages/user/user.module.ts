@@ -8,7 +8,8 @@ import {NavbarModule} from "../../_components/navbar/navbar.module";
 import {TweetModule} from "../../_components/tweet/tweet.module";
 import {TweetService} from "../../_services";
 import {AlertModule} from "../../_directives/alert/alert.module";
-import {CreateTweetModule} from "../../_components";
+import {FollowModule} from "../../_components/follow/follow.module";
+import {UnfollowModule} from "../../_components/unfollow/unfollow.module";
 
 @NgModule({
     imports: [
@@ -18,6 +19,8 @@ import {CreateTweetModule} from "../../_components";
         RouterModule,
         TweetModule,
         AlertModule,
+        FollowModule,
+        UnfollowModule,
     ],
     declarations: [
         UserComponent

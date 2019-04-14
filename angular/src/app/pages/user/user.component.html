@@ -8,7 +8,7 @@
             <!-- User main avatar -->
             <div class="avatar-container">
                 <!-- TODO: Make this the profile picture of the user -->
-                <div class="avatar" style="background-image: url('https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200')">
+                <img class="avatar" [src]="(user | async)?.avatar" onerror="this.src='https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'">
                 </div>
             </div>
         </div>
@@ -50,14 +50,16 @@
     </nav>
     <div class="container main-content">
         <div class="row">
-            <alert></alert>
+            <div class="col-12">
+                <alert></alert>
+            </div>
         </div>
         <div class="row">
             <div class="col profile-col">
                 <!-- Left column -->
                 <div class="profile-header">
-                     <button (click)="follow()" class="btn btn-block btn-follow btn-lg"> <i class="fa fa-user-plus"></i> Follow</button>
-                    <button (click)="unfollow()" class="btn btn-block btn-unfollow btn-lg"> <i class="fa fa-frown"></i> Unfollow</button>
+                    <app-follow [toFollow]="(user | async).id" [me]="loggedIn.id"></app-follow>
+                    <app-unfollow [toUnFollow]="(user | async).id" [me]="loggedIn.id"></app-unfollow>
                     <hr>
                     <!-- Header information -->
                     <h3 class="profile-fullname">{{(user | async)?.username}}</h3>
@@ -90,7 +92,7 @@
                             <li class="tweet-card" *ngFor="let f of followers | slice: 0:3">
                                 <div class="tweet-content">
                                     <!-- TODO: Make this the profile picture of the user -->
-                                    <img class="tweet-card-avatar" src="https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200" alt="">
+                                    <img class="tweet-card-avatar" [src]="(f | async)?.avatar" onerror="this.src='https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'">
                                     <div class="tweet-header">
                                     <span class="fullname">
                                       <strong>{{f.username}}</strong>

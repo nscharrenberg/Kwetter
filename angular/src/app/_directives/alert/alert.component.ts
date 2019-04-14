@@ -5,6 +5,7 @@ import { AlertService } from '../../_services';
 
 @Component({
     selector: 'alert',
+    styleUrls: ['./alert.component.scss'],
     templateUrl: 'alert.component.html'
 })
 

@@ -9,6 +9,9 @@ public class UserDto {
     private Integer id;
     private String username;
     private String email;
+    private String firstname;
+    private String lastname;
+    private String avatar;
     private String biography;
     private String website;
     private Double longitude;
@@ -104,5 +107,29 @@ public class UserDto {
 
     public void setTweets(Set<TweetCleanDto> tweets) {
         this.tweets = tweets;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

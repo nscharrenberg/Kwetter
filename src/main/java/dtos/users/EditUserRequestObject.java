@@ -5,6 +5,9 @@ public class EditUserRequestObject {
     private String username;
     private String email;
     private String password;
+    private String firstname;
+    private String lastname;
+    private String avatar;
     private String biography;
     private String website;
     private Double longitude;
@@ -72,5 +75,29 @@ public class EditUserRequestObject {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

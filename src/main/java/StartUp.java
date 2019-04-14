@@ -122,6 +122,9 @@ public class StartUp {
             user.setWebsite("www.admin.nl");
             user.setLatitude(000.000);
             user.setLongitude(000.000);
+            user.setFirstname("admin");
+            user.setLastname("admin");
+            user.setAvatar("");
             ObjectResponse<User> created = userService.create(user);
 
             if(created.getObject() != null) {

@@ -8,7 +8,7 @@
             <!-- User main avatar -->
             <div class="avatar-container">
                 <!-- TODO: Make this the profile picture of the user -->
-                <div class="avatar" style="background-image: url('https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200')">
+                <img class="avatar" [src]="(user | async)?.avatar" onerror="this.src='https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'">
                 </div>
             </div>
         </div>
@@ -16,9 +16,6 @@
 
     <nav class="navbar profile-stats">
         <div class="container">
-            <div class="row">
-                <alert></alert>
-            </div>
             <div class="row">
                 <div class="col">
 
@@ -53,14 +50,19 @@
     </nav>
     <div class="container main-content">
         <div class="row">
+            <div class="col-12">
+                <alert></alert>
+            </div>
+        </div>
+        <div class="row">
             <div class="col profile-col">
                 <!-- Left column -->
                 <div class="profile-header">
                     <!-- Header information -->
                     <h3 class="profile-fullname">{{loggedIn.username}}</h3>
                     <h2 class="profile-element"><a>@{{loggedIn.username}}</a></h2>
-                    <a class="profile-element profile-website" hrerf=""><i class="octicon octicon-link"></i>&nbsp;{{loggedIn.website}}</a>
-                    <a class="profile-element profile-website" hrerf=""><i class="octicon octicon-location"></i>{{ address }}</a>
+                    <a class="profile-element profile-website" [href]="loggedIn.website" ef=""><i class="octicon octicon-link"></i>&nbsp;{{loggedIn.website}}</a>
+                    <p class="profile-element"><i class="octicon octicon-location"></i>{{ address }}</p>
                     <h2 class="profile-element"><i class="octicon octicon-mail"></i>{{loggedIn.email}}</h2>
                     <!-- End: image grid -->
                 </div>
@@ -70,7 +72,9 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-12">
-                        <app-create-tweet [author]="loggedIn"></app-create-tweet>
+                        <div class="tweet-list">
+                            <app-create-tweet [author]="loggedIn"></app-create-tweet>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -95,15 +99,16 @@
                             <li class="tweet-card" *ngFor="let f of followers | slice: 0:3">
                                 <div class="tweet-content">
                                     <!-- TODO: Make this the profile picture of the user -->
-                                    <img class="tweet-card-avatar" src="https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200" alt="">
+                                    <img class="tweet-card-avatar" [src]="(f | async)?.avatar" onerror="this.src='https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'">
                                     <div class="tweet-header">
                                     <span class="fullname">
-                                      <strong>{{f.username}}</strong>
+                                      <strong><a [href]="'/user/' + f.id">{{f.username}}</a></strong>
                                     </span>
                                         <span class="username">@{{f.username}}</span>
                                     </div>
 
-                                    <a [href]="f.id" class="btn btn-follow">Follow</a>
+                                    <app-follow [toFollow]="f.id" [me]="loggedIn.id"></app-follow>
+                                    <app-unfollow [toUnFollow]="f.id" [me]="loggedIn.id"></app-unfollow>
                                 </div>
                             </li>
                         </ol>
