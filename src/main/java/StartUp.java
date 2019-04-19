@@ -106,6 +106,13 @@ public class StartUp {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+
+        try {
+            roleService.create(new Role("moderator"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -120,11 +127,11 @@ public class StartUp {
             user.setEmail("admin@admin.com");
             user.setBiography("admin biography");
             user.setWebsite("www.admin.nl");
-            user.setLatitude(000.000);
-            user.setLongitude(000.000);
+            user.setLatitude(51.4517676);
+            user.setLongitude(5.480993799999965);
             user.setFirstname("admin");
             user.setLastname("admin");
-            user.setAvatar("");
+            user.setAvatar("https://2eu.funnyjunk.com/pictures/Dolan+duck+profile+picture+feel+free+to+share+this+epic_97d32e_3518960.jpg");
             ObjectResponse<User> created = userService.create(user);
 
             if(created.getObject() != null) {

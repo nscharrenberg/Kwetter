@@ -57,7 +57,26 @@
       <role-name>admin</role-name>
     </auth-constraint>
   </security-constraint>
+
+  <security-constraint>
+    <display-name>Moderator Pages</display-name>
+    <web-resource-collection>
+      <web-resource-name>Moderator Pages</web-resource-name>
+      <url-pattern>/admin/index.xhtml</url-pattern>
+      <url-pattern>/admin/tweets.xhtml</url-pattern>
+      <url-pattern>/admin/users.xhtml</url-pattern>
+      <url-pattern>/admin/javax.faces.resource/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>moderator</role-name>
+      <role-name>admin</role-name>
+    </auth-constraint>
+  </security-constraint>
+
   <security-role>
     <role-name>admin</role-name>
+  </security-role>
+  <security-role>
+    <role-name>moderator</role-name>
   </security-role>
 </web-app>

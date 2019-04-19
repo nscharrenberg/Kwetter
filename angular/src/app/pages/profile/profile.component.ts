@@ -127,6 +127,8 @@ export class ProfileComponent implements OnInit {
                 }
 
                 //set latitude, longitude and zoom
+                this.registerForm.controls["longitude"].setValue(place.geometry.location.lng());
+                this.registerForm.controls["latitude"].setValue(place.geometry.location.lat());
                 this.latitude = place.geometry.location.lat();
                 this.longitude = place.geometry.location.lng();
             });

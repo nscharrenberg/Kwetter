@@ -145,7 +145,7 @@ public class UserController {
             user.setEmail(request.getEmail() != null ? request.getEmail() : response.getObject().getEmail());
             user.setBiography(request.getBiography() != null ? request.getBiography() : response.getObject().getBiography());
             user.setWebsite(request.getWebsite() != null ? request.getWebsite() : response.getObject().getWebsite());
-            user.setLongitude(request.getLongitude() != null ? request.getLongitude() : response.getObject().getLatitude());
+            user.setLongitude(request.getLongitude() != null ? request.getLongitude() : response.getObject().getLongitude());
             user.setLatitude(request.getLatitude() != null ? request.getLatitude() : response.getObject().getLatitude());
             user.setFirstname(request.getFirstname() != null ? request.getFirstname() : response.getObject().getFirstname());
             user.setLastname(request.getLastname() != null ? request.getLastname() : response.getObject().getLastname());
