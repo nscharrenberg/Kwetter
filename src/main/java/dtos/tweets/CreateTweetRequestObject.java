@@ -1,8 +1,8 @@
 package dtos.tweets;
 
 public class CreateTweetRequestObject {
-    private String message;
-    private Integer author;
+    private String message = "";
+    private Integer author = 0;
 
     public String getMessage() {
         return message;

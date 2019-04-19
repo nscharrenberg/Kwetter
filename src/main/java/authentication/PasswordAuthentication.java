@@ -18,6 +18,12 @@ public class PasswordAuthentication {
     }
 
     public static boolean verify(String password, String hash) {
-        return BCrypt.checkpw(password, hash);
+        try {
+            return BCrypt.checkpw(password, hash);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }

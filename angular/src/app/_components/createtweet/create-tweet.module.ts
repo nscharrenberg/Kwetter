@@ -3,13 +3,15 @@ import { NgModule } from '@angular/core';
 
 import {RouterModule} from "@angular/router";
 import {CreateTweetComponent} from "./create-tweet.component";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {AlertModule} from "../../_directives/alert/alert.module";
 
 @NgModule({
     imports: [
         CommonModule,
         RouterModule,
-        FormsModule,
+        AlertModule,
+        ReactiveFormsModule,
     ],
     declarations: [
         CreateTweetComponent,

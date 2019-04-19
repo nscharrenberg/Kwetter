@@ -24,7 +24,6 @@ public class CorsFilter implements ContainerResponseFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-
         //todo: Accept all or only from a certain host?
         responseContext.getHeaders().add(
                 "Access-Control-Allow-Origin", "*");
@@ -35,6 +34,6 @@ public class CorsFilter implements ContainerResponseFilter {
                 "origin, content-type, accept, authorization");
         responseContext.getHeaders().add(
                 "Access-Control-Allow-Methods",
-                "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+                "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD");
     }
 }

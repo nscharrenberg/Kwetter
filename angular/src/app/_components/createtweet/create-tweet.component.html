@@ -1,4 +1,10 @@
-<div class="form-group">
-    <textarea class="form-control" name="message" id="message" cols="30" rows="3" [(ngModel)]="message" placeholder="What's on your tought?"></textarea>
-    <button class="btn btn-info btn-block" (click)="send()"><i class="fa fa-commenting-o"></i> Tweet</button>
-</div>
+<form class="form-group" [formGroup]="createForm" (ngSubmit)="send()">
+    <textarea class="form-control" name="message" id="message" cols="30" rows="3" formControlName="message" placeholder="What's on your tought?" [ngClass]="{ 'is-invalid': submitted && f.message.errors || submitted && f.userId.errors }"></textarea>
+    <div *ngIf="submitted && f.message.errors" class="invalid-feedback">
+        <div *ngIf="f.message.errors.required">Message is required</div>
+    </div>
+    <div *ngIf="submitted && f.userId.errors" class="invalid-feedback">
+        <div *ngIf="f.userId.errors.required">User is unknown</div>
+    </div>
+    <button class="btn btn-info btn-block" type="submit"><i class="fa fa-commenting-o"></i> Tweet</button>
+</form>

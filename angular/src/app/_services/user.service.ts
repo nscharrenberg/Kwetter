@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { User } from '../_models';
 import {KWETTER_V1_API} from "../_helpers/api-constants";
+import {Tweet} from "../_models/tweet";
 
 @Injectable()
 export class UserService {
@@ -58,6 +59,8 @@ export class UserService {
      * @returns {Observable<Object>}
      */
     update(user: User) {
+        console.log(JSON.stringify(user));
+
         return this.http.patch<User>(KWETTER_V1_API("users/" + user.id), user);
     }
 
@@ -79,5 +82,9 @@ export class UserService {
             "userId": me,
             "toFollowId": toUnfollow
         });
+    }
+
+    getRandomUsers(limitTo: number) {
+        return this.http.get<User[]>(KWETTER_V1_API("users/randomUsers?limitTo=" + limitTo));
     }
 }

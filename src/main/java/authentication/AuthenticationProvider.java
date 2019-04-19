@@ -39,6 +39,10 @@ public class AuthenticationProvider {
 
         User loggedInUser = authenticated.getObject();
 
+        if(loggedInUser.getRole() == null) {
+            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "You do not have the authorization to perform this action");
+        }
+
         if(userService.isAdmin(loggedInUser).getObject()) {
             return authenticated;
         }

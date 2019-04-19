@@ -1,9 +1,9 @@
 package dtos.tweets;
 
 public class EditTweetRequestObject {
-    private Integer id;
-    private String message;
-    private Integer author;
+    private Integer id = 0;
+    private String message = "";
+    private Integer author = 0;
 
     public Integer getId() {
         return id;

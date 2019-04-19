@@ -1,10 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpBackend } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {COUNTRY_API} from "../_helpers/api-constants";
 
 @Injectable()
 export class CountryService {
-    constructor(private http: HttpClient) {
+    private http: HttpClient
+    constructor(private handler: HttpBackend) {
+        this.http = new HttpClient(handler);
     }
 
     getAll() {

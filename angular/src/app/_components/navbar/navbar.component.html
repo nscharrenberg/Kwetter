@@ -7,10 +7,7 @@
         <!-- Navbar navigation links -->
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#"><i class="octicon octicon-home" aria-hidden="true"></i> Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="octicon octicon-zap"></i> Timeline</a>
+                <a class="nav-link" [routerLink]="['/home']"><i class="octicon octicon-home" aria-hidden="true"></i> Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#"><i class="octicon octicon-bell"></i> Mentions</a>
@@ -18,9 +15,9 @@
         </ul>
         <!-- END: Navbar navigation links -->
         <!-- Navbar Search form -->
-        <form class="navbar-form" role="search">
+        <form [formGroup]="searchForm" (ngSubmit)="search()" class="navbar-form">
             <div class="input-group">
-                <input type="text" class="form-control input-search" placeholder="Search Twitter" name="srch-term" id="srch-term">
+                <input formControlName="searchValue" type="text" class="form-control input-search" placeholder="Search Twitter" name="srch-term" id="srch-term">
                 <div class="input-group-btn">
                     <button class="btn btn-default btn-search" type="submit"><i class="octicon octicon-search navbar-search-icon"></i></button>
                 </div>
@@ -31,7 +28,7 @@
         <div class="dropdown navbar-user-dropdown">
             <a class="btn dropdown-toggle" data-toggle="dropdown">{{user.username}} <b class="caret"></b></a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Profile</a>
+                <a class="dropdown-item" [routerLink]="['/profile']" href="#">Profile</a>
                 <a class="dropdown-item" [routerLink]="['/auth/login']">Logout</a>
             </div>
         </div>
@@ -39,3 +36,4 @@
         <!-- Navbar Tweet button -->
     </div>
 </nav>
+<router-outlet></router-outlet>

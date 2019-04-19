@@ -51,7 +51,14 @@ export class HomeComponent implements OnInit {
 
     getFollowers() {
         this.user.forEach(u => {
+            if(u.followers == undefined || u.followers.length <= 0) {
+                this.userService.getRandomUsers(5).forEach(u => {
+                    this.followers = u;
+                });
+            }
+
             this.followers = u.followers.sort(() => Math.random() * u.followers.length);
+
             return;
         });
     }

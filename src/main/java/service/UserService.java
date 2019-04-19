@@ -116,8 +116,6 @@ public class UserService implements Serializable {
         if(user.getBiography().isEmpty() || user.getBiography() == null) errorsMessages.add("biography can not be empty");
         if(user.getPassword().isEmpty() || user.getPassword() == null) errorsMessages.add("password can not be empty");
         if(user.getWebsite().isEmpty() || user.getWebsite() == null) errorsMessages.add("website can not be empty");
-        if(user.getLatitude() == 0) errorsMessages.add("latitude can not be empty");
-        if(user.getLongitude() == 0) errorsMessages.add("longtitude can not be empty");
 
         if(errorsMessages.size() > 0) {
             Gson gson = new Gson();
@@ -165,16 +163,14 @@ public class UserService implements Serializable {
      */
     public ObjectResponse<User> update(User user) {
         List<String> errorsMessages = new ArrayList<>();
-        if(user.getLongitude() <= 0) errorsMessages.add("Invalid ID");
+        if(user.getId() <= 0) errorsMessages.add("Invalid ID");
         if(user.getUsername().isEmpty() || user.getUsername() == null) errorsMessages.add("username can not be empty");
         if(user.getEmail().isEmpty() || user.getEmail() == null) errorsMessages.add("email can not be empty");
         if(user.getFirstname().isEmpty() || user.getFirstname() == null) errorsMessages.add("firstname can not be empty");
         if(user.getLastname().isEmpty() || user.getLastname() == null) errorsMessages.add("lastname can not be empty");
         if(user.getBiography().isEmpty() || user.getBiography() == null) errorsMessages.add("biography can not be empty");
-        if(user.getPassword().isEmpty() || user.getPassword() == null) errorsMessages.add("password can not be empty");
         if(user.getWebsite().isEmpty() || user.getWebsite() == null) errorsMessages.add("website can not be empty");
-        if(user.getLatitude() <= 0) errorsMessages.add("latitude can not be empty");
-        if(user.getLongitude() <= 0) errorsMessages.add("longtitude can not be empty");
+        if(user.getPassword().isEmpty() || user.getPassword() == null) errorsMessages.add("password can not be empty");
 
         if(errorsMessages.size() > 0) {
             Gson gson = new Gson();
@@ -185,6 +181,10 @@ public class UserService implements Serializable {
 
         if(getByIdResponse.getObject() == null) {
             return getByIdResponse;
+        }
+
+        if(!user.getRole().equals(getByIdResponse.getObject().getRole())) {
+            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "You can not change the user's role!");
         }
 
         if(user.getBiography() != null) {
@@ -204,8 +204,13 @@ public class UserService implements Serializable {
             return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "User with email " + user.getEmail() + " already exists.");
         }
 
-        if(!PasswordAuthentication.verify(user.getPassword(), getByIdResponse.getObject().getPassword()) || !getByIdResponse.getObject().getPassword().equals(user.getPassword())) {
-            user.setPassword(PasswordAuthentication.hash(user.getPassword()));
+
+        if(!user.getPassword().replaceAll(" ", "").isEmpty()) {
+            if(!PasswordAuthentication.verify(user.getPassword(), getByIdResponse.getObject().getPassword()) && !getByIdResponse.getObject().getPassword().equals(user.getPassword())) {
+                user.setPassword(PasswordAuthentication.hash(user.getPassword()));
+            }
+        } else {
+            user.setPassword(getByEmailResponse.getObject().getPassword());
         }
 
         User result = ur.update(user);
@@ -339,7 +344,6 @@ public class UserService implements Serializable {
         ObjectResponse<User> findByUsernameResponse = getByUsername(username);
 
         if(findByUsernameResponse.getObject() != null) {
-
             if(PasswordAuthentication.verify(password, findByUsernameResponse.getObject().getPassword())) {
                 return new ObjectResponse<>(HttpStatusCodes.OK, String.format("You are logged in as %s", findByUsernameResponse.getObject().getEmail()), findByUsernameResponse.getObject());
             }

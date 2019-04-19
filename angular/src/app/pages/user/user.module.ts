@@ -10,10 +10,12 @@ import {TweetService} from "../../_services";
 import {AlertModule} from "../../_directives/alert/alert.module";
 import {FollowModule} from "../../_components/follow/follow.module";
 import {UnfollowModule} from "../../_components/unfollow/unfollow.module";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
     imports: [
         CommonModule,
+        ReactiveFormsModule,
         RouterModule,
         NavbarModule,
         RouterModule,

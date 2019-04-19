@@ -6,6 +6,7 @@ export class User {
     username: string;
     email: string;
     biography: string;
+    password: string;
     website: string;
     longitude: number;
     latitude: number;

@@ -10,7 +10,6 @@ import {AlertModule} from "../../../_directives/alert/alert.module";
 @NgModule({
     imports: [
         CommonModule,
-        FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
         RouterModule,

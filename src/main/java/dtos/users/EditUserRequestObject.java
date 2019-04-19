@@ -1,17 +1,17 @@
 package dtos.users;
 
 public class EditUserRequestObject {
-    private Integer id;
-    private String username;
-    private String email;
-    private String password;
-    private String firstname;
-    private String lastname;
-    private String avatar;
-    private String biography;
-    private String website;
-    private Double longitude;
-    private Double latitude;
+    private Integer id = 0;
+    private String username = "";
+    private String email = "";
+    private String password = "";
+    private String firstname = "";
+    private String lastname = "";
+    private String avatar = "";
+    private String biography = "";
+    private String website = "";
+    private Double longitude = 0.00;
+    private Double latitude = 0.00;
 
     public Integer getId() {
         return id;

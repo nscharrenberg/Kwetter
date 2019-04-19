@@ -12,7 +12,6 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 @NgModule({
     imports: [
         CommonModule,
-        FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
         RouterModule,

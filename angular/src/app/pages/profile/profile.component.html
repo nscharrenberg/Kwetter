@@ -1,0 +1,167 @@
+<app-navbar></app-navbar>
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="main-container">
+  <!-- Profile background large image -->
+  <!-- TODO: Make this the profile picture of the user -->
+  <div class="row profile-background" style="background-image: url()">
+    <div class="container">
+      <!-- User main avatar -->
+      <div class="avatar-container">
+        <!-- TODO: Make this the profile picture of the user -->
+        <img class="avatar" [src]="(user | async)?.avatar" onerror="this.src='https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'">
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar profile-stats">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+
+      </div>
+      <div class="col-6">
+        <ul>
+          <li class="profile-stats-item-active">
+            <a>
+              <span class="profile-stats-item profile-stats-item-label">Tweets</span>
+              <span class="profile-stats-item profile-stats-item-number">{{(tweets | async)?.length}}</span>
+            </a>
+          </li>
+          <li>
+            <a>
+              <span class="profile-stats-item profile-stats-item-label">Following</span>
+              <span class="profile-stats-item profile-stats-item-number">{{(user | async)?.following.length}}</span>
+            </a>
+          </li>
+          <li>
+            <a>
+              <span class="profile-stats-item profile-stats-item-label">Followers</span>
+              <span class="profile-stats-item profile-stats-item-number">{{(user | async)?.followers.length}}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col">
+
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="container main-content">
+  <div class="row">
+    <div class="col-12">
+      <alert></alert>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col profile-col">
+      <!-- Left column -->
+      <div class="profile-header">
+        <!-- Header information -->
+        <h3 class="profile-fullname">{{loggedIn.username}}</h3>
+        <h2 class="profile-element"><a>@{{loggedIn.username}}</a></h2>
+        <a class="profile-element profile-website" [href]="loggedIn.website" ef=""><i class="octicon octicon-link"></i>&nbsp;{{loggedIn.website}}</a>
+        <p class="profile-element"><i class="octicon octicon-location"></i>{{ address }}</p>
+        <h2 class="profile-element"><i class="octicon octicon-mail"></i>{{loggedIn.email}}</h2>
+        <!-- End: image grid -->
+      </div>
+    </div>
+    <!-- End; Left column -->
+    <!-- Center content column -->
+    <div class="col-9">
+      <div class="row">
+        <div class="col-12">
+          <div class="tweet-list">
+            <div class="tweet-card">
+              <div class="tweet-content">
+                <h1>Profile</h1>
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                      <div *ngIf="f.email.errors.required">Email is required</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="username">Username</label>
+                    <input id="username" type="text" formControlName="username" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.username.errors }" />
+                    <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                      <div *ngIf="f.username.errors.required">Username is required</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password" type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+                    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                      <div *ngIf="f.password.errors.required">Password is required</div>
+                      <div *ngIf="f.password.errors.minlength">Password must be at least 6 characters</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="firstname">Firstname</label>
+                    <input id="firstname" type="text" formControlName="firstname" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.firstname.errors }" />
+                    <div *ngIf="submitted && f.firstname.errors" class="invalid-feedback">
+                      <div *ngIf="f.firstname.errors.required">Firstname is required</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="lastname">Lastname</label>
+                    <input id="lastname" type="text" formControlName="lastname" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.lastname.errors }" />
+                    <div *ngIf="submitted && f.lastname.errors" class="invalid-feedback">
+                      <div *ngIf="f.lastname.errors.required">Lastname is required</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="website">Website</label>
+                    <input id="website" type="text" formControlName="website" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.website.errors }" />
+                    <div *ngIf="submitted && f.website.errors" class="invalid-feedback">
+                      <div *ngIf="f.website.errors.required">Website is required</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="address">Address</label>
+                    <input id="address" class="form-control"
+                           type="text"
+                           formControlName="address"
+                           (onSelect)="getPlaceAutocomplete()"
+                           (change)="getPlaceAutocomplete()"
+                           #googleAddress
+                           [ngClass]="{ 'is-invalid': submitted && f.longitude.errors || submitted && f.latitude.errors }"
+                    >
+                    <div *ngIf="submitted && f.longitude.errors || submitted && f.latitude.errors" class="invalid-feedback">
+                      <div *ngIf="f.longitude.errors.required || f.latitude.errors.required">Address is required</div>
+                    </div>
+
+                    <input type="hidden" formControlName="longitude" class="form-control" />
+                    <input type="hidden" formControlName="latitude" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="biography">Biography</label>
+                    <textarea class="form-control" formControlName="biography" id="biography" cols="30" rows="5" [ngClass]="{ 'is-invalid': submitted && f.biography.errors }"></textarea>
+                    <div *ngIf="submitted && f.biography.errors" class="invalid-feedback">
+                      <div *ngIf="f.biography.errors.required">Biography is required</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="avatar">Profile Picture</label>
+                    <input id="avatar" type="text" formControlName="avatar" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.avatar.errors }" />
+                    <div *ngIf="submitted && f.avatar.errors" class="invalid-feedback">
+                      <div *ngIf="f.avatar.errors.required">Profile Picture is required</div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <button [disabled]="loading" class="btn btn-primary">Update</button>
+                    <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End: tweet list -->
+      </div>
+    </div>
+  </div>
+</div>

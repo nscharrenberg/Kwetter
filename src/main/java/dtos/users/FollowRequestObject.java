@@ -1,8 +1,8 @@
 package dtos.users;
 
 public class FollowRequestObject {
-    private Integer userId;
-    private Integer toFollowId;
+    private Integer userId = 0;
+    private Integer toFollowId = 0;
 
     public Integer getUserId() {
         return userId;

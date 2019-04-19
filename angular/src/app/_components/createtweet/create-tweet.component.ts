@@ -7,6 +7,7 @@ import {AlertService, AuthenticationService, TweetService, UserService} from "..
 import {User} from "../../_models";
 import {Tweet} from "../../_models/tweet";
 import {ActivatedRoute, Router} from "@angular/router";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
     selector: 'app-create-tweet',
@@ -14,8 +15,9 @@ import {ActivatedRoute, Router} from "@angular/router";
     templateUrl: 'create-tweet.component.html'
 })
 export class CreateTweetComponent  implements OnInit {
-    @Input("author") user: User;
-    message: string;
+    @Input("author") userId: number;
+
+    createForm: FormGroup;
 
     constructor(
         private router: Router,
@@ -24,20 +26,25 @@ export class CreateTweetComponent  implements OnInit {
         private alertService: AlertService,
         private tweetService: TweetService,
         private authenticationService: AuthenticationService,
-        private userService: UserService) {
+        private userService: UserService,
+        private formBuilder: FormBuilder,) {
     }
 
     ngOnInit() {
-
+        this.createForm = this.formBuilder.group({
+            message: ['', [Validators.required]],
+            userId: [this.userId, [Validators.required]]
+        });
     }
 
+    // convenience getter for easy access to form fields
+    get f() { return this.createForm.controls; }
+
     send() {
-        let tweet : Tweet = new Tweet();
-       this.tweetService.create(this.message, this.user.id).forEach(data => {
-           console.log(JSON.stringify(data));
+       this.tweetService.create(this.f.message.value, this.f.userId.value).forEach(data => {
            this.alertService.success("Tweet posted");
        }).catch(error => {
-           this.alertService.error(error.error.toString());
+           this.alertService.error(error.error);
        });
     }
 }

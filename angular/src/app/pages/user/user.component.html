@@ -58,8 +58,8 @@
             <div class="col profile-col">
                 <!-- Left column -->
                 <div class="profile-header">
-                    <app-follow [toFollow]="(user | async).id" [me]="loggedIn.id"></app-follow>
-                    <app-unfollow [toUnFollow]="(user | async).id" [me]="loggedIn.id"></app-unfollow>
+                    <app-follow [toFollow]="(user | async)?.id" [me]="loggedIn.id"></app-follow>
+                    <app-unfollow [toUnFollow]="(user | async)?.id" [me]="loggedIn.id"></app-unfollow>
                     <hr>
                     <!-- Header information -->
                     <h3 class="profile-fullname">{{(user | async)?.username}}</h3>
@@ -73,40 +73,12 @@
             </div>
             <!-- End; Left column -->
             <!-- Center content column -->
-            <div class="col-6">
+            <div class="col-9">
                 <ol class="tweet-list">
                     <app-tweet *ngFor="let t of tweets | async" [tweet]="t"></app-tweet>
                 </ol>
                 <!-- End: tweet list -->
             </div>
             <!-- End: Center content column -->
-            <div class="col right-col">
-                <div class="content-panel">
-                    <div class="panel-header">
-                        <h4>Who to follow</h4><small><a href="">Refresh</a></small><small><a href="">View all</a></small>
-                    </div>
-                    <!-- Who to Follow panel -->
-                    <div class="panel-content">
-                        <!--Follow list -->
-                        <ol class="tweet-list">
-                            <li class="tweet-card" *ngFor="let f of followers | slice: 0:3">
-                                <div class="tweet-content">
-                                    <!-- TODO: Make this the profile picture of the user -->
-                                    <img class="tweet-card-avatar" [src]="(f | async)?.avatar" onerror="this.src='https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'">
-                                    <div class="tweet-header">
-                                    <span class="fullname">
-                                      <strong>{{f.username}}</strong>
-                                    </span>
-                                        <span class="username">@{{f.username}}</span>
-                                    </div>
-
-                                    <a [href]="f.id" class="btn btn-follow">Follow</a>
-                                </div>
-                            </li>
-                        </ol>
-                        <!--END: Follow list -->
-                    </div>
-                </div>
-            </div>
         </div>
     </div>

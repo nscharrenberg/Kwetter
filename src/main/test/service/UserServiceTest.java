@@ -3,7 +3,6 @@ package service;
 import authentication.PasswordAuthentication;
 import domain.Role;
 import domain.User;
-import exceptions.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,6 @@ import repository.interfaces.UserRepository;
 import responses.HttpStatusCodes;
 import responses.ObjectResponse;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 

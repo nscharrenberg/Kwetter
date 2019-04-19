@@ -41,9 +41,15 @@ export class AuthenticationService {
             this.user.website = currentUser.user.website;
             this.user.longitude = currentUser.user.longitude;
             this.user.latitude = currentUser.user.latitude;
-            this.user.role = new Role();
-            this.user.role.id = currentUser.user.role.id;
-            this.user.role.name = currentUser.user.role.name;
+            this.user.firstname = currentUser.user.firstname;
+            this.user.lastname = currentUser.user.lastname;
+            this.user.avatar = currentUser.user.avatar;
+            if(currentUser.user.role != undefined) {
+                this.user.role = new Role();
+                this.user.role.id = currentUser.user.role.id;
+                this.user.role.name = currentUser.user.role.name;
+            }
+
 
             return this.user;
         } else {

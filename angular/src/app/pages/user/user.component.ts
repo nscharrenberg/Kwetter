@@ -15,7 +15,7 @@ import {of} from "rxjs/internal/observable/of";
     templateUrl: 'user.component.html'
 })
 export class UserComponent implements OnInit {
-    private paramId: number = null;
+    private paramId: string = null;
     loggedIn: User = null;
     tweets: Observable<Tweet[]> = null;
     user: Observable<User> = null;
@@ -36,13 +36,18 @@ export class UserComponent implements OnInit {
 
     ngOnInit() {
         this.activatedRoute.paramMap.forEach(params => {
-            this.paramId = parseInt(params.get("id"));
+            this.paramId = params.get("username");
         });
 
 
         this.loggedIn = this.authenticationService.getLoggedInUser();
-        this.tweets = this.tweetService.getMyTimeLine(this.paramId, 1, 10);
-        this.user = this.userService.getById(this.paramId);
+        this.user = this.userService.getByUsername(this.paramId);
+
+        this.user.forEach(data => {
+            this.tweets = this.tweetService.getMyTimeLine(data.id, 1, 10);
+        }).catch(err => {
+           this.alertService.error("Could not find user", true);
+        });
 
         this.user.forEach(r => {
             this.geocode(r.longitude, r.latitude).forEach(
@@ -56,16 +61,8 @@ export class UserComponent implements OnInit {
                     }
                 });
         });
-
-        this.getFollowers();
     }
 
-    getFollowers() {
-        this.user.forEach(u => {
-            this.followers = u.followers.sort(() => Math.random() * u.followers.length);
-            return;
-        });
-    }
 
     geocode(long: number, lat: number): Observable<google.maps.GeocoderResult[]> {
         return Observable.create((observer: Observer<google.maps.GeocoderResult[]>) => {
