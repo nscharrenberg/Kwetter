@@ -52,6 +52,8 @@ public class LogonBean extends AdminSession implements Serializable {
     private boolean remember;
 
     public void login() throws IOException {
+
+
         switch (continueAuthentication()) {
             case SEND_CONTINUE:
                 facesContext.responseComplete();

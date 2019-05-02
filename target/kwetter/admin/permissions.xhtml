@@ -52,14 +52,14 @@
 
                         <p:column filterBy="#{permission.id}" sortBy="#{permission.id}" headerText="Id" footerText="contains"
                                    priority="1">
-                            <p:link value="#{permission.id}" outcome="/admin/index.xhtml">
+                            <p:link value="#{permission.id}">
                                 <f:param name="id" value="#{permission.id}"/>
                             </p:link>
                         </p:column>
 
                         <p:column filterBy="#{permission.name}" sortBy="#{permission.name}" headerText="Name" footerText="contains"
                                    priority="1">
-                            <p:link value="#{permission.name}" outcome="/admin/index.xhtml">
+                            <p:link value="#{permission.name}">
                                 <f:param name="name" value="#{permission.name}"/>
                             </p:link>
                         </p:column>

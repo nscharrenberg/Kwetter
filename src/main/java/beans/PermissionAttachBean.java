@@ -28,14 +28,14 @@ public class PermissionAttachBean implements Serializable {
     @Inject
     private PermissionService permissionService;
 
-    private int roleId;
-    private int permissionId;
+    private String roleId = "0";
+    private String permissionId = "0";
 
-    private Role role;
-    private Permission permission;
+    private Role role = null;
+    private Permission permission = null;
 
     public void attach() {
-        ObjectResponse<Role> roleResponse = roleService.getById(roleId);
+        ObjectResponse<Role> roleResponse = roleService.getById(Integer.parseInt(roleId));
 
         if(roleResponse.getObject() != null) {
             this.role = roleResponse.getObject();
@@ -43,7 +43,7 @@ public class PermissionAttachBean implements Serializable {
             Messages.create(String.format("Error %s", roleResponse.getCode())).error().detail(roleResponse.getMessage()).add();
         }
 
-        ObjectResponse<Permission> permissionResponse = permissionService.getById(permissionId);
+        ObjectResponse<Permission> permissionResponse = permissionService.getById(Integer.parseInt(permissionId));
 
         if(permissionResponse.getObject() != null) {
             this.permission = permissionResponse.getObject();
@@ -67,19 +67,35 @@ public class PermissionAttachBean implements Serializable {
         }
     }
 
-    public int getRoleId() {
+    public String getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(int roleId) {
+    public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
 
-    public int getPermissionId() {
+    public String getPermissionId() {
         return permissionId;
     }
 
-    public void setPermissionId(int permissionId) {
+    public void setPermissionId(String permissionId) {
         this.permissionId = permissionId;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Permission getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Permission permission) {
+        this.permission = permission;
     }
 }

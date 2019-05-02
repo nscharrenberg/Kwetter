@@ -71,12 +71,12 @@
                                      layout="grid">
 
                             <p:outputLabel for="userList" value="Users"/>
-                            <p:selectOneMenu id="userList" value="#{changeRoleBean.userId}">
+                            <p:selectOneMenu id="userList" value="#{changeRoleBean.userId}" required="true" requiredMessage="Please Select User.">
                                 <f:selectItems value="#{userBean.users}" var="u" itemValue="#{u.id}" itemLabel="#{u.username}" />
                             </p:selectOneMenu>
 
                             <p:outputLabel for="roleList" value="Roles"/>
-                            <p:selectOneMenu id="roleList" value="#{changeRoleBean.roleId}">
+                            <p:selectOneMenu id="roleList" value="#{changeRoleBean.roleId}" required="true" requiredMessage="Please Select Role.">
                                 <f:selectItems value="#{roleBean.roles}" var="r" itemValue="#{r.id}" itemLabel="#{r.name}"/>
                             </p:selectOneMenu>
                         </p:panelGrid>
@@ -114,26 +114,26 @@
 
                         <p:column filterBy="#{user.id}" sortBy="#{user.id}" headerText="Id" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.id}" outcome="/admin/index.xhtml">
+                            <p:link value="#{user.id}">
                                 <f:param name="id" value="#{user.id}"/>
                             </p:link>
                         </p:column>
 
                         <p:column filterBy="#{user.username}" sortBy="#{user.username}" headerText="Name" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.username}" outcome="/admin/index.xhtml">
+                            <p:link value="#{user.username}">
                                 <f:param name="name" value="#{user.username}"/>
                             </p:link>
                         </p:column>
                         <p:column filterBy="#{user.email}" sortBy="#{user.email}" headerText="Email" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.email}" outcome="/admin/index.xhtml">
+                            <p:link value="#{user.email}">
                                 <f:param name="email" value="#{user.email}"/>
                             </p:link>
                         </p:column>
                         <p:column filterBy="#{user.role.name}" sortBy="#{user.role.name}" headerText="Permissions" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{user.role.name}" outcome="/admin/index.xhtml">
+                            <p:link value="#{user.role.name}">
                                 <f:param name="role" value="#{user.role.id}"/>
                             </p:link>
                         </p:column>

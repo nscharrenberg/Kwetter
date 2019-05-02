@@ -130,20 +130,20 @@
 
                         <p:column filterBy="#{role.id}" sortBy="#{role.id}"  headerText="Id" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{role.id}" outcome="/admin/index.xhtml">
+                            <p:link value="#{role.id}">
                                 <f:param name="id" value="#{role.id}"/>
                             </p:link>
                         </p:column>
 
                         <p:column filterBy="#{role.name}" sortBy="#{role.name}"  headerText="Name" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{role.name}" outcome="/admin/index.xhtml">
+                            <p:link value="#{role.name}">
                                 <f:param name="name" value="#{role.name}"/>
                             </p:link>
                         </p:column>
                         <p:column  headerText="Permissions" footerText="contains"
                                   filterMatchMode="contains" priority="1">
-                            <p:link value="#{role.permissions.size()}" outcome="/admin/index.xhtml">
+                            <p:link value="#{role.permissions.size()}">
                                 <f:param name="permissions" value="#{role.permissions.size()}"/>
                             </p:link>
                         </p:column>
