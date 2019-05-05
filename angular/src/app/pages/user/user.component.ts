@@ -54,10 +54,10 @@ export class UserComponent implements OnInit {
                 (results: google.maps.GeocoderResult[]) => {
                     this.address = results[0].formatted_address;
                 })
-                .then(() => console.log('Geocoding service: completed.'))
+                .then(() => console.log('Geocoding com.nscharrenberg.kwetter.service: completed.'))
                 .catch((error: google.maps.GeocoderStatus) => {
                     if (error === google.maps.GeocoderStatus.ZERO_RESULTS) {
-                        console.log('Geocoding service: geocoder failed due to: ' + error);
+                        console.log('Geocoding com.nscharrenberg.kwetter.service: geocoder failed due to: ' + error);
                     }
                 });
         });
@@ -73,7 +73,7 @@ export class UserComponent implements OnInit {
                         observer.next(results);
                         observer.complete();
                     } else {
-                        console.log('Geocoding service: geocoder failed due to: ' + status);
+                        console.log('Geocoding com.nscharrenberg.kwetter.service: geocoder failed due to: ' + status);
                         observer.error(status);
                     }
                 })

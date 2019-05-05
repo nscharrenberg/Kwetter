@@ -202,3 +202,18 @@ hs_err_pid*
 
 
 /angular/src/app/_helpers/api-constants.ts
+target/kwetter/WEB-INF/web\.xml
+
+target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles\.lst
+
+target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles\.lst
+
+target/test-classes/cucumber/feature/GetPermission\.feature
+
+target/test-classes/cucumber/feature/GetRole\.feature
+
+target/test-classes/cucumber/feature/GetTweet\.feature
+
+target/test-classes/cucumber/feature/GetUser\.feature
+
+target/failsafe-reports/failsafe-summary\.xml
