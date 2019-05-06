@@ -22,7 +22,6 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\collection\TweetServiceCollImpl.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\permissions\CreatePermissionRequestObject.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\exceptions\CreationFailedException.java
-D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\utils\EmailUtil.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\utils\DetailMessage.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\beans\UserBean.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\interfaces\PermissionRepository.java

@@ -61,7 +61,6 @@
       <url-pattern>/admin/index.xhtml</url-pattern>
       <url-pattern>/admin/tweets.xhtml</url-pattern>
       <url-pattern>/admin/users.xhtml</url-pattern>
-      <url-pattern>/javax.faces.resource/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>moderator</role-name>

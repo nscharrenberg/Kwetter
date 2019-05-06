@@ -20,6 +20,7 @@ public class UserDto {
     private Set<UserCleanDto> followers;
     private Set<UserCleanDto> following;
     private Set<TweetCleanDto> tweets;
+    private Set<TweetCleanDto> mentions;
 
     public Integer getId() {
         return id;
@@ -131,5 +132,13 @@ public class UserDto {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Set<TweetCleanDto> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(Set<TweetCleanDto> mentions) {
+        this.mentions = mentions;
     }
 }

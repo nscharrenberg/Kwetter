@@ -72,6 +72,16 @@ public class User {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, orphanRemoval = true)
     private Set<Tweet> tweets;
 
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY
+    )
+    @JoinTable(
+            name = "mentions",
+            joinColumns = @JoinColumn(name = "tweet_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Tweet> mentions;
+
     public User() {
         this.followers = new HashSet<>();
         this.following = new HashSet<>();
@@ -222,5 +232,13 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Set<Tweet> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(Set<Tweet> mentions) {
+        this.mentions = mentions;
     }
 }

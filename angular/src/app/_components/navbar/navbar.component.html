@@ -25,13 +25,14 @@
         </form>
         <!-- END: Navbar Search form -->
         <!-- Navbar User menu -->
-        <div class="dropdown navbar-user-dropdown">
+        <div class="dropdown navbar-user-dropdown" *ngIf="user;else guestaccount">
             <a class="btn dropdown-toggle" data-toggle="dropdown">{{user.username}} <b class="caret"></b></a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" [routerLink]="['/profile']" href="#">Profile</a>
                 <a class="dropdown-item" [routerLink]="['/auth/login']">Logout</a>
             </div>
         </div>
+        <ng-template #guestaccount></ng-template>
         <!-- END: Navbar User menu -->
         <!-- Navbar Tweet button -->
     </div>

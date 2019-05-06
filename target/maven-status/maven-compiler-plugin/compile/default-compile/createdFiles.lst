@@ -20,7 +20,6 @@ com\nscharrenberg\kwetter\controllers\UserController.class
 com\nscharrenberg\kwetter\service\PermissionService.class
 com\nscharrenberg\kwetter\beans\RoleBean.class
 com\nscharrenberg\kwetter\beans\LogonBean.class
-com\nscharrenberg\kwetter\utils\EmailUtil.class
 com\nscharrenberg\kwetter\domain\User.class
 com\nscharrenberg\kwetter\dtos\users\CreateUserRequestObject.class
 com\nscharrenberg\kwetter\dtos\roles\CreateRoleRequestObject.class

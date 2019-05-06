@@ -60,7 +60,7 @@
                 <div class="profile-header">
                     <!-- Header information -->
                     <h3 class="profile-fullname">{{loggedIn.username}}</h3>
-                    <h2 class="profile-element"><a>@{{loggedIn.username}}</a></h2>
+                    <h2 id="usernameTag" class="profile-element"><a>@{{loggedIn.username}}</a></h2>
                     <a class="profile-element profile-website" [href]="loggedIn.website" ef=""><i class="octicon octicon-link"></i>&nbsp;{{loggedIn.website}}</a>
                     <p class="profile-element"><i class="octicon octicon-location"></i>{{ address }}</p>
                     <h2 class="profile-element"><i class="octicon octicon-mail"></i>{{loggedIn.email}}</h2>
@@ -102,7 +102,7 @@
                                     <img class="tweet-card-avatar" [src]="f?.avatar" onerror="this.src='https://en.gravatar.com/userimage/155883735/f61270db7a03be084dcfa712f19388a7.png?size=200'">
                                     <div class="tweet-header">
                                     <span class="fullname">
-                                      <strong><a [href]="'/user/' + f.id">{{f.username}}</a></strong>
+                                      <strong><a [href]="'/user/' + f.username">{{f.username}}</a></strong>
                                     </span>
                                         <span class="username">@{{f.username}}</span>
                                     </div>

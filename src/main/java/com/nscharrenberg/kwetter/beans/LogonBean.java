@@ -7,7 +7,6 @@ import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.UserService;
-import com.nscharrenberg.kwetter.utils.EmailUtil;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.SessionScoped;
@@ -17,12 +16,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.security.enterprise.AuthenticationStatus;
 import javax.security.enterprise.SecurityContext;
 import javax.security.enterprise.authentication.mechanism.http.AuthenticationParameters;
@@ -55,14 +48,11 @@ public class LogonBean extends AdminSession implements Serializable {
     @Inject
     private UserService userService;
 
-    @Resource(name = "java/mail/kwetter")
-    private Session mailSession;
-
     private String username;
     private String password;
     private boolean remember;
 
-    public void login() throws IOException, MessagingException {
+    public void login() throws IOException {
         if(continueAuthentication() == null) {
             Messages.addError(null, "Login failed");
             externalContext.getFlash().setKeepMessages(true);
@@ -146,23 +136,5 @@ public class LogonBean extends AdminSession implements Serializable {
             e.printStackTrace();
             return "";
         }
-    }
-
-    public void send() {
-        mailSession.setDebug(true);
-        Message message = new MimeMessage(mailSession);
-
-        try {
-            System.out.println("Send Start");
-            message.setSubject("Welcome");
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress("nscharrenberg@hotmail.com"));
-            message.setText("Example Message");
-
-            Transport.send(message);
-        } catch (MessagingException | NoClassDefFoundError e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Send Finished");
     }
 }
