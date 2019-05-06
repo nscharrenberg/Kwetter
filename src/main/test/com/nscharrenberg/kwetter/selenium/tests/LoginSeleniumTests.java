@@ -2,6 +2,7 @@ package com.nscharrenberg.kwetter.selenium.tests;
 
 import com.nscharrenberg.kwetter.selenium.setups.LoginPage;
 import com.nscharrenberg.kwetter.selenium.utils.SeleniumTestBase;
+import com.nscharrenberg.kwetter.selenium.utils.SeleniumTestDirectoryCreator;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,7 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class LoginSeleniumTests extends SeleniumTestBase {
-    private LoginPage loginPage = new LoginPage();
+    private LoginPage loginPage;
+
+    public LoginSeleniumTests() {
+        this.loginPage = new LoginPage();
+    }
 
     @Test
     public void login_valid_user() throws IOException {
@@ -18,10 +23,13 @@ public class LoginSeleniumTests extends SeleniumTestBase {
         String username = "admin";
         String password = "password123";
 
+        String folder = "login";
+        String folderName = SeleniumTestDirectoryCreator.createTestFolder(folder);
+
         webDriver.get(loginUrl);
-        screenshotHelper.saveScreenshot("login_for_success_test_screenshot.png");
+        screenshotHelper.saveScreenshot(folder + "/" + folderName + "/login_for_success_test_screenshot.png");
         String nextPage = loginPage.login(webDriver, username, password);
-        screenshotHelper.saveScreenshot("login_success_screenshot.png");
+        screenshotHelper.saveScreenshot(folder + "/" + folderName + "/login_success_screenshot.png");
         assertEquals("@" + username, nextPage);
     }
 
@@ -31,10 +39,13 @@ public class LoginSeleniumTests extends SeleniumTestBase {
         String username = "admin123";
         String password = "wrongpassword";
 
+        String folder = "login_invalid";
+        String folderName = SeleniumTestDirectoryCreator.createTestFolder(folder);
+
         webDriver.get(loginUrl);
-        screenshotHelper.saveScreenshot("login_for_failed_test_screenshot.png");
+        screenshotHelper.saveScreenshot(folder + "/" + folderName + "/login_for_failed_test_screenshot.png");
         String nextPage = loginPage.login(webDriver, username, password);
-        screenshotHelper.saveScreenshot("login_invalid_screenshot.png");
+        screenshotHelper.saveScreenshot(folder + "/" + folderName + "/login_invalid_screenshot.png");
         assertNotEquals("@" + username, nextPage);
         assertEquals("Wrong username or password", nextPage);
     }
