@@ -25,12 +25,6 @@ public class LoginPage {
         WebElement loginButtonElement = wait.until(ExpectedConditions.elementToBeClickable(By.id(LOGIN_BUTTON_FIELD)));
         loginButtonElement.click();
 
-//        WebElement loginPage = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("usernameTag")));
-//        wait.until(ExpectedConditions.or(
-//                ExpectedConditions.presenceOfElementLocated(By.id("usernameTag")),
-//                ExpectedConditions.presenceOfElementLocated(By.className("alert-danger"))
-//        ));
-
         WebElement loginPage =wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[contains(@id,'usernameTag') or (contains(@class,'alert-danger'))]")));
 
         return loginPage.getText();

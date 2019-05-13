@@ -2,8 +2,9 @@ package com.nscharrenberg.kwetter.dtos.tweets;
 
 import com.nscharrenberg.kwetter.dtos.users.UserCleanDto;
 
-import java.util.Date;
-import java.util.Set;
+import javax.ws.rs.core.Link;
+import java.net.URI;
+import java.util.*;
 
 public class TweetDto {
     private Integer id;
@@ -12,6 +13,13 @@ public class TweetDto {
     private UserCleanDto author;
     private Set<UserCleanDto> mentions;
     private Set<UserCleanDto> likes;
+    private Set<Link> links;
+
+    public TweetDto() {
+        this.mentions = new HashSet<>();
+        this.likes = new HashSet<>();
+        this.links = new HashSet<>();
+    }
 
     public Integer getId() {
         return id;
@@ -59,5 +67,13 @@ public class TweetDto {
 
     public void setLikes(Set<UserCleanDto> likes) {
         this.likes = likes;
+    }
+
+    public Set<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(Set<Link> links) {
+        this.links = links;
     }
 }

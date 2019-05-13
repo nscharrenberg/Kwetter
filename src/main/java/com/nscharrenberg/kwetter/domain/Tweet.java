@@ -1,12 +1,6 @@
 package com.nscharrenberg.kwetter.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.eclipse.persistence.annotations.CascadeOnDelete;
-
 import javax.persistence.*;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -56,9 +50,48 @@ public class Tweet {
     )
     private Set<User> likes;
 
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY
+    )
+    @JoinTable(
+            name = "tweet_hashtags",
+            joinColumns = @JoinColumn(name = "tweet_id"),
+            inverseJoinColumns = @JoinColumn(name = "hashtag_id")
+    )
+    private Set<Hashtag> hashtags;
+
     public Tweet() {
-        this.mentions = new HashSet<>();
         this.likes = new HashSet<>();
+        this.mentions = new HashSet<>();
+        this.hashtags = new HashSet<>();
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+        if(author != null) {
+            author.addTweet(this);
+        }
+    }
+
+    public void addMention(User user) {
+        this.mentions.add(user);
+    }
+
+    public void removeMention(User user) {
+        this.mentions.remove(user);
+    }
+
+    public void addLike(User user) {
+        this.likes.add(user);
+    }
+
+    public void removeLike(User user) {
+        this.likes.remove(user);
+    }
+
+    public String getReadableCreatedAt() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        return sdf.format(this.createdAt);
     }
 
     public int getId() {
@@ -79,13 +112,6 @@ public class Tweet {
 
     public User getAuthor() {
         return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-        if(author != null) {
-            author.addTweet(this);
-        }
     }
 
     public Date getCreatedAt() {
@@ -112,25 +138,11 @@ public class Tweet {
         this.likes = likes;
     }
 
-    public void addMention(User user) {
-        this.mentions.add(user);
+    public Set<Hashtag> getHashtags() {
+        return hashtags;
     }
 
-    public void removeMention(User user) {
-        this.mentions.remove(user);
+    public void setHashtags(Set<Hashtag> hashtags) {
+        this.hashtags = hashtags;
     }
-
-    public void addLike(User user) {
-        this.likes.add(user);
-    }
-
-    public void removeLike(User user) {
-        this.likes.remove(user);
-    }
-
-    public String getReadableCreatedAt() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return sdf.format(this.createdAt);
-    }
-
 }

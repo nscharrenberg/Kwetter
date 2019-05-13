@@ -20,10 +20,9 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +38,9 @@ public class TweetController {
 
     @Inject
     private AuthenticationProvider authenticationProvider;
+
+    @Context
+    private UriInfo uriInfo;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -60,7 +62,22 @@ public class TweetController {
             ModelMapper mapper = new ModelMapper();
             TweetDto[] tweetDto = mapper.map(response.getObject(), TweetDto[].class);
 
-            return Response.status(response.getCode()).entity(tweetDto).build();
+            List<TweetDto> tweetDtos = new ArrayList<>(Arrays.asList(tweetDto));
+
+            Response.ResponseBuilder responseBuilder = Response.status(response.getCode());
+
+            if(tweetDtos.size() > 0) {
+                tweetDtos.forEach(t -> {
+                    Link selfLink = Link.fromUri(uriInfo.getBaseUriBuilder().path(TweetController.class).path(TweetController.class, "getById").build(t.getId())).rel("self").build();
+                    Link authorLink = Link.fromUri(uriInfo.getBaseUriBuilder().path(UserController.class, "getByUsername").build(t.getId())).rel("author").build();
+                    t.getLinks().add(selfLink);
+                    t.getLinks().add(authorLink);
+
+                    responseBuilder.links(selfLink, authorLink);
+                });
+            }
+
+            return responseBuilder.entity(tweetDtos).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

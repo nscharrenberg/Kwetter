@@ -5,6 +5,7 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\beans\GeocodeView.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\jpa\UserServiceJPAImpl.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\service\TweetService.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\interfaces\HashtagRepository.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\authentication\PermissionEnum.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\beans\ChangeRoleBean.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\controllers\RestConfig.java
@@ -22,7 +23,9 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\collection\TweetServiceCollImpl.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\permissions\CreatePermissionRequestObject.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\exceptions\CreationFailedException.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\jpa\HashtagServiceJPAImpl.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\utils\DetailMessage.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\domain\Hashtag.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\beans\UserBean.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\interfaces\PermissionRepository.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\beans\LogonBean.java
@@ -37,7 +40,9 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\tweets\LikeRequestObject.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\permissions\PermissionCleanDto.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\collection\PermissionServiceCollImpl.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\controllers\HashtagController.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\responses\HttpStatusCodes.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\hashtags\HashtagDto.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\users\RoleRequestObject.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\controllers\UserController.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\authentication\ServletIdentityStore.java
@@ -53,6 +58,7 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\controllers\TweetController.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\tweets\CreateTweetRequestObject.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\exceptions\NameNotUniqueException.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\service\HashtagService.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\StartUp.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\beans\PermissionDetachBean.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\domain\Role.java
@@ -60,6 +66,7 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\interfaces\JPA.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\roles\RoleDto.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\jpa\PermissionServiceJPAImpl.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\hashtags\HashtagCleanDto.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\roles\CreateRoleRequestObject.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\service\RoleService.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\responses\JaxResponse.java

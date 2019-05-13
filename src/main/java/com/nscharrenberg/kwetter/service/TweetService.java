@@ -1,5 +1,6 @@
 package com.nscharrenberg.kwetter.service;
 
+import com.nscharrenberg.kwetter.domain.Hashtag;
 import com.nscharrenberg.kwetter.domain.Tweet;
 import com.nscharrenberg.kwetter.domain.User;
 import com.nscharrenberg.kwetter.exceptions.*;
@@ -29,6 +30,9 @@ public class TweetService {
 
     @Inject
     private UserService ur;
+
+    @Inject
+    private HashtagService hashtagService;
 
     /**
      * Get All Tweets or get Paginated tweets
@@ -227,7 +231,14 @@ public class TweetService {
             return new ObjectResponse<>(getMentionsByMessageResponse.getCode(), getMentionsByMessageResponse.getMessage());
         }
 
+        ObjectResponse<Set<Hashtag>> getHashtagsByMessageResponse = getHashtagsByMessage(tweet.getMessage());
+
+        if(getHashtagsByMessageResponse.getObject() == null) {
+            return new ObjectResponse<>(getHashtagsByMessageResponse.getCode(), getHashtagsByMessageResponse.getMessage());
+        }
+
         tweet.setMentions(getMentionsByMessageResponse.getObject());
+        tweet.setHashtags(getHashtagsByMessageResponse.getObject());
         tweet.setCreatedAt(new Date());
         Tweet created = tr.create(tweet);
 
@@ -411,5 +422,31 @@ public class TweetService {
         }
 
         return new ObjectResponse<>(HttpStatusCodes.OK, users.size() + " users mentioned in this tweet", users);
+    }
+
+    /**
+     * Get all hashtags from a message
+     * a hashtag is marked with an # symbol before the trend
+     * @param message
+     * @return
+     */
+    private ObjectResponse<Set<Hashtag>> getHashtagsByMessage(String message) {
+        if(!message.contains("#")) {
+            return new ObjectResponse<>(HttpStatusCodes.OK, "0 hashtags mentioned in this tweet", new HashSet<>());
+        }
+
+        String regex = "(?:\\s|\\A)[#]+([A-Za-z0-9-_]+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(message);
+        Set<Hashtag> hashtags = new HashSet<>();
+
+        while(matcher.find()) {
+            ObjectResponse<Hashtag> u = hashtagService.findOrCreate(matcher.group(0).replace(" ", "").replace("#", ""));
+            if(u.getObject() != null) {
+                hashtags.add(u.getObject());
+            }
+        }
+
+        return new ObjectResponse<>(HttpStatusCodes.OK, hashtags.size() + " hashtags mentioned in this tweet", hashtags);
     }
 }

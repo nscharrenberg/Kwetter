@@ -47,6 +47,19 @@ export class TweetComponent  implements OnInit {
                    console.log("2: " + w);
                    this.message += w + " ";
                }
+           } else if(w.includes("#")) {
+               if(w.charAt(0) === '#') {
+                   console.log("3 " + w);
+                   let tempWord = w.substr(1);
+                   console.log("4 " + tempWord);
+                   let html = `<a href="/hashtag/` + tempWord + `">` + w + `</a> `;
+
+                   console.log("5 " + html);
+                   this.message += html;
+               } else {
+                   console.log("2: " + w);
+                   this.message += w + " ";
+               }
            } else {
                console.log("1: " + w);
              this.message += w + " ";
