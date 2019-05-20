@@ -39,7 +39,6 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\permissions\PermissionCleanDto.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\collection\PermissionServiceCollImpl.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\controllers\HashtagController.java
-D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\websocket\WebSocket.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\websocket\WebSocketSessionListener.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\hashtags\HashtagDto.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\users\RoleRequestObject.java
@@ -70,6 +69,7 @@ D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\k
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\service\RoleService.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\responses\JaxResponse.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\jpa\TweetServiceJPAImpl.java
+D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\websocket\TweetWebsocket.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\repository\collection\RoleServiceCollImpl.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\dtos\roles\EditRoleRequestObject.java
 D:\NScha\Synology Cloud\School\S6\JEA6\kwetter\src\main\java\com\nscharrenberg\kwetter\websocket\TweetMessage.java

@@ -4,6 +4,8 @@ import com.nscharrenberg.kwetter.domain.Role;
 import com.nscharrenberg.kwetter.domain.User;
 import com.nscharrenberg.kwetter.repository.interfaces.JPA;
 import com.nscharrenberg.kwetter.repository.interfaces.UserRepository;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -25,7 +27,7 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public User getById(int id) {
         try {
-            return em.createNamedQuery("user.getUserById", User.class).setParameter("id", id).getSingleResult();
+            return em.createNamedQuery("user.getUserById", User.class).setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache).setParameter("id", id).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -35,7 +37,7 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public User getByUsername(String username) {
         try {
-            return em.createNamedQuery("user.getUserByUsername", User.class).setParameter("username", username).getSingleResult();
+            return em.createNamedQuery("user.getUserByUsername", User.class).setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache).setParameter("username", username).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -45,7 +47,7 @@ public class UserServiceJPAImpl implements UserRepository {
     @Override
     public User getByEmail(String email) {
         try {
-            return em.createNamedQuery("user.getUserByEmail", User.class).setParameter("email", email).getSingleResult();
+            return em.createNamedQuery("user.getUserByEmail", User.class).setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache).setParameter("email", email).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

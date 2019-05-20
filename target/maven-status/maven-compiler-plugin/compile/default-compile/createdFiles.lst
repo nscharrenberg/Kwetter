@@ -25,6 +25,7 @@ com\nscharrenberg\kwetter\controllers\UserController.class
 com\nscharrenberg\kwetter\service\PermissionService.class
 com\nscharrenberg\kwetter\beans\RoleBean.class
 com\nscharrenberg\kwetter\beans\LogonBean.class
+com\nscharrenberg\kwetter\websocket\TweetWebsocket.class
 com\nscharrenberg\kwetter\domain\User.class
 com\nscharrenberg\kwetter\dtos\users\CreateUserRequestObject.class
 com\nscharrenberg\kwetter\dtos\roles\CreateRoleRequestObject.class
@@ -54,7 +55,6 @@ com\nscharrenberg\kwetter\dtos\tweets\LikeRequestObject.class
 com\nscharrenberg\kwetter\service\RoleService.class
 com\nscharrenberg\kwetter\beans\PermissionDetachBean.class
 com\nscharrenberg\kwetter\domain\Hashtag.class
-com\nscharrenberg\kwetter\websocket\WebSocket.class
 com\nscharrenberg\kwetter\websocket\TweetMessage.class
 com\nscharrenberg\kwetter\dtos\users\EditUserRequestObject.class
 com\nscharrenberg\kwetter\repository\collection\UserServiceCollImpl.class

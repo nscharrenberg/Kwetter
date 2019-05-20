@@ -21,7 +21,7 @@ import java.util.Set;
         decoders = TweetMessageDecoder.class,
         encoders = TweetMessageEncoder.class
 )
-public class WebSocket {
+public class TweetWebsocket {
     @Inject
     private UserService userService;
 
@@ -43,6 +43,12 @@ public class WebSocket {
         if(userResponse.getObject() == null) {
             return;
         }
+
+        message.getMentions().forEach(f -> {
+            if(users.contains(f.getUsername())) {
+                WebSocketSessionListener.getInstance().getSessionMap().get(f.getUsername()).getAsyncRemote().sendObject(message);
+            }
+        });
 
         userResponse.getObject().getFollowers().forEach(f -> {
             if(users.contains(f.getUsername())) {

@@ -171,6 +171,7 @@ public class TweetServiceJPAImpl implements TweetRepository {
         for(User u : user.getFollowing()) {
             tweets.addAll(getTweetsByUser(u));
         }
+
         tweets.addAll(user.getMentions());
 
         tweets.sort(Comparator.comparing(Tweet::getCreatedAt).reversed());
