@@ -2,10 +2,10 @@ package com.nscharrenberg.kwetter.beans;
 
 import com.nscharrenberg.kwetter.domain.Permission;
 import com.nscharrenberg.kwetter.domain.Role;
-import org.omnifaces.util.Messages;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.PermissionService;
 import com.nscharrenberg.kwetter.service.RoleService;
+import org.omnifaces.util.Messages;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;

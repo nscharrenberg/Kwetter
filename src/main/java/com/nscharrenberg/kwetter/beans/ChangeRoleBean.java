@@ -2,17 +2,15 @@ package com.nscharrenberg.kwetter.beans;
 
 import com.nscharrenberg.kwetter.domain.Role;
 import com.nscharrenberg.kwetter.domain.User;
-import org.omnifaces.util.Messages;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.RoleService;
 import com.nscharrenberg.kwetter.service.UserService;
+import org.omnifaces.util.Messages;
 
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.List;
 
 @Named
 @ViewScoped

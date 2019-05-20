@@ -1,9 +1,10 @@
 package com.nscharrenberg.kwetter.beans;
 
 import com.nscharrenberg.kwetter.domain.Tweet;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.TweetService;
+import org.omnifaces.util.Messages;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -12,7 +13,6 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.omnifaces.util.Messages;
 
 @Named
 @ViewScoped
@@ -39,7 +39,7 @@ public class TweetBean implements Serializable {
     public void delete(Tweet tweet) {
         ObjectResponse<Tweet> response = tweetService.delete(tweet);
 
-        if(response.getCode() == HttpStatusCodes.OK) {
+        if(response.getCode() == StatusCodes.OK) {
             Messages.create("Success!").detail(response.getMessage()).add();
         } else {
             Messages.create(String.format("Error %s", response.getCode())).error().detail(response.getMessage()).add();

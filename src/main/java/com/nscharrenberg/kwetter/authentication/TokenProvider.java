@@ -1,12 +1,12 @@
 package com.nscharrenberg.kwetter.authentication;
 
 
+import com.nscharrenberg.kwetter.responses.StatusCodes;
+import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
-import com.nscharrenberg.kwetter.responses.ObjectResponse;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -22,6 +22,14 @@ public class TokenProvider {
     public static int TIME_TO_LIVE = 800000;
     public static String AUTHENTICATION_SCHEME = "Bearer";
 
+    /**
+     * Generate a JWT token
+     * @param id
+     * @param issuer
+     * @param subject
+     * @param ttlMillis
+     * @return
+     */
     public static ObjectResponse<String> generate(String id, String issuer, String subject, long ttlMillis) {
         try {
             SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
@@ -48,12 +56,18 @@ public class TokenProvider {
                 builder.setExpiration(exp);
             }
 
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Token created", builder.compact());
+            return new ObjectResponse<>(StatusCodes.OK, "Token created", builder.compact());
         } catch (Exception e) {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Something went wrong");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Something went wrong");
         }
     }
 
+    /**
+     * Get the secret key so this can be used for signing the JWT tokens
+     * @param resource
+     * @return
+     * @throws IOException
+     */
     private static String getSecretKey(String resource) throws IOException {
         byte[] byteBuffer = new byte[16384];
         int length = currentThread().getContextClassLoader().getResource(resource).openStream().read(byteBuffer);
@@ -68,21 +82,25 @@ public class TokenProvider {
         return key;
     }
 
+    /**
+     * Decode a given JWT token
+     * @param bearer
+     * @return
+     */
     public static ObjectResponse<Claims> decode(String bearer) {
         try {
             if(bearer.startsWith(String.format("%s ", AUTHENTICATION_SCHEME))) {
                 String token  = bearer.substring(TokenProvider.AUTHENTICATION_SCHEME.length()).trim();
 
-                return new ObjectResponse<>(HttpStatusCodes.OK, "Authorized", Jwts.parser()
+                return new ObjectResponse<>(StatusCodes.OK, "Authorized", Jwts.parser()
                         .setSigningKey(DatatypeConverter.parseBase64Binary(getSecretKey(SECRET_KEY)))
                         .parseClaimsJws(token)
                         .getBody());
             } else {
-                return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "You are not authorized");
+                return new ObjectResponse<>(StatusCodes.UNAUTHORIZED, "You are not authorized");
             }
         } catch (Exception e) {
-            return new ObjectResponse<>(HttpStatusCodes.UNAUTHORIZED, "You are not authorized");
+            return new ObjectResponse<>(StatusCodes.UNAUTHORIZED, "You are not authorized");
         }
-
     }
 }

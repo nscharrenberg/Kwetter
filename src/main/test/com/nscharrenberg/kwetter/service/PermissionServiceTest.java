@@ -1,20 +1,21 @@
 package com.nscharrenberg.kwetter.service;
 
 import com.nscharrenberg.kwetter.domain.Permission;
+import com.nscharrenberg.kwetter.repository.interfaces.PermissionRepository;
+import com.nscharrenberg.kwetter.responses.ObjectResponse;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import com.nscharrenberg.kwetter.repository.interfaces.PermissionRepository;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
-import com.nscharrenberg.kwetter.responses.ObjectResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -50,7 +51,7 @@ public class PermissionServiceTest {
 
         // Assert
         verify(pr, atLeastOnce()).all();
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(permissionList, response.getObject());
         assertEquals(permissionList.size(), response.getObject().size());
     }
@@ -74,7 +75,7 @@ public class PermissionServiceTest {
 
         // Assert
         verify(pr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(permission, response.getObject());
     }
 
@@ -87,7 +88,7 @@ public class PermissionServiceTest {
         ObjectResponse<Permission> response = permissionService.getById(id);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -102,7 +103,7 @@ public class PermissionServiceTest {
 
         // Assert
         verify(pr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -124,7 +125,7 @@ public class PermissionServiceTest {
 
         // Assert
         verify(pr, atLeastOnce()).getByName(name);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(permission, response.getObject());
     }
 
@@ -141,7 +142,7 @@ public class PermissionServiceTest {
         ObjectResponse<Permission> response = permissionService.getByName("");
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -154,7 +155,7 @@ public class PermissionServiceTest {
         ObjectResponse<Permission> response = permissionService.getByName(name);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -175,7 +176,7 @@ public class PermissionServiceTest {
 
         // Assert
         verify(pr, atLeastOnce()).create(permission);
-        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(StatusCodes.CREATED, response.getCode());
         assertEquals(permission.getName(), response.getObject().getName());
     }
 
@@ -190,7 +191,7 @@ public class PermissionServiceTest {
 
         // Assert
         verify(pr, never()).create(permission);
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -208,7 +209,7 @@ public class PermissionServiceTest {
         // Assert
         verify(pr, atLeastOnce()).getByName(name);
         verify(pr, never()).create(permission);
-        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+        assertEquals(StatusCodes.CONFLICT, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -235,7 +236,7 @@ public class PermissionServiceTest {
         verify(pr, atLeastOnce()).getById(id);
         verify(pr, atLeastOnce()).getByName(name);
         verify(pr, atLeastOnce()).update(permission);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(permission.getName(), response.getObject().getName());
     }
 
@@ -263,7 +264,7 @@ public class PermissionServiceTest {
         //Assert
         verify(pr, atLeastOnce()).getById(id);
         verify(pr, atLeastOnce()).getByName(name);
-        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+        assertEquals(StatusCodes.CONFLICT, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -280,7 +281,7 @@ public class PermissionServiceTest {
         ObjectResponse<Permission> response = permissionService.update(permission);
 
         //Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -297,7 +298,7 @@ public class PermissionServiceTest {
         ObjectResponse<Permission> response = permissionService.update(permission);
 
         //Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -316,7 +317,7 @@ public class PermissionServiceTest {
 
         //Assert
         verify(pr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -340,7 +341,7 @@ public class PermissionServiceTest {
         // Assert
         verify(pr, atLeastOnce()).getById(id);
         verify(pr, atLeastOnce()).delete(permission);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -357,7 +358,7 @@ public class PermissionServiceTest {
         ObjectResponse<Permission> response = permissionService.delete(permission);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -376,7 +377,7 @@ public class PermissionServiceTest {
 
         // Assert
         verify(pr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 }

@@ -1,22 +1,17 @@
 package com.nscharrenberg.kwetter.controllers;
 
+import com.google.common.collect.Iterables;
 import com.nscharrenberg.kwetter.authentication.AuthenticationProvider;
 import com.nscharrenberg.kwetter.authentication.PermissionEnum;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.nscharrenberg.kwetter.domain.Role;
 import com.nscharrenberg.kwetter.domain.User;
 import com.nscharrenberg.kwetter.dtos.users.EditUserRequestObject;
 import com.nscharrenberg.kwetter.dtos.users.FollowRequestObject;
-import com.nscharrenberg.kwetter.dtos.users.RoleRequestObject;
 import com.nscharrenberg.kwetter.dtos.users.UserDto;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.modelmapper.ModelMapper;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import com.nscharrenberg.kwetter.responses.JaxResponse;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
-import com.nscharrenberg.kwetter.service.RoleService;
 import com.nscharrenberg.kwetter.service.UserService;
+import org.modelmapper.ModelMapper;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -129,7 +124,7 @@ public class UserController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UPDATE_USERS.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 
@@ -177,7 +172,7 @@ public class UserController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.FOLLOW_USER.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 
@@ -222,7 +217,7 @@ public class UserController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UNFOLLOW_USER.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 
@@ -274,7 +269,7 @@ public class UserController {
 
             ObjectResponse<User> loggedIn = authenticationProvider.authenticate(authentication);
 
-            if(loggedIn.getCode() == HttpStatusCodes.OK) {
+            if(loggedIn.getCode() == StatusCodes.OK) {
                 UserDto user = Iterables.tryFind(userDto, input -> loggedIn.getObject().getId() == input.getId()).orNull();
 
                 if(user != null) {

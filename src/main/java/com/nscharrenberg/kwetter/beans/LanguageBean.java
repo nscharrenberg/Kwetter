@@ -1,16 +1,11 @@
 package com.nscharrenberg.kwetter.beans;
 
-import sun.util.locale.BaseLocale;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 
 @Named
 @SessionScoped

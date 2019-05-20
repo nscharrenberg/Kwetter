@@ -36,32 +36,22 @@ export class TweetComponent  implements OnInit {
         wordArray.forEach(w => {
            if(w.includes("@")) {
                if(w.charAt(0) === '@') {
-                   console.log("3 " + w);
                    let tempWord = w.substr(1);
-                   console.log("4 " + tempWord);
                    let html = `<a href="/user/` + tempWord + `">` + w + `</a> `;
 
-                   console.log("5 " + html);
                    this.message += html;
                } else {
-                   console.log("2: " + w);
                    this.message += w + " ";
                }
            } else if(w.includes("#")) {
                if(w.charAt(0) === '#') {
-                   console.log("3 " + w);
                    let tempWord = w.substr(1);
-                   console.log("4 " + tempWord);
                    let html = `<a href="/hashtag/` + tempWord + `">` + w + `</a> `;
-
-                   console.log("5 " + html);
                    this.message += html;
                } else {
-                   console.log("2: " + w);
                    this.message += w + " ";
                }
            } else {
-               console.log("1: " + w);
              this.message += w + " ";
            }
         });
@@ -73,6 +63,7 @@ export class TweetComponent  implements OnInit {
             console.log("Already Liking");
             this.tweetService.unlike(this.tweet.id, this.loggedIn.id).forEach(t => {
                 this.alertService.success("Tweet unliked");
+                location.reload();
             }).catch(error => {
                 this.alertService.error(error.error);
             });
@@ -80,6 +71,7 @@ export class TweetComponent  implements OnInit {
             console.log("Not liking yet");
             this.tweetService.like(this.tweet.id, this.loggedIn.id).forEach(t => {
                 this.alertService.success("Tweet Liked");
+                location.reload();
             }).catch(error => {
                 this.alertService.error(error.error);
             });
@@ -90,12 +82,14 @@ export class TweetComponent  implements OnInit {
     findIfAlreadyLiked() : boolean {
         let liked: boolean = false;
 
-        this.tweet.likes.forEach(l => {
-           if(l.id === this.loggedIn.id) {
-               liked = true;
-               return;
-           }
-        });
+        if(this.tweet.likes != undefined) {
+            this.tweet.likes.forEach(l => {
+                if(l.id === this.loggedIn.id) {
+                    liked = true;
+                    return;
+                }
+            });
+        }
 
         return liked;
     }

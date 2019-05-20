@@ -2,17 +2,13 @@ package com.nscharrenberg.kwetter.service;
 
 import com.nscharrenberg.kwetter.domain.Permission;
 import com.nscharrenberg.kwetter.domain.Role;
-import com.nscharrenberg.kwetter.exceptions.*;
 import com.nscharrenberg.kwetter.repository.interfaces.JPA;
 import com.nscharrenberg.kwetter.repository.interfaces.RoleRepository;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 
-import javax.ejb.Stateful;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Stateless
@@ -30,7 +26,7 @@ public class RoleService {
      */
     public ObjectResponse<List<Role>> all() {
         List<Role> roles = rr.all();
-        return new ObjectResponse<>(HttpStatusCodes.OK, roles.size() + " permissions loaded", roles);
+        return new ObjectResponse<>(StatusCodes.OK, roles.size() + " permissions loaded", roles);
     }
 
     /**
@@ -40,16 +36,16 @@ public class RoleService {
      */
     public ObjectResponse<Role> getById(int id) {
         if(id <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         Role role = rr.getById(id);
 
         if(role == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Role not found");
+            return new ObjectResponse<>(StatusCodes.NOT_FOUND, "Role not found");
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + role.getName() + " found", role);
+        return new ObjectResponse<>(StatusCodes.OK, "Role with name: " + role.getName() + " found", role);
     }
 
     /**
@@ -59,16 +55,16 @@ public class RoleService {
      */
     public ObjectResponse<Role> getByName(String name) {
         if(name.isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
         Role role = rr.getByName(name);
 
         if(role == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Role not found");
+            return new ObjectResponse<>(StatusCodes.NOT_FOUND, "Role not found");
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + role.getName() + " found", role);
+        return new ObjectResponse<>(StatusCodes.OK, "Role with name: " + role.getName() + " found", role);
     }
 
     /**
@@ -78,20 +74,20 @@ public class RoleService {
      */
     public ObjectResponse<Role> create(Role role) {
         if(role.getName().isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
         ObjectResponse<Role> getByNameResponse = getByName(role.getName());
         if(getByNameResponse.getObject() != null) {
-            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "Role with name " + role.getName() + " already exists.");
+            return new ObjectResponse<>(StatusCodes.CONFLICT, "Role with name " + role.getName() + " already exists.");
         }
 
         Role created = rr.create(role);
 
         if(created != null) {
-            return new ObjectResponse<>(HttpStatusCodes.CREATED, "Role with name: " + role.getName() + " created", role);
+            return new ObjectResponse<>(StatusCodes.CREATED, "Role with name: " + role.getName() + " created", role);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new role due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new role due to an unknown error");
         }
     }
 
@@ -102,11 +98,11 @@ public class RoleService {
      */
     public ObjectResponse<Role> update(Role role) {
         if(role.getName().isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "name can not be empty");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "name can not be empty");
         }
 
         if(role.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         ObjectResponse<Role> getByIdResponse = getById(role.getId());
@@ -117,14 +113,14 @@ public class RoleService {
 
         ObjectResponse<Role> getByNameResponse = getByName(role.getName());
         if(getByNameResponse.getObject() != null && role.getId() != getByNameResponse.getObject().getId()) {
-            return new ObjectResponse<>(HttpStatusCodes.CONFLICT, "Role with name " + role.getName() + " already exists.");
+            return new ObjectResponse<>(StatusCodes.CONFLICT, "Role with name " + role.getName() + " already exists.");
         }
 
         Role result = rr.update(role);
         if(result != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + result.getName() + " has been updated", result);
+            return new ObjectResponse<>(StatusCodes.OK, "Role with name: " + result.getName() + " has been updated", result);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not update an existing role due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not update an existing role due to an unknown error");
         }
     }
 
@@ -135,7 +131,7 @@ public class RoleService {
      */
     public ObjectResponse<Role> delete(Role role) {
         if(role.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         ObjectResponse<Role> getByIdResponse = getById(role.getId());
@@ -146,9 +142,9 @@ public class RoleService {
         boolean deleted = rr.delete(role);
 
         if(deleted) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Role with name " + role.getName() + " has been deleted");
+            return new ObjectResponse<>(StatusCodes.OK, "Role with name " + role.getName() + " has been deleted");
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Role with name " + role.getName() + "could not be deleted due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Role with name " + role.getName() + "could not be deleted due to an unknown error");
         }
     }
 
@@ -161,11 +157,11 @@ public class RoleService {
      */
     public ObjectResponse<Role> addPermission(Role role, Permission permission) {
         if(role.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Role ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid Role ID");
         }
 
         if(permission.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Permission ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid Permission ID");
         }
 
         ObjectResponse<Permission> getPermissionByIdResponse = pr.getById(permission.getId());
@@ -181,14 +177,14 @@ public class RoleService {
         }
 
         if(getByIdResponse.getObject().getPermissions().contains(permission)) {
-            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "Role: " + role.getName() + " already has the permission " + permission.getName());
+            return new ObjectResponse<>(StatusCodes.FORBIDDEN, "Role: " + role.getName() + " already has the permission " + permission.getName());
         }
 
         Role result = rr.addPermission(role, permission);
         if(result != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " has been added to Role with name: " + role.getName(), result);
+            return new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " has been added to Role with name: " + role.getName(), result);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not add Permission to an existing role due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not add Permission to an existing role due to an unknown error");
         }
     }
 
@@ -200,11 +196,11 @@ public class RoleService {
      */
     public ObjectResponse<Role> removePermission(Role role, Permission permission) {
         if(role.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Role ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid Role ID");
         }
 
         if(permission.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Permissions ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid Permissions ID");
         }
 
         ObjectResponse<Permission> getPermissionByIdResponse = pr.getById(permission.getId());
@@ -220,14 +216,14 @@ public class RoleService {
         }
 
         if(!getByIdResponse.getObject().getPermissions().contains(permission)) {
-            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "Role: " + role.getName() + " does not have the permission " + permission.getName());
+            return new ObjectResponse<>(StatusCodes.FORBIDDEN, "Role: " + role.getName() + " does not have the permission " + permission.getName());
         }
 
         Role result = rr.removePermission(role, permission);
         if(result != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " has been remove from Role with name: " + role.getName(), result);
+            return new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " has been remove from Role with name: " + role.getName(), result);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not remove Permission from an existing role due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not remove Permission from an existing role due to an unknown error");
         }
     }
 }

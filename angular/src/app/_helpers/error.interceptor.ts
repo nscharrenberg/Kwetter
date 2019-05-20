@@ -19,6 +19,8 @@ export class ErrorInterceptor implements HttpInterceptor {
                 }
             }
 
+            console.log("ERRNO: " + JSON.stringify(err));
+
             return throwError(err);
         }))
     }

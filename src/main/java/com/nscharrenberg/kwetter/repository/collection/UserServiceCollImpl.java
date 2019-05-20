@@ -1,15 +1,11 @@
 package com.nscharrenberg.kwetter.repository.collection;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.nscharrenberg.kwetter.domain.Role;
 import com.nscharrenberg.kwetter.domain.User;
-import com.nscharrenberg.kwetter.exceptions.NameNotUniqueException;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import com.nscharrenberg.kwetter.repository.interfaces.UserRepository;
 
 import javax.ejb.Stateful;
-import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import java.util.ArrayList;
 import java.util.List;

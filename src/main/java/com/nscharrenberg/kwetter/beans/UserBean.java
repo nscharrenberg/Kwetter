@@ -1,16 +1,14 @@
 package com.nscharrenberg.kwetter.beans;
 
 import com.nscharrenberg.kwetter.domain.User;
-import org.omnifaces.util.Faces;
-import org.omnifaces.util.Messages;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.UserService;
+import org.omnifaces.util.Messages;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

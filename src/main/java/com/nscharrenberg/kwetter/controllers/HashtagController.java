@@ -1,6 +1,5 @@
 package com.nscharrenberg.kwetter.controllers;
 
-import com.nscharrenberg.kwetter.authentication.AuthenticationProvider;
 import com.nscharrenberg.kwetter.domain.Hashtag;
 import com.nscharrenberg.kwetter.dtos.hashtags.HashtagDto;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
@@ -9,7 +8,10 @@ import org.modelmapper.ModelMapper;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -17,9 +19,6 @@ import java.util.List;
 @Stateless
 @Path("/hashtags")
 public class HashtagController {
-    @Inject
-    private AuthenticationProvider authenticationProvider;
-
     @Inject
     private HashtagService hashtagService;
 

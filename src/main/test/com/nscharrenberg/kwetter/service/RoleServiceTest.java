@@ -2,28 +2,21 @@ package com.nscharrenberg.kwetter.service;
 
 import com.nscharrenberg.kwetter.domain.Permission;
 import com.nscharrenberg.kwetter.domain.Role;
-import com.nscharrenberg.kwetter.exceptions.*;
+import com.nscharrenberg.kwetter.repository.interfaces.RoleRepository;
+import com.nscharrenberg.kwetter.responses.ObjectResponse;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import com.nscharrenberg.kwetter.repository.collection.PermissionServiceCollImpl;
-import com.nscharrenberg.kwetter.repository.collection.RoleServiceCollImpl;
-import com.nscharrenberg.kwetter.repository.interfaces.RoleRepository;
-import com.nscharrenberg.kwetter.repository.jpa.RoleServiceJPAImpl;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
-import com.nscharrenberg.kwetter.responses.ObjectResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsSame.sameInstance;
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.then;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -61,7 +54,7 @@ public class RoleServiceTest {
 
         // Assert
         verify(rr, atLeastOnce()).all();
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(roleList, response.getObject());
         assertEquals(roleList.size(), response.getObject().size());
     }
@@ -85,7 +78,7 @@ public class RoleServiceTest {
 
         // Assert
         verify(rr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(role, response.getObject());
     }
 
@@ -98,7 +91,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.getById(id);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -113,7 +106,7 @@ public class RoleServiceTest {
 
         // Assert
         verify(rr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -135,7 +128,7 @@ public class RoleServiceTest {
 
         // Assert
         verify(rr, atLeastOnce()).getByName(name);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(role, response.getObject());
     }
 
@@ -152,7 +145,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.getByName("");
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -165,7 +158,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.getByName(name);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -186,7 +179,7 @@ public class RoleServiceTest {
 
         // Assert
         verify(rr, atLeastOnce()).create(role);
-        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(StatusCodes.CREATED, response.getCode());
         assertEquals(role.getName(), response.getObject().getName());
     }
 
@@ -201,7 +194,7 @@ public class RoleServiceTest {
 
         // Assert
         verify(rr, never()).create(role);
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -219,7 +212,7 @@ public class RoleServiceTest {
         // Assert
         verify(rr, atLeastOnce()).getByName(name);
         verify(rr, never()).create(role);
-        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+        assertEquals(StatusCodes.CONFLICT, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -246,7 +239,7 @@ public class RoleServiceTest {
         verify(rr, atLeastOnce()).getById(id);
         verify(rr, atLeastOnce()).getByName(name);
         verify(rr, atLeastOnce()).update(role);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(role.getName(), response.getObject().getName());
     }
 
@@ -274,7 +267,7 @@ public class RoleServiceTest {
         //Assert
         verify(rr, atLeastOnce()).getById(id);
         verify(rr, atLeastOnce()).getByName(name);
-        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+        assertEquals(StatusCodes.CONFLICT, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -291,7 +284,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.update(role);
 
         //Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -308,7 +301,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.update(role);
 
         //Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -327,7 +320,7 @@ public class RoleServiceTest {
 
         //Assert
         verify(rr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -351,7 +344,7 @@ public class RoleServiceTest {
         // Assert
         verify(rr, atLeastOnce()).getById(id);
         verify(rr, atLeastOnce()).delete(role);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -368,7 +361,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.delete(role);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -387,7 +380,7 @@ public class RoleServiceTest {
 
         // Assert
         verify(rr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -410,7 +403,7 @@ public class RoleServiceTest {
         permission.setName(permissionName);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
         when(rr.addPermission(role, permission)).thenReturn(role);
 
         // Act
@@ -420,7 +413,7 @@ public class RoleServiceTest {
         verify(rr, atLeastOnce()).getById(roleId);
         verify(pr, atLeastOnce()).getById(permissionId);
         verify(rr, atLeastOnce()).addPermission(role, permission);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(role, response.getObject());
     }
 
@@ -443,7 +436,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.addPermission(role, permission);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -466,7 +459,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.addPermission(role, permission);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -485,14 +478,14 @@ public class RoleServiceTest {
         permission.setId(permissionId);
         permission.setName(permissionName);
 
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Permission not found"));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "Permission not found"));
 
         // Act
         ObjectResponse<Role> response = roleService.addPermission(role, permission);
 
         // Assert
         verify(pr, atLeastOnce()).getById(permissionId);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -512,7 +505,7 @@ public class RoleServiceTest {
         permission.setName(permissionName);
 
         when(rr.getById(roleId)).thenReturn(null);
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
 
         // Act
         ObjectResponse<Role> response = roleService.addPermission(role, permission);
@@ -520,7 +513,7 @@ public class RoleServiceTest {
         // Assert
         verify(rr, atLeastOnce()).getById(roleId);
         verify(pr, atLeastOnce()).getById(permissionId);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -542,7 +535,7 @@ public class RoleServiceTest {
         role.addPermission(permission);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
 
         // Act
         ObjectResponse<Role> response = roleService.addPermission(role, permission);
@@ -550,7 +543,7 @@ public class RoleServiceTest {
         // Assert
         verify(rr, atLeastOnce()).getById(roleId);
         verify(pr, atLeastOnce()).getById(permissionId);
-        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertEquals(StatusCodes.FORBIDDEN, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -575,7 +568,7 @@ public class RoleServiceTest {
         role.addPermission(permission);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
         when(rr.removePermission(role, permission)).thenReturn(role);
 
         // Act
@@ -585,7 +578,7 @@ public class RoleServiceTest {
         verify(rr, atLeastOnce()).getById(roleId);
         verify(pr, atLeastOnce()).getById(permissionId);
         verify(rr, atLeastOnce()).removePermission(role, permission);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(role, response.getObject());
     }
 
@@ -610,7 +603,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.removePermission(role, permission);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -635,7 +628,7 @@ public class RoleServiceTest {
         ObjectResponse<Role> response = roleService.removePermission(role, permission);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -656,14 +649,14 @@ public class RoleServiceTest {
 
         role.addPermission(permission);
 
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Permission not found"));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "Permission not found"));
 
         // Act
         ObjectResponse<Role> response = roleService.removePermission(role, permission);
 
         // Assert
         verify(pr, atLeastOnce()).getById(permissionId);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -685,7 +678,7 @@ public class RoleServiceTest {
         role.addPermission(permission);
 
         when(rr.getById(roleId)).thenReturn(null);
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
 
         // Act
         ObjectResponse<Role> response = roleService.removePermission(role, permission);
@@ -693,7 +686,7 @@ public class RoleServiceTest {
         // Assert
         verify(rr, atLeastOnce()).getById(roleId);
         verify(pr, atLeastOnce()).getById(permissionId);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -713,7 +706,7 @@ public class RoleServiceTest {
         permission.setName(permissionName);
 
         when(rr.getById(roleId)).thenReturn(role);
-        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
+        when(pr.getById(permissionId)).thenReturn(new ObjectResponse<>(StatusCodes.OK, "Permission with name: " + permission.getName() + " found", permission));
 
         // Act
         ObjectResponse<Role> response = roleService.removePermission(role, permission);
@@ -721,7 +714,7 @@ public class RoleServiceTest {
         // Assert
         verify(rr, atLeastOnce()).getById(roleId);
         verify(pr, atLeastOnce()).getById(permissionId);
-        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertEquals(StatusCodes.FORBIDDEN, response.getCode());
         assertNull(response.getObject());
     }
 }

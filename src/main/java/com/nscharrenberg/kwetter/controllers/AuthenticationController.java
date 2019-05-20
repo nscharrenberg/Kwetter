@@ -3,14 +3,15 @@ package com.nscharrenberg.kwetter.controllers;
 import com.nscharrenberg.kwetter.authentication.TokenProvider;
 import com.nscharrenberg.kwetter.domain.User;
 import com.nscharrenberg.kwetter.dtos.users.*;
-import org.modelmapper.ModelMapper;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import com.nscharrenberg.kwetter.responses.JaxResponse;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.UserService;
+import com.nscharrenberg.kwetter.websocket.WebSocketSessionListener;
+import org.modelmapper.ModelMapper;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.security.enterprise.SecurityContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,7 +39,7 @@ public class AuthenticationController {
 
             ObjectResponse<String> tokenGeneration = TokenProvider.generate(Integer.toString(response.getObject().getId()), TokenProvider.ISSUER, response.getObject().getEmail(), TokenProvider.TIME_TO_LIVE);
 
-            if(tokenGeneration.getCode() != HttpStatusCodes.OK) {
+            if(tokenGeneration.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(tokenGeneration);
             }
 
@@ -49,6 +50,10 @@ public class AuthenticationController {
             UserCleanDto userDto = mapper.map(response.getObject(), UserCleanDto.class);
 
             token.setUser(userDto);
+
+            if(!WebSocketSessionListener.getInstance().getActiveUsers().contains(userDto.getUsername())) {
+                WebSocketSessionListener.getInstance().getActiveUsers().add(userDto.getUsername());
+            }
 
             return Response.status(response.getCode()).entity(token).build();
         } catch (Exception e) {
@@ -62,17 +67,8 @@ public class AuthenticationController {
     @Path("/register")
     public Response create(CreateUserRequestObject request) {
         try {
-            User user = new User();
-            user.setUsername(request.getUsername());
-            user.setEmail(request.getEmail());
-            user.setPassword(request.getPassword());
-            user.setBiography(request.getBiography());
-            user.setWebsite(request.getWebsite());
-            user.setLongitude(request.getLongitude());
-            user.setLatitude(request.getLatitude());
-            user.setFirstname(request.getFirstname());
-            user.setLastname(request.getLastname());
-            user.setAvatar(request.getAvatar());
+            ModelMapper mapper = new ModelMapper();
+            User user = mapper.map(request, User.class);
 
             ObjectResponse<User> response = userService.create(user);
 
@@ -80,7 +76,6 @@ public class AuthenticationController {
                 return Response.status(response.getCode()).entity(response.getMessage()).build();
             }
 
-            ModelMapper mapper = new ModelMapper();
             UserDto userDto = mapper.map(response.getObject(), UserDto.class);
 
             return Response.status(response.getCode()).entity(userDto).build();

@@ -10,7 +10,7 @@
 //import org.mockito.Mock;
 //import org.mockito.junit.MockitoJUnitRunner;
 //import com.nscharrenberg.kwetter.repository.interfaces.UserRepository;
-//import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
+//import com.nscharrenberg.kwetter.responses.StatusCodes;
 //import com.nscharrenberg.kwetter.responses.ObjectResponse;
 //
 //import java.util.ArrayList;
@@ -76,7 +76,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).all();
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(list, response.getObject());
 //        assertEquals(list.size(), response.getObject().size());
 //    }
@@ -103,7 +103,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(user, response.getObject());
 //    }
 //
@@ -124,7 +124,7 @@
 //        ObjectResponse<User> response = userService.getById(id);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -147,7 +147,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -174,7 +174,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(user, response.getObject());
 //    }
 //
@@ -195,7 +195,7 @@
 //        ObjectResponse<User> response = userService.getByUsername(username);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -218,7 +218,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -244,7 +244,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByEmail(email);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(user, response.getObject());
 //    }
 //
@@ -265,7 +265,7 @@
 //        ObjectResponse<User> response = userService.getByEmail(email);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -288,7 +288,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByEmail(email);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -319,7 +319,7 @@
 //
 //        when(ur.getByUsername(username)).thenReturn(null);
 //        when(ur.getByEmail(email)).thenReturn(null);
-//        when(rr.getByName(roleName)).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "Role with name: " + role.getName() + " found", role));
+//        when(rr.getByName(roleName)).thenReturn(new ObjectResponse<>(StatusCodes.OK, "Role with name: " + role.getName() + " found", role));
 //        when(ur.create(user)).thenReturn(user);
 //
 //        // Act
@@ -330,7 +330,7 @@
 //        verify(ur, atLeastOnce()).getByEmail(email);
 //        verify(rr, atLeastOnce()).getByName(roleName);
 //        verify(ur, atLeastOnce()).create(user);
-//        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+//        assertEquals(StatusCodes.CREATED, response.getCode());
 //        assertEquals(user, response.getObject());
 //    }
 //
@@ -358,7 +358,7 @@
 //        ObjectResponse<User> response = userService.create(user);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -386,7 +386,7 @@
 //        ObjectResponse<User> response = userService.create(user);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -427,7 +427,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
-//        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+//        assertEquals(StatusCodes.CONFLICT, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -470,7 +470,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
 //        verify(ur, atLeastOnce()).getByEmail(email);
-//        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+//        assertEquals(StatusCodes.CONFLICT, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -505,7 +505,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
 //        verify(ur, atLeastOnce()).getByEmail(email);
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -537,7 +537,7 @@
 //
 //        when(ur.getByUsername(username)).thenReturn(null);
 //        when(ur.getByEmail(email)).thenReturn(null);
-//        when(rr.getByName(roleName)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Role not found"));
+//        when(rr.getByName(roleName)).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "Role not found"));
 //
 //        // Act
 //        ObjectResponse<User> response = userService.create(user);
@@ -546,7 +546,7 @@
 //        verify(ur, atLeastOnce()).getByUsername(username);
 //        verify(ur, atLeastOnce()).getByEmail(email);
 //        verify(rr, atLeastOnce()).getByName(roleName);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -588,7 +588,7 @@
 //        verify(ur, atLeastOnce()).getByUsername(username);
 //        verify(ur, atLeastOnce()).getByEmail(email);
 //        verify(ur, atLeastOnce()).update(user);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(user, response.getObject());
 //    }
 //
@@ -616,7 +616,7 @@
 //        ObjectResponse<User> response = userService.update(user);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -644,7 +644,7 @@
 //        ObjectResponse<User> response = userService.update(user);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -687,7 +687,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getByUsername(username);
-//        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+//        assertEquals(StatusCodes.CONFLICT, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -732,7 +732,7 @@
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getByUsername(username);
 //        verify(ur, atLeastOnce()).getByEmail(email);
-//        assertEquals(HttpStatusCodes.CONFLICT, response.getCode());
+//        assertEquals(StatusCodes.CONFLICT, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -765,7 +765,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -796,7 +796,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).delete(user);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -820,7 +820,7 @@
 //        ObjectResponse<User> response = userService.delete(user);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -846,7 +846,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -894,7 +894,7 @@
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getById(id2);
 //        verify(ur, atLeastOnce()).follow(user, toFollow);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(toFollow, response.getObject());
 //    }
 //
@@ -932,7 +932,7 @@
 //        ObjectResponse<User> response = userService.follow(user, toFollow);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -970,7 +970,7 @@
 //        ObjectResponse<User> response = userService.follow(user, toFollow);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1011,7 +1011,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1054,7 +1054,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getById(id2);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1099,7 +1099,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getById(id2);
-//        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+//        assertEquals(StatusCodes.FORBIDDEN, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1149,7 +1149,7 @@
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getById(id2);
 //        verify(ur, atLeastOnce()).unfollow(user, toFollow);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(toFollow, response.getObject());
 //    }
 //
@@ -1189,7 +1189,7 @@
 //        ObjectResponse<User> response = userService.unfollow(user, toFollow);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1229,7 +1229,7 @@
 //        ObjectResponse<User> response = userService.unfollow(user, toFollow);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1272,7 +1272,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1317,7 +1317,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getById(id2);
-//        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+//        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1360,7 +1360,7 @@
 //        // Assert
 //        verify(ur, atLeastOnce()).getById(id);
 //        verify(ur, atLeastOnce()).getById(id2);
-//        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+//        assertEquals(StatusCodes.FORBIDDEN, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1390,7 +1390,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
-//        assertEquals(HttpStatusCodes.OK, response.getCode());
+//        assertEquals(StatusCodes.OK, response.getCode());
 //        assertEquals(user, response.getObject());
 //    }
 //
@@ -1417,7 +1417,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
-//        assertEquals(HttpStatusCodes.UNAUTHORIZED, response.getCode());
+//        assertEquals(StatusCodes.UNAUTHORIZED, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1444,7 +1444,7 @@
 //
 //        // Assert
 //        verify(ur, atLeastOnce()).getByUsername(username);
-//        assertEquals(HttpStatusCodes.UNAUTHORIZED, response.getCode());
+//        assertEquals(StatusCodes.UNAUTHORIZED, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1469,7 +1469,7 @@
 //        ObjectResponse<User> response = userService.login(username, password);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //
@@ -1493,7 +1493,7 @@
 //        ObjectResponse<User> response = userService.login(username, password);
 //
 //        // Assert
-//        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+//        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
 //        assertNull(response.getObject());
 //    }
 //}

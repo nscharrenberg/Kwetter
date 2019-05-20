@@ -8,6 +8,7 @@ import {User} from "../../_models";
 import {Tweet} from "../../_models/tweet";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {WsTweetService} from "../../_services/wsTweetService";
 
 @Component({
     selector: 'app-create-tweet',
@@ -27,6 +28,7 @@ export class CreateTweetComponent  implements OnInit {
         private tweetService: TweetService,
         private authenticationService: AuthenticationService,
         private userService: UserService,
+        private wsTweetService: WsTweetService,
         private formBuilder: FormBuilder,) {
     }
 
@@ -41,9 +43,12 @@ export class CreateTweetComponent  implements OnInit {
     get f() { return this.createForm.controls; }
 
     send() {
-       this.tweetService.create(this.f.message.value, this.f.userId.value).forEach(data => {
+       this.tweetService.create(this.f.message.value, this.f.userId.value).forEach((data: Tweet) => {
+            this.wsTweetService.messages.next(data);
            this.alertService.success("Tweet posted");
+           location.reload();
        }).catch(error => {
+           console.log("ERRNA: " + JSON.stringify(error));
            this.alertService.error(error.error);
        });
     }

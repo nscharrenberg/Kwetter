@@ -2,16 +2,12 @@ package com.nscharrenberg.kwetter.beans;
 
 import com.github.adminfaces.template.config.AdminConfig;
 import com.github.adminfaces.template.session.AdminSession;
-import com.nscharrenberg.kwetter.domain.User;
+import com.nscharrenberg.kwetter.service.UserService;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
-import com.nscharrenberg.kwetter.responses.ObjectResponse;
-import com.nscharrenberg.kwetter.service.UserService;
 
-import javax.annotation.Resource;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Specializes;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -25,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.Principal;
 
 import static com.nscharrenberg.kwetter.utils.DetailMessage.addDetailMessage;
 

@@ -4,9 +4,12 @@ import {AuthenticationService, TweetService, UserService} from "../../_services"
 import {User} from "../../_models";
 import {Observable} from "rxjs/internal/Observable";
 import LatLng = google.maps.LatLng;
-import GeocoderStatus = google.maps.GeocoderStatus;
 import {Observer} from "rxjs/internal/types";
 import {Router} from "@angular/router";
+import {WebsocketService} from "../../_services/websocket.service";
+import {Subject} from "rxjs/internal/Subject";
+import {KWETTER_WS} from "../../_helpers/api-constants";
+import {WsTweetService} from "../../_services/wsTweetService";
 
 
 @Component({
@@ -15,7 +18,7 @@ import {Router} from "@angular/router";
 })
 export class HomeComponent implements OnInit {
     loggedIn: User;
-    tweets: Observable<Tweet[]>;
+    tweets: Tweet[];
     user: Observable<User>;
     followers: User[];
     geocoder: google.maps.Geocoder;
@@ -26,13 +29,18 @@ export class HomeComponent implements OnInit {
         private zone: NgZone,
         private tweetService: TweetService,
         private authenticationService: AuthenticationService,
-        private userService: UserService) {
+        private userService: UserService,
+        private wsTweetService: WsTweetService) {
         this.geocoder = new google.maps.Geocoder();
     }
 
     ngOnInit() {
         this.loggedIn = this.authenticationService.getLoggedInUser();
-        this.tweets = this.tweetService.getMyTimeLine(this.loggedIn.id, 1, 10);
+        this.tweetService.getMyTimeLine(this.loggedIn.id, 1, 10).subscribe((data: Tweet[]) => {
+            this.tweets = data;
+        }, (error) => {
+            console.log("Error: " + JSON.stringify(error));
+        });
         this.user = this.userService.getById(this.loggedIn.id);
 
         this.geocode().forEach(
@@ -44,9 +52,14 @@ export class HomeComponent implements OnInit {
                 if (error === google.maps.GeocoderStatus.ZERO_RESULTS) {
                     console.log('Geocoding com.nscharrenberg.kwetter.service: geocoder failed due to: ' + error);
                 }
+                console.log("FAIL");
             });
 
         this.getFollowers();
+        this.wsTweetService.messages.subscribe(msg => {
+            console.log("Response from websocket: " + msg);
+            this.tweets.unshift(msg);
+        });
     }
 
     getFollowers() {
@@ -72,7 +85,6 @@ export class HomeComponent implements OnInit {
                         observer.next(results);
                         observer.complete();
                     } else {
-                        console.log('Geocoding com.nscharrenberg.kwetter.service: geocoder failed due to: ' + status);
                         observer.error(status);
                     }
                 })

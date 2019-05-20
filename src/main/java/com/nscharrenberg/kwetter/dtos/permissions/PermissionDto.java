@@ -1,6 +1,5 @@
 package com.nscharrenberg.kwetter.dtos.permissions;
 
-import com.nscharrenberg.kwetter.domain.Role;
 import com.nscharrenberg.kwetter.dtos.roles.RoleCleanDto;
 
 import java.util.Set;

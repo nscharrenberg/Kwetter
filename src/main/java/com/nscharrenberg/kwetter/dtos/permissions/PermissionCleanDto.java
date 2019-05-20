@@ -1,7 +1,5 @@
 package com.nscharrenberg.kwetter.dtos.permissions;
 
-import java.util.Set;
-
 public class PermissionCleanDto {
     private Integer id;
     private String name;

@@ -1,7 +1,5 @@
 package com.nscharrenberg.kwetter.dtos.users;
 
-import com.nscharrenberg.kwetter.domain.User;
-
 public class TokenDto {
     private String token;
     private UserCleanDto user;

@@ -12,6 +12,8 @@ import {CreateTweetModule} from "../../_components";
 import {AlertModule} from "../../_directives/alert/alert.module";
 import {FollowModule} from "../../_components/follow/follow.module";
 import {UnfollowModule} from "../../_components/unfollow/unfollow.module";
+import {WsTweetService} from "../../_services/wsTweetService";
+import {WebsocketService} from "../../_services/websocket.service";
 
 @NgModule({
     imports: [
@@ -30,7 +32,9 @@ import {UnfollowModule} from "../../_components/unfollow/unfollow.module";
         HomeComponent
     ],
     providers: [
-        TweetService
+        TweetService,
+        WebsocketService,
+        WsTweetService,
     ]
 })
 export class HomeModule {}

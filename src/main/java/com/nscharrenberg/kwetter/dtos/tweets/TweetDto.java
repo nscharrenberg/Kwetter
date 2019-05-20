@@ -3,8 +3,9 @@ package com.nscharrenberg.kwetter.dtos.tweets;
 import com.nscharrenberg.kwetter.dtos.users.UserCleanDto;
 
 import javax.ws.rs.core.Link;
-import java.net.URI;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TweetDto {
     private Integer id;

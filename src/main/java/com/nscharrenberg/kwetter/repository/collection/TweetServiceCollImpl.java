@@ -1,18 +1,15 @@
 package com.nscharrenberg.kwetter.repository.collection;
 
 import com.google.common.collect.Iterables;
-import com.nscharrenberg.kwetter.domain.Role;
 import com.nscharrenberg.kwetter.domain.Tweet;
 import com.nscharrenberg.kwetter.domain.User;
-import com.nscharrenberg.kwetter.exceptions.NameNotUniqueException;
 import com.nscharrenberg.kwetter.repository.interfaces.TweetRepository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ejb.Stateful;
-import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
-import javax.persistence.TypedQuery;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Default

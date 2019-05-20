@@ -3,18 +3,13 @@ package com.nscharrenberg.kwetter.service;
 import com.nscharrenberg.kwetter.domain.Hashtag;
 import com.nscharrenberg.kwetter.domain.Tweet;
 import com.nscharrenberg.kwetter.domain.User;
-import com.nscharrenberg.kwetter.exceptions.*;
 import com.nscharrenberg.kwetter.repository.interfaces.JPA;
 import com.nscharrenberg.kwetter.repository.interfaces.TweetRepository;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 
-import javax.annotation.Nullable;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -49,14 +44,14 @@ public class TweetService {
                     Integer pageSize = (Integer) options[1];
                     tweets = tr.paginated(pageNumber, pageSize);
                 } else {
-                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                    return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
                 }
             }
         } else {
             tweets = tr.all();
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets loaded", tweets);
+        return new ObjectResponse<>(StatusCodes.OK, tweets.size() + " tweets loaded", tweets);
     }
 
     /**
@@ -66,16 +61,16 @@ public class TweetService {
      */
     public ObjectResponse<Tweet> getById(int id) {
         if(id <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         Tweet tweet = tr.getById(id);
 
         if(tweet == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "Tweet not found");
+            return new ObjectResponse<>(StatusCodes.NOT_FOUND, "Tweet not found");
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message: " + tweet.getMessage() + " found", tweet);
+        return new ObjectResponse<>(StatusCodes.OK, "Tweet with message: " + tweet.getMessage() + " found", tweet);
     }
 
     /**
@@ -85,7 +80,7 @@ public class TweetService {
      */
     public ObjectResponse<List<Tweet>> getByAuthorName(String username, Object... options) {
         if(username.isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "username can not be empty");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "username can not be empty");
         }
 
         ObjectResponse<User> getUserByIdResponse = ur.getByUsername(username);
@@ -104,9 +99,9 @@ public class TweetService {
                     Integer pageSize = (Integer) options[1];
                     List<Tweet> tweets = tr.getByAuthorIdPaginated(getUserByIdResponse.getObject().getId(), pageNumber, pageSize);
 
-                    return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
+                    return new ObjectResponse<>(StatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
                 } else {
-                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                    return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
                 }
             }
         }
@@ -117,7 +112,7 @@ public class TweetService {
             return getTweetsByAuthorIdResponse;
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByAuthorIdResponse.getObject().size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse.getObject());
+        return new ObjectResponse<>(StatusCodes.OK, getTweetsByAuthorIdResponse.getObject().size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse.getObject());
     }
 
     /**
@@ -127,7 +122,7 @@ public class TweetService {
      */
     public ObjectResponse<List<Tweet>> getByAuthorId(int id, Object... options) {
         if(id <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         ObjectResponse<User> getUserByIdResponse = ur.getById(id);
@@ -146,9 +141,9 @@ public class TweetService {
                     Integer pageSize = (Integer) options[1];
                     List<Tweet> tweets = tr.getByAuthorIdPaginated(id, pageNumber, pageSize);
 
-                    return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
+                    return new ObjectResponse<>(StatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
                 } else {
-                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                    return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
                 }
             }
         }
@@ -156,10 +151,10 @@ public class TweetService {
         List<Tweet> getTweetsByAuthorIdResponse = tr.getByAuthorId(id);
 
         if(getTweetsByAuthorIdResponse == null) {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "List of tweet from author " + getUserByIdResponse.getObject().getUsername() + " is never instantiated.");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "List of tweet from author " + getUserByIdResponse.getObject().getUsername() + " is never instantiated.");
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, getTweetsByAuthorIdResponse.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse);
+        return new ObjectResponse<>(StatusCodes.OK, getTweetsByAuthorIdResponse.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", getTweetsByAuthorIdResponse);
     }
 
     /**
@@ -170,7 +165,7 @@ public class TweetService {
      */
     public ObjectResponse<List<Tweet>> getTimeLine(int id, Object... options) {
         if(id <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         ObjectResponse<User> getUserByIdResponse = ur.getById(id);
@@ -191,14 +186,14 @@ public class TweetService {
                     Integer pageSize = (Integer) options[1];
                     tweets = tr.getTimeLine(getUserByIdResponse.getObject(), pageNumber, pageSize);
                 } else {
-                    return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
+                    return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Pagination Values must be numbers.");
                 }
             }
         } else {
             tweets = tr.getTimeLine(getUserByIdResponse.getObject());
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
+        return new ObjectResponse<>(StatusCodes.OK, tweets.size() + " tweets from " + getUserByIdResponse.getObject().getUsername() + " loaded", tweets);
     }
 
     /**
@@ -208,11 +203,11 @@ public class TweetService {
      */
     public ObjectResponse<Tweet> create(Tweet tweet) {
         if(tweet.getMessage() == null || tweet.getMessage().isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet must have a message");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet must have a message");
         }
 
         if(tweet.getAuthor() == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet must have an author");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet must have an author");
         }
 
         ObjectResponse<User> getUserById = ur.getById(tweet.getAuthor().getId());
@@ -222,7 +217,7 @@ public class TweetService {
         }
 
         if(tweet.getMessage().length() > 140) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
         }
 
         ObjectResponse<Set<User>> getMentionsByMessageResponse = getMentionsByMessage(tweet.getMessage());
@@ -243,9 +238,9 @@ public class TweetService {
         Tweet created = tr.create(tweet);
 
         if(created != null) {
-            return new ObjectResponse<>(HttpStatusCodes.CREATED, "Tweet with message: " + tweet.getMessage() + " created", tweet);
+            return new ObjectResponse<>(StatusCodes.CREATED, "Tweet with message: " + tweet.getMessage() + " created", tweet);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new tweet due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not create a new tweet due to an unknown error");
         }
     }
 
@@ -256,15 +251,15 @@ public class TweetService {
      */
     public ObjectResponse<Tweet> update(Tweet tweet) {
         if(tweet.getMessage().isEmpty()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet must have a message");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet must have a message");
         }
 
         if(tweet.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         if(tweet.getMessage().length() > 140) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
         }
 
         ObjectResponse<Tweet> getByIdResponse = getById(tweet.getId());
@@ -274,11 +269,11 @@ public class TweetService {
         }
 
         if(tweet.getAuthor() == null) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Author can not be null, must meet original author with id " + getByIdResponse.getObject().getAuthor().getId());
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Author can not be null, must meet original author with id " + getByIdResponse.getObject().getAuthor().getId());
         }
 
         if(tweet.getAuthor().getId() != getByIdResponse.getObject().getAuthor().getId()) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Author can not be changed!");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Author can not be changed!");
         }
 
         ObjectResponse<Set<User>> getMentionsByMessageResponse = getMentionsByMessage(tweet.getMessage());
@@ -290,9 +285,9 @@ public class TweetService {
         tweet.setMentions(getMentionsByMessageResponse.getObject());
         Tweet result = tr.update(tweet);
         if(result != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message: " + result.getMessage() + " has been updated", result);
+            return new ObjectResponse<>(StatusCodes.OK, "Tweet with message: " + result.getMessage() + " has been updated", result);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not update an existing tweet due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not update an existing tweet due to an unknown error");
         }
     }
 
@@ -303,7 +298,7 @@ public class TweetService {
      */
     public ObjectResponse<Tweet> delete(Tweet tweet) {
         if(tweet.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid ID");
         }
 
         ObjectResponse<Tweet> getByIdResponse = getById(tweet.getId());
@@ -314,9 +309,9 @@ public class TweetService {
 
         boolean deleted = tr.delete(tweet);
         if(deleted) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet with message " + tweet.getMessage() + " has been deleted");
+            return new ObjectResponse<>(StatusCodes.OK, "Tweet with message " + tweet.getMessage() + " has been deleted");
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Tweet with message " + tweet.getMessage() + "could not be deleted due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Tweet with message " + tweet.getMessage() + "could not be deleted due to an unknown error");
         }
     }
 
@@ -328,11 +323,11 @@ public class TweetService {
      */
     public ObjectResponse<Tweet> like(Tweet tweet, User user) {
         if(user.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
         }
 
         if(tweet.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Tweet ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid Tweet ID");
         }
 
         ObjectResponse<User> getUserByIdResponse = ur.getById(user.getId());
@@ -348,14 +343,14 @@ public class TweetService {
         }
 
         if (getTweetByIdResponse.getObject().getLikes().contains(user)) {
-            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "You already like this tweet");
+            return new ObjectResponse<>(StatusCodes.FORBIDDEN, "You already like this tweet");
         }
 
         Tweet result = tr.like(tweet, user);
         if(result != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Tweet by " + result.getAuthor().getUsername() + " liked", result);
+            return new ObjectResponse<>(StatusCodes.OK, "Tweet by " + result.getAuthor().getUsername() + " liked", result);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not like this tweet due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not like this tweet due to an unknown error");
         }
     }
 
@@ -367,11 +362,11 @@ public class TweetService {
      */
     public ObjectResponse<Tweet> unlike(Tweet tweet, User user) {
         if(user.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid User ID");
         }
 
         if(tweet.getId() <= 0) {
-            return new ObjectResponse<>(HttpStatusCodes.NOT_ACCEPTABLE, "Invalid Tweet ID");
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Invalid Tweet ID");
         }
 
         ObjectResponse<User> getUserByIdResponse = ur.getById(user.getId());
@@ -387,14 +382,14 @@ public class TweetService {
         }
 
         if (!getTweetByIdResponse.getObject().getLikes().contains(user)) {
-            return new ObjectResponse<>(HttpStatusCodes.FORBIDDEN, "You do not like this tweet yet");
+            return new ObjectResponse<>(StatusCodes.FORBIDDEN, "You do not like this tweet yet");
         }
 
         Tweet result =  tr.unlike(tweet, user);
         if(result != null) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "Like from tweet by " + result.getAuthor().getUsername() + " removed", result);
+            return new ObjectResponse<>(StatusCodes.OK, "Like from tweet by " + result.getAuthor().getUsername() + " removed", result);
         } else {
-            return new ObjectResponse<>(HttpStatusCodes.INTERNAL_SERVER_ERROR, "Could not remove your like from this tweet due to an unknown error");
+            return new ObjectResponse<>(StatusCodes.INTERNAL_SERVER_ERROR, "Could not remove your like from this tweet due to an unknown error");
         }
     }
 
@@ -406,7 +401,7 @@ public class TweetService {
      */
     private ObjectResponse<Set<User>> getMentionsByMessage(String message) {
         if(!message.contains("@")) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "0 users mentioned in this tweet", new HashSet<>());
+            return new ObjectResponse<>(StatusCodes.OK, "0 users mentioned in this tweet", new HashSet<>());
         }
 
         String regex = "(?:\\s|\\A)[@]+([A-Za-z0-9-_]+)";
@@ -421,7 +416,7 @@ public class TweetService {
             }
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, users.size() + " users mentioned in this tweet", users);
+        return new ObjectResponse<>(StatusCodes.OK, users.size() + " users mentioned in this tweet", users);
     }
 
     /**
@@ -432,7 +427,7 @@ public class TweetService {
      */
     private ObjectResponse<Set<Hashtag>> getHashtagsByMessage(String message) {
         if(!message.contains("#")) {
-            return new ObjectResponse<>(HttpStatusCodes.OK, "0 hashtags mentioned in this tweet", new HashSet<>());
+            return new ObjectResponse<>(StatusCodes.OK, "0 hashtags mentioned in this tweet", new HashSet<>());
         }
 
         String regex = "(?:\\s|\\A)[#]+([A-Za-z0-9-_]+)";
@@ -447,6 +442,6 @@ public class TweetService {
             }
         }
 
-        return new ObjectResponse<>(HttpStatusCodes.OK, hashtags.size() + " hashtags mentioned in this tweet", hashtags);
+        return new ObjectResponse<>(StatusCodes.OK, hashtags.size() + " hashtags mentioned in this tweet", hashtags);
     }
 }
