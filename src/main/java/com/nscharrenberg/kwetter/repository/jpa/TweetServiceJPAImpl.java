@@ -6,15 +6,9 @@ import com.nscharrenberg.kwetter.repository.interfaces.JPA;
 import com.nscharrenberg.kwetter.repository.interfaces.TweetRepository;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;

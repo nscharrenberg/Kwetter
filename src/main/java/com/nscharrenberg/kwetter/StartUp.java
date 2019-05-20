@@ -4,10 +4,6 @@ import com.nscharrenberg.kwetter.domain.Permission;
 import com.nscharrenberg.kwetter.domain.Role;
 import com.nscharrenberg.kwetter.domain.Tweet;
 import com.nscharrenberg.kwetter.domain.User;
-import com.nscharrenberg.kwetter.exceptions.CreationFailedException;
-import com.nscharrenberg.kwetter.exceptions.InvalidContentException;
-import com.nscharrenberg.kwetter.exceptions.NameNotUniqueException;
-import com.nscharrenberg.kwetter.exceptions.NotFoundException;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.PermissionService;
 import com.nscharrenberg.kwetter.service.RoleService;
@@ -22,7 +18,6 @@ import javax.faces.annotation.FacesConfig;
 import javax.inject.Inject;
 import javax.security.enterprise.authentication.mechanism.http.CustomFormAuthenticationMechanismDefinition;
 import javax.security.enterprise.authentication.mechanism.http.LoginToContinue;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 

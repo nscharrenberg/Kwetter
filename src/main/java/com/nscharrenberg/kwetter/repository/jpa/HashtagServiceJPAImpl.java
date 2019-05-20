@@ -1,7 +1,6 @@
 package com.nscharrenberg.kwetter.repository.jpa;
 
 import com.nscharrenberg.kwetter.domain.Hashtag;
-import com.nscharrenberg.kwetter.domain.Permission;
 import com.nscharrenberg.kwetter.repository.interfaces.HashtagRepository;
 import com.nscharrenberg.kwetter.repository.interfaces.JPA;
 

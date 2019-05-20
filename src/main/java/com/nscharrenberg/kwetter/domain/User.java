@@ -1,14 +1,9 @@
 package com.nscharrenberg.kwetter.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 

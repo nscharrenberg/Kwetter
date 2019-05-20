@@ -1,22 +1,24 @@
 package com.nscharrenberg.kwetter.authentication;
 
-import com.google.common.hash.Hashing;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.nio.charset.StandardCharsets;
-
 public class PasswordAuthentication {
-    public static String hash_deprecated(String password) {
-        return Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
-    }
 
-    /*
-     * Bcrypt not supported by glassfish and payara
+    /**
+     * Encrypt the password using bcrypt
+     * @param password
+     * @return
      */
     public static String hash(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
+    /**
+     * Verify the given password using bcrypt
+     * @param password
+     * @param hash
+     * @return
+     */
     public static boolean verify(String password, String hash) {
         try {
             return BCrypt.checkpw(password, hash);
@@ -24,6 +26,5 @@ public class PasswordAuthentication {
             e.printStackTrace();
             return false;
         }
-
     }
 }

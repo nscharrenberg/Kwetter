@@ -27,6 +27,7 @@ export class FollowComponent {
     follow() {
         this.userService.follow(this.me, this.toFollow).forEach(data => {
             this.alertService.success("You are now following " + data.username);
+            location.reload();
         }).catch(error => {
             this.alertService.error(error.error.toString());
         });

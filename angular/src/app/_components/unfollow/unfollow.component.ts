@@ -27,6 +27,7 @@ export class UnfollowComponent {
     unfollow() {
         this.userService.unfollow(this.me, this.toUnFollow).forEach(data => {
             this.alertService.success("You are not following " + data.username + " anymore");
+            location.reload();
         }).catch(error => {
             this.alertService.error(error.error.toString());
         });

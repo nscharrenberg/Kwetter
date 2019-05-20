@@ -3,11 +3,9 @@ package com.nscharrenberg.kwetter.repository.collection;
 import com.google.common.collect.Iterables;
 import com.nscharrenberg.kwetter.domain.Permission;
 import com.nscharrenberg.kwetter.domain.Role;
-import com.nscharrenberg.kwetter.exceptions.NameNotUniqueException;
 import com.nscharrenberg.kwetter.repository.interfaces.RoleRepository;
 
 import javax.ejb.Stateful;
-import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import java.util.ArrayList;
 import java.util.List;

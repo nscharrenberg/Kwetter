@@ -8,24 +8,20 @@ import com.nscharrenberg.kwetter.dtos.tweets.CreateTweetRequestObject;
 import com.nscharrenberg.kwetter.dtos.tweets.EditTweetRequestObject;
 import com.nscharrenberg.kwetter.dtos.tweets.LikeRequestObject;
 import com.nscharrenberg.kwetter.dtos.tweets.TweetDto;
-import org.modelmapper.ModelMapper;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import com.nscharrenberg.kwetter.responses.JaxResponse;
 import com.nscharrenberg.kwetter.responses.ObjectResponse;
 import com.nscharrenberg.kwetter.service.TweetService;
 import com.nscharrenberg.kwetter.service.UserService;
+import org.modelmapper.ModelMapper;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.*;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless
 @Path("/tweets")
@@ -72,10 +68,14 @@ public class TweetController {
                     Link authorLink = Link.fromUri(uriInfo.getBaseUriBuilder().path(UserController.class, "getByUsername").build(t.getId())).rel("author").build();
                     t.getLinks().add(selfLink);
                     t.getLinks().add(authorLink);
-
-                    responseBuilder.links(selfLink, authorLink);
                 });
             }
+
+//            responseBuilder.links(
+//                    Link.fromUri(uriInfo.getBaseUriBuilder().path(TweetController.class).path(TweetController.class, "all").queryParam(Integer.toString(resultPerPage)).queryParam(Integer.toString(pageNumber > 1 ? pageNumber - 1 : 1)).build()).rel("previous_page").build(),
+//                    Link.fromUri(uriInfo.getBaseUriBuilder().path(TweetController.class).path(TweetController.class, "all").queryParam(Integer.toString(resultPerPage)).queryParam(Integer.toString(pageNumber)).build()).rel("current_page").build(),
+//                    Link.fromUri(uriInfo.getBaseUriBuilder().path(TweetController.class).path(TweetController.class, "all").queryParam(Integer.toString(resultPerPage)).queryParam(Integer.toString(pageNumber + 1)).build()).rel("next_page").build()
+//                    );
 
             return responseBuilder.entity(tweetDtos).build();
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class TweetController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.CREATE_TWEET.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 
@@ -234,7 +234,7 @@ public class TweetController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UPDATE_TWEET.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 
@@ -272,7 +272,7 @@ public class TweetController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.DELETE_TWEET.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 
@@ -306,7 +306,7 @@ public class TweetController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.LIKE_TWEET.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 
@@ -346,7 +346,7 @@ public class TweetController {
         try {
             ObjectResponse<User> loggedIn = authenticationProvider.authenticationWithPermission(authentication, PermissionEnum.UNLIKE_TWEET.getValue());
 
-            if(loggedIn.getCode() != HttpStatusCodes.OK) {
+            if(loggedIn.getCode() != StatusCodes.OK) {
                 return JaxResponse.checkObjectResponse(loggedIn);
             }
 

@@ -2,26 +2,18 @@ package com.nscharrenberg.kwetter.service;
 
 import com.nscharrenberg.kwetter.domain.Tweet;
 import com.nscharrenberg.kwetter.domain.User;
-import com.nscharrenberg.kwetter.exceptions.*;
+import com.nscharrenberg.kwetter.repository.interfaces.TweetRepository;
+import com.nscharrenberg.kwetter.responses.ObjectResponse;
+import com.nscharrenberg.kwetter.responses.StatusCodes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import com.nscharrenberg.kwetter.repository.interfaces.TweetRepository;
-import com.nscharrenberg.kwetter.repository.interfaces.UserRepository;
-import com.nscharrenberg.kwetter.responses.HttpStatusCodes;
-import com.nscharrenberg.kwetter.responses.ObjectResponse;
 
-import javax.swing.*;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -119,7 +111,7 @@ public class TweetServiceTest {
 
         // Assert
         verify(tr, atLeastOnce()).all();
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(list, response.getObject());
         assertEquals(list.size(), response.getObject().size());
         assertEquals(8, response.getObject().size());
@@ -147,7 +139,7 @@ public class TweetServiceTest {
 
         // Assert
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(tweet, response.getObject());
     }
 
@@ -167,7 +159,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.getById(id);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -190,7 +182,7 @@ public class TweetServiceTest {
 
         // Assert
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -201,8 +193,8 @@ public class TweetServiceTest {
     public void getByAuthorName_ExistingUserName_StatusCodeOk() {
         // Arange
 
-        when(ur.getByUsername(user.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
-        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getByUsername(user.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
         when(tr.getByAuthorId(user.getId())).thenReturn(new ArrayList<>(user.getTweets()));
 
         // Act
@@ -212,7 +204,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getByUsername(user.getUsername());
         verify(ur, atLeastOnce()).getById(user.getId());
         verify(tr, atLeastOnce()).getByAuthorId(user.getId());
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(new ArrayList<>(user.getTweets()), response.getObject());
     }
 
@@ -225,7 +217,7 @@ public class TweetServiceTest {
         ObjectResponse<List<Tweet>> response = tweetService.getByAuthorName(username);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -234,14 +226,14 @@ public class TweetServiceTest {
         // Arange
         String username = "iDoNotExist";
 
-        when(ur.getByUsername(username)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(ur.getByUsername(username)).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "User not found"));
 
         // Act
         ObjectResponse<List<Tweet>> response = tweetService.getByAuthorName(username);
 
         // Assert
         verify(ur, atLeastOnce()).getByUsername(username);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -251,7 +243,7 @@ public class TweetServiceTest {
     @Test
     public void getByAuthorId_ExistingId_StatusCodeOk() {
         // Arange
-        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
         when(tr.getByAuthorId(user.getId())).thenReturn(new ArrayList<>(user.getTweets()));
 
         // Act
@@ -260,7 +252,7 @@ public class TweetServiceTest {
         // Assert
         verify(ur, atLeastOnce()).getById(user.getId());
         verify(tr, atLeastOnce()).getByAuthorId(user.getId());
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(new ArrayList<>(user.getTweets()), response.getObject());
     }
 
@@ -273,7 +265,7 @@ public class TweetServiceTest {
         ObjectResponse<List<Tweet>> response = tweetService.getByAuthorId(id);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -282,14 +274,14 @@ public class TweetServiceTest {
         // Arange
         int id = 156;
 
-        when(ur.getById(id)).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(ur.getById(id)).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "User not found"));
 
         // Act
         ObjectResponse<List<Tweet>> response = tweetService.getByAuthorId(id);
 
         // Assert
         verify(ur, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -306,7 +298,7 @@ public class TweetServiceTest {
         tweet.setMessage(message);
         tweet.setAuthor(author);
 
-        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
         when(tr.create(tweet)).thenReturn(tweet);
 
         // Act
@@ -315,7 +307,7 @@ public class TweetServiceTest {
         // Assert
         verify(ur, atLeastOnce()).getById(user.getId());
         verify(tr, atLeastOnce()).create(tweet);
-        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(StatusCodes.CREATED, response.getCode());
         assertEquals(tweet, response.getObject());
     }
 
@@ -333,7 +325,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.create(tweet);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -350,7 +342,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.create(tweet);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -364,14 +356,14 @@ public class TweetServiceTest {
         tweet.setMessage(message);
         tweet.setAuthor(author);
 
-        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "User not found"));
 
         // Act
         ObjectResponse<Tweet> response = tweetService.create(tweet);
 
         // Assert
         verify(ur, atLeastOnce()).getById(user.getId());
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -388,8 +380,8 @@ public class TweetServiceTest {
         Set<User> expectedMentions = new HashSet<>();
         expectedMentions.add(user2);
 
-        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
-        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
         when(tr.create(tweet)).thenReturn(tweet);
 
         // Act
@@ -399,7 +391,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getById(user.getId());
         verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
         verify(tr, atLeastOnce()).create(tweet);
-        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(StatusCodes.CREATED, response.getCode());
         assertEquals(tweet, response.getObject());
         assertEquals(expectedMentions, response.getObject().getMentions());
     }
@@ -418,9 +410,9 @@ public class TweetServiceTest {
         expectedMentions.add(user2);
         expectedMentions.add(user3);
 
-        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
-        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
-        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
         when(tr.create(tweet)).thenReturn(tweet);
 
         // Act
@@ -431,7 +423,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
         verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
         verify(tr, atLeastOnce()).create(tweet);
-        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(StatusCodes.CREATED, response.getCode());
         assertEquals(tweet, response.getObject());
         assertEquals(expectedMentions, response.getObject().getMentions());
     }
@@ -450,10 +442,10 @@ public class TweetServiceTest {
         expectedMentions.add(user2);
         expectedMentions.add(user3);
 
-        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
-        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
-        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
-        when(ur.getByUsername("iDoNotExist")).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(ur.getById(user.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user.getUsername() + " found", user));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(ur.getByUsername("iDoNotExist")).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "User not found"));
         when(tr.create(tweet)).thenReturn(tweet);
 
         // Act
@@ -465,7 +457,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
         verify(ur, atLeastOnce()).getByUsername("iDoNotExist");
         verify(tr, atLeastOnce()).create(tweet);
-        assertEquals(HttpStatusCodes.CREATED, response.getCode());
+        assertEquals(StatusCodes.CREATED, response.getCode());
         assertEquals(tweet, response.getObject());
         assertEquals(expectedMentions, response.getObject().getMentions());
     }
@@ -494,7 +486,7 @@ public class TweetServiceTest {
         // Assert
         verify(tr, atLeastOnce()).getById(id);
         verify(tr, atLeastOnce()).update(tweet);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(tweet, response.getObject());
     }
 
@@ -514,7 +506,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.update(tweet);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -541,7 +533,7 @@ public class TweetServiceTest {
 
         // Assert
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -570,7 +562,7 @@ public class TweetServiceTest {
 
         // Assert
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -590,7 +582,7 @@ public class TweetServiceTest {
         expectedMentions.add(user2);
 
         when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
         when(tr.update(tweet)).thenReturn(tweet);
 
         // Act
@@ -600,7 +592,7 @@ public class TweetServiceTest {
         verify(tr, atLeastOnce()).getById(id);
         verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
         verify(tr, atLeastOnce()).update(tweet);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(tweet, response.getObject());
         assertEquals(expectedMentions, response.getObject().getMentions());
     }
@@ -622,8 +614,8 @@ public class TweetServiceTest {
         expectedMentions.add(user3);
 
         when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
-        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
         when(tr.update(tweet)).thenReturn(tweet);
 
         // Act
@@ -634,7 +626,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getByUsername(user2.getUsername());
         verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
         verify(tr, atLeastOnce()).update(tweet);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(tweet, response.getObject());
         assertEquals(expectedMentions, response.getObject().getMentions());
     }
@@ -656,9 +648,9 @@ public class TweetServiceTest {
         expectedMentions.add(user3);
 
         when(tr.getById(id)).thenReturn(tweet);
-        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
-        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
-        when(ur.getByUsername("iDoNotExist")).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(ur.getByUsername(user2.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user2.getUsername() + " found", user2));
+        when(ur.getByUsername(user3.getUsername())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + user3.getUsername() + " found", user3));
+        when(ur.getByUsername("iDoNotExist")).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "User not found"));
         when(tr.update(tweet)).thenReturn(tweet);
 
         // Act
@@ -670,7 +662,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getByUsername(user3.getUsername());
         verify(ur, atLeastOnce()).getByUsername("iDoNotExist");
         verify(tr, atLeastOnce()).update(tweet);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(tweet, response.getObject());
         assertEquals(expectedMentions, response.getObject().getMentions());
     }
@@ -699,7 +691,7 @@ public class TweetServiceTest {
         // Assert
         verify(tr, atLeastOnce()).getById(id);
         verify(tr, atLeastOnce()).delete(tweet);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -719,7 +711,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.delete(tweet);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -741,7 +733,7 @@ public class TweetServiceTest {
 
         // Assert
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -768,7 +760,7 @@ public class TweetServiceTest {
         expected.setAuthor(author);
         expected.addLike(liker);
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
         when(tr.getById(id)).thenReturn(tweet);
         when(tr.like(tweet, liker)).thenReturn(expected);
 
@@ -779,7 +771,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getById(liker.getId());
         verify(tr, atLeastOnce()).getById(id);
         verify(tr, atLeastOnce()).like(tweet, liker);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(tweet.getId(), response.getObject().getId());
         assertTrue(response.getObject().getLikes().contains(liker));
     }
@@ -804,7 +796,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -826,7 +818,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
 }
 
@@ -844,14 +836,14 @@ public class TweetServiceTest {
 
         User liker = user2;
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "User not found"));
 
         // Act
         ObjectResponse<Tweet> response = tweetService.like(tweet, liker);
 
         // Assert
         verify(ur, atLeastOnce()).getById(liker.getId());
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -869,7 +861,7 @@ public class TweetServiceTest {
 
         User liker = user2;
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
         when(tr.getById(id)).thenReturn(null);
 
         // Act
@@ -878,7 +870,7 @@ public class TweetServiceTest {
         // Assert
         verify(ur, atLeastOnce()).getById(liker.getId());
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -898,7 +890,7 @@ public class TweetServiceTest {
 
         tweet.addLike(liker);
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
         when(tr.getById(id)).thenReturn(tweet);
 
         // Act
@@ -907,7 +899,7 @@ public class TweetServiceTest {
         // Assert
         verify(ur, atLeastOnce()).getById(liker.getId());
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertEquals(StatusCodes.FORBIDDEN, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -933,7 +925,7 @@ public class TweetServiceTest {
         expected.setMessage(message);
         expected.setAuthor(author);
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
         when(tr.getById(id)).thenReturn(tweet);
         when(tr.unlike(tweet, liker)).thenReturn(expected);
 
@@ -944,7 +936,7 @@ public class TweetServiceTest {
         verify(ur, atLeastOnce()).getById(liker.getId());
         verify(tr, atLeastOnce()).getById(id);
         verify(tr, atLeastOnce()).unlike(tweet, liker);
-        assertEquals(HttpStatusCodes.OK, response.getCode());
+        assertEquals(StatusCodes.OK, response.getCode());
         assertEquals(tweet.getId(), response.getObject().getId());
         assertFalse(response.getObject().getLikes().contains(liker));
     }
@@ -968,7 +960,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -990,7 +982,7 @@ public class TweetServiceTest {
         ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
 
         // Assert
-        assertEquals(HttpStatusCodes.NOT_ACCEPTABLE, response.getCode());
+        assertEquals(StatusCodes.NOT_ACCEPTABLE, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -1008,14 +1000,14 @@ public class TweetServiceTest {
         tweet.setAuthor(author);
         tweet.addLike(liker);
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.NOT_FOUND, "User not found"));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.NOT_FOUND, "User not found"));
 
         // Act
         ObjectResponse<Tweet> response = tweetService.unlike(tweet, liker);
 
         // Assert
         verify(ur, atLeastOnce()).getById(liker.getId());
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -1033,7 +1025,7 @@ public class TweetServiceTest {
         tweet.setAuthor(author);
         tweet.addLike(liker);
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
         when(tr.getById(id)).thenReturn(null);
 
         // Act
@@ -1042,7 +1034,7 @@ public class TweetServiceTest {
         // Assert
         verify(ur, atLeastOnce()).getById(liker.getId());
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.NOT_FOUND, response.getCode());
+        assertEquals(StatusCodes.NOT_FOUND, response.getCode());
         assertNull(response.getObject());
     }
 
@@ -1060,7 +1052,7 @@ public class TweetServiceTest {
 
         User liker = user2;
 
-        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(HttpStatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
+        when(ur.getById(liker.getId())).thenReturn(new ObjectResponse<>(StatusCodes.OK, "User with username: " + liker.getUsername() + " found", liker));
         when(tr.getById(id)).thenReturn(tweet);
 
         // Act
@@ -1069,7 +1061,7 @@ public class TweetServiceTest {
         // Assert
         verify(ur, atLeastOnce()).getById(liker.getId());
         verify(tr, atLeastOnce()).getById(id);
-        assertEquals(HttpStatusCodes.FORBIDDEN, response.getCode());
+        assertEquals(StatusCodes.FORBIDDEN, response.getCode());
         assertNull(response.getObject());
     }
 }
