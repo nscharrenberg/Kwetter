@@ -37,4 +37,8 @@ public class SeleniumTestBase {
     public void close() throws IOException {
         webDriver.close();
     }
+
+    public static String HOST() {
+        return WEBSITE_HOST;
+    }
 }

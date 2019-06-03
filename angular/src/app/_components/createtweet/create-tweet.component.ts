@@ -46,7 +46,6 @@ export class CreateTweetComponent  implements OnInit {
        this.tweetService.create(this.f.message.value, this.f.userId.value).forEach((data: Tweet) => {
             this.wsTweetService.messages.next(data);
            this.alertService.success("Tweet posted");
-           location.reload();
        }).catch(error => {
            console.log("ERRNA: " + JSON.stringify(error));
            this.alertService.error(error.error);

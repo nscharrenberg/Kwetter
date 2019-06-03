@@ -44,6 +44,10 @@ public class TweetWebsocket {
             return;
         }
 
+        if(users.contains(userResponse.getObject().getUsername())) {
+            WebSocketSessionListener.getInstance().getSessionMap().get(userResponse.getObject().getUsername()).getAsyncRemote().sendObject(message);
+        }
+
         message.getMentions().forEach(f -> {
             if(users.contains(f.getUsername())) {
                 WebSocketSessionListener.getInstance().getSessionMap().get(f.getUsername()).getAsyncRemote().sendObject(message);

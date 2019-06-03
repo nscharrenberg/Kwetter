@@ -210,14 +210,14 @@ public class TweetService {
             return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet must have an author");
         }
 
+        if(tweet.getMessage().length() > 140) {
+            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
+        }
+
         ObjectResponse<User> getUserById = ur.getById(tweet.getAuthor().getId());
 
         if(getUserById.getObject() == null) {
             return new ObjectResponse<>(getUserById.getCode(), getUserById.getMessage());
-        }
-
-        if(tweet.getMessage().length() > 140) {
-            return new ObjectResponse<>(StatusCodes.NOT_ACCEPTABLE, "Tweet can not be longer then 140 characters");
         }
 
         ObjectResponse<Set<User>> getMentionsByMessageResponse = getMentionsByMessage(tweet.getMessage());

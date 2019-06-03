@@ -25,7 +25,7 @@
                         <li class="profile-stats-item-active">
                             <a>
                                 <span class="profile-stats-item profile-stats-item-label">Tweets</span>
-                                <span class="profile-stats-item profile-stats-item-number">{{tweets?.length}}</span>
+                                <span class="profile-stats-item profile-stats-item-number">{{(user | async)?.tweets.length}}</span>
                             </a>
                         </li>
                         <li>
